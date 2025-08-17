@@ -19,8 +19,20 @@ class TwitchBot(commands.Bot):
             initial_channels=[CHANNEL]
         )
 
+    def get_profile(self):
+        profile_url = "https://osu.ppy.sh/api/get_user"
+        params = {"k": API_KEY, "u": osuUsername}
+        response = requests.get(url=profile_url, params=params)
+
+        data = response.json()[0]
+        return data
+    
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
+
+    @commands.command(name="cmds")
+    async def cmds(self, ctx):
+        await ctx.send(f"@{ctx.author.name} !np, !rank")
 
     @commands.command(name="np")
     async def np(self, ctx):
@@ -31,19 +43,17 @@ class TwitchBot(commands.Bot):
 
     @commands.command(name="rank")
     async def rank(self, ctx):
-        profile_url = "https://osu.ppy.sh/api/get_user"
-        params = {"k": API_KEY, "u": osuUsername}
-
-        response = requests.get(url=profile_url, params=params)
-        data = response.json()[0]
-
+        data = self.get_profile()
         global_rank, country_rank = data["pp_rank"], data["pp_country_rank"]
 
         await ctx.send(f"@{ctx.author.name} Global Rank: #{global_rank}, Country Rank: #{country_rank}")
 
-    @commands.command(name="cmds")
-    async def cmds(self, ctx):
-        await ctx.send(f"@{ctx.author.name} !np, !rank")
+    # @commands.command(name="playtime")
+
+    # @commands.command(name="playcount")
+
+    # @commands.command(name="Mplaycount")
+
 
 bot = TwitchBot()
 bot.run()
