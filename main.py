@@ -32,7 +32,7 @@ class TwitchBot(commands.Bot):
 
     @commands.command(name="cmds")
     async def cmds(self, ctx):
-        await ctx.send(f"@{ctx.author.name} !np, !rank")
+        await ctx.send(f"@{ctx.author.name} !np, !rank, !playtime, !playcount")
 
     @commands.command(name="np")
     async def np(self, ctx):
@@ -48,12 +48,19 @@ class TwitchBot(commands.Bot):
 
         await ctx.send(f"@{ctx.author.name} Global Rank: #{global_rank}, Country Rank: #{country_rank}")
 
-    # @commands.command(name="playtime")
+    @commands.command(name="playtime")
+    async def playtime(self, ctx):
+        data = self.get_profile()
+        total_playtime = int(data["total_seconds_played"]) // 3600
 
-    # @commands.command(name="playcount")
+        await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! for a total of {total_playtime} hours.")
 
-    # @commands.command(name="Mplaycount")
+    @commands.command(name="playcount")
+    async def playcount(self, ctx):
+        data = self.get_profile()
+        playcount = data["playcount"]
 
+        await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! {playcount} times.")
 
 bot = TwitchBot()
 bot.run()
