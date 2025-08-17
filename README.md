@@ -52,3 +52,11 @@ This command will show you the rank of the account where `osuUsername` has been 
 ```
 @kurookamitv Global Rank: #8440, Country Rank: #47
 ```
+
+### !playtime
+
+This will show you how much hours the streamer has wasted on this silly game.
+
+### !playcount
+
+Similar to `!playtime`, the sent message coming from this command will contain the playcount of the streamer.
