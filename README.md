@@ -33,6 +33,10 @@ osuAuth:"YOUROSUAPIKEY"
 
 ## Commands
 
+### !cmds
+
+The same as the classic "!commands" command, but purposely called `!cmds` to not trigger Nightbot or any other bots' "!commands" command. This will send a message in chat with a simple listing of all the commands available. If the amount of commands get too much for this, I'll try to find another way to make this a useful command without it being too cluttered.
+
 ### !np
 
 `!np` is the well-known command where you can ask the bot what map the streamer is currently playing! This will show you an output like this:

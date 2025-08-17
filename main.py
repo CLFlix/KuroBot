@@ -41,5 +41,9 @@ class TwitchBot(commands.Bot):
 
         await ctx.send(f"@{ctx.author.name} Global Rank: #{global_rank}, Country Rank: #{country_rank}")
 
+    @commands.command(name="cmds")
+    async def cmds(self, ctx):
+        await ctx.send(f"@{ctx.author.name} !np, !rank")
+
 bot = TwitchBot()
 bot.run()
