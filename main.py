@@ -30,9 +30,10 @@ class TwitchBot(commands.Bot):
     # performance impact of doing this instead of websockets should be irrelevant.
     def get_map(self):
         companion_url = "http://localhost:20727/json"
-        response = requests.get(companion_url)
 
-        if response.status_code != 200:
+        try:
+            response = requests.get(companion_url)
+        except:
             raise ConnectionError("StreamCompanion is not running or not accessible")
         
         response.encoding = 'utf-8-sig'
@@ -48,27 +49,33 @@ class TwitchBot(commands.Bot):
 
     @commands.command(name="np")
     async def np(self, ctx):
-        map_info = self.get_map()
-        
-        mapid = map_info["mapid"]
-        artist = map_info["artistRoman"] 
-        title = map_info["titleRoman"]
-        diffname = map_info["diffName"]
-        
-        await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid}")
+        try:
+            map_info = self.get_map()
+            
+            mapid = map_info["mapid"]
+            artist = map_info["artistRoman"] 
+            title = map_info["titleRoman"]
+            diffname = map_info["diffName"]
+            
+            await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid}")
+        except ConnectionError as e:
+            await ctx.send(f"@{ctx.author.name} {e}")
 
     @commands.command(name="nppp") 
     async def nppp(self, ctx):
-        map_info = self.get_map()
-        
-        mapid = map_info["mapid"]
-        artist = map_info["artistRoman"]
-        title = map_info["titleRoman"] 
-        diffname = map_info["diffName"]
-        
-        pp_str = f"96%: {map_info['osu_96PP']:.0f}, 97%: {map_info['osu_97PP']:.0f}, 98%: {map_info['osu_98PP']:.0f}, 99%: {map_info['osu_99PP']:.0f}, 100%: {map_info['osu_SSPP']:.0f}"
-        
-        await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid} | PP: {pp_str}")
+        try:
+            map_info = self.get_map()
+            
+            mapid = map_info["mapid"]
+            artist = map_info["artistRoman"]
+            title = map_info["titleRoman"] 
+            diffname = map_info["diffName"]
+            
+            pp_str = f"96%: {map_info['osu_96PP']:.0f}, 97%: {map_info['osu_97PP']:.0f}, 98%: {map_info['osu_98PP']:.0f}, 99%: {map_info['osu_99PP']:.0f}, 100%: {map_info['osu_SSPP']:.0f}"
+            
+            await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid} | PP: {pp_str}")
+        except ConnectionError as e:
+            await ctx.send(f"@{ctx.author.name} {e}")
 
     @commands.command(name="rank")
     async def rank(self, ctx):
