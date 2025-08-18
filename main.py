@@ -45,7 +45,7 @@ class TwitchBot(commands.Bot):
 
     @commands.command(name="cmds")
     async def cmds(self, ctx):
-        await ctx.send(f"@{ctx.author.name} !np, !rank, !playtime, !playcount")
+        await ctx.send(f"@{ctx.author.name} !np, !nppp, !rank, !playtime, !playcount")
 
     @commands.command(name="np")
     async def np(self, ctx):

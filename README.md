@@ -2,11 +2,10 @@
 
 ## Installation
 
-If you haven't installed twitchio and / or dotenv yet, this won't work. You will have to run this into your command prompt in order to make this work on your PC:
+Before being able to run anything, you need to install some dependencies in order for the script to work. Open command prompt and navigate to this folder and run:
 
 ```
-pip install "twitchio<3"
-pip install python-dotenv
+pip install -r requirements.txt
 ```
 
 You will also need <a href="https://github.com/Piotrekol/StreamCompanion">StreamCompanion</a> in order for `!np` to work. The function uses a file that's part of StreamCompanion.
@@ -15,7 +14,6 @@ You will also need <a href="https://github.com/Piotrekol/StreamCompanion">Stream
 
 You will need to fill in some fields in a `.env` file within this folder:
 
-`BOT_NICK` will be the username the bot has to use to chat. If you want to let it go through your own account; just fill in your own username.\
 The `CHANNEL` field has to be filled with the channel you want the bot to chat in, if you use it normally, this will be your own channel name.\
 `TOKEN` is one you can't show anyone, that's why the `.env` file is hidden here. You can easily find this token by going to Twitch on your browser and opening the `Network` tab in F12. Then you look for any `gql` entry and look for `Authorization` in the `Headers` section. The value will be `OAuth YOUROAUTHTOKEN`.\
 `osuUsername` is self-explanatory.\
@@ -25,7 +23,6 @@ The result should be something like this:
 
 ```
 TOKEN="YOUROAUTHTOKEN"
-BOT_NICK="KurookamiTV"
 CHANNEL="KurookamiTV"
 osuUsername:"_Kurookami_"
 osuAuth:"YOUROSUAPIKEY"
@@ -42,7 +39,15 @@ The same as the classic "!commands" command, but purposely called `!cmds` to not
 `!np` is the well-known command where you can ask the bot what map the streamer is currently playing! This will show you an output like this:
 
 ```
-@kurookamitv Now playing: Poppy - they're all around us [Coward] CS:4.5 AR:9.8 OD:9 HP:8.5
+@kurookamitv Now playing: AliA - impulse [Sylvarus' Extra] https://osu.ppy.sh/b/2067454
+```
+
+### !nppp
+
+This will show the same thing as the command before this, including the pp amounts for SS, 99%, 98%, 97% and 96% FC.
+
+```
+@kurookamitv Now playing: AliA - impulse [Sylvarus' Extra] https://osu.ppy.sh/b/2067454 | PP: 96%: 152, 97%: 166, 98%: 183, 99%: 206, 100%: 239
 ```
 
 ### !rank
