@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-BOT_NICK = os.getenv("BOT_NICK")
 TOKEN = os.getenv("TOKEN")
 CHANNEL = os.getenv("CHANNEL")
 osuUsername = os.getenv("osuUsername")
