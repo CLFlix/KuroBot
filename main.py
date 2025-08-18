@@ -45,7 +45,7 @@ class TwitchBot(commands.Bot):
 
     @commands.command(name="cmds")
     async def cmds(self, ctx):
-        await ctx.send(f"@{ctx.author.name} !np, !nppp, !rank, !playtime, !playcount")
+        await ctx.send(f"@{ctx.author.name} !np, !nppp, !rank, !playtime, !playcount, !rq")
 
     @commands.command(name="np")
     async def np(self, ctx):
@@ -97,6 +97,10 @@ class TwitchBot(commands.Bot):
         playcount = data["playcount"]
 
         await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! {playcount} times.")
+
+    @commands.command(name="rq")
+    async def rq(self, ctx):
+        await ctx.send("If the title doesn't say anything about requests, assume you can request anything :D")
 
 bot = TwitchBot()
 bot.run()
