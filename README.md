@@ -36,18 +36,18 @@ The same as the classic "!commands" command, but purposely called `!cmds` to not
 
 ### !np
 
-`!np` is the well-known command where you can ask the bot what map the streamer is currently playing! This will show you an output like this:
+`!np` is the well-known command where you can ask the bot what map the streamer is currently playing! Mods are also included. This will show you an output like this:
 
 ```
-@kurookamitv Now playing: AliA - impulse [Sylvarus' Extra] https://osu.ppy.sh/b/2067454
+@kurookamitv Now playing: Yousei Teikoku - Ira [Wrath] https://osu.ppy.sh/b/4426662
 ```
 
 ### !nppp
 
-This will show the same thing as the command before this, including the pp amounts for SS, 99%, 98%, 97% and 96% FC.
+This will show the same thing as the command before this, including the pp amounts for SS, 99% and 95% FC.
 
 ```
-@kurookamitv Now playing: AliA - impulse [Sylvarus' Extra] https://osu.ppy.sh/b/2067454 | PP: 96%: 152, 97%: 166, 98%: 183, 99%: 206, 100%: 239
+@kurookamitv Now playing: Yousei Teikoku - Ira [Wrath] https://osu.ppy.sh/b/4426662 | PP: 95%: 453, 99%: 564, 100%: 615
 ```
 
 ### !rank

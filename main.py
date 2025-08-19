@@ -56,8 +56,19 @@ class TwitchBot(commands.Bot):
             artist = map_info["artistRoman"] 
             title = map_info["titleRoman"]
             diffname = map_info["diffName"]
-            
-            await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid}")
+            mods = map_info["mods"]
+
+            # Do nothing if there's only 1 mod
+            if mods == "NM":
+                mods = None
+            elif len(mods) > 2:
+                mods = mods.replace(",", "")
+
+            if not mods:
+                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid}")
+            else:
+                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] +{mods} https://osu.ppy.sh/b/{mapid}")
+                
         except ConnectionError as e:
             await ctx.send(f"@{ctx.author.name} {e}")
 
@@ -71,7 +82,7 @@ class TwitchBot(commands.Bot):
             title = map_info["titleRoman"] 
             diffname = map_info["diffName"]
             
-            pp_str = f"96%: {map_info['osu_96PP']:.0f}, 97%: {map_info['osu_97PP']:.0f}, 98%: {map_info['osu_98PP']:.0f}, 99%: {map_info['osu_99PP']:.0f}, 100%: {map_info['osu_SSPP']:.0f}"
+            pp_str = f"95%: {map_info['osu_95PP']:.0f}, 99%: {map_info['osu_99PP']:.0f}, 100%: {map_info['osu_SSPP']:.0f}"
             
             await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid} | PP: {pp_str}")
         except ConnectionError as e:
