@@ -103,4 +103,11 @@ class TwitchBot(commands.Bot):
         await ctx.send("If the title doesn't say anything about requests, assume you can request anything :D")
 
 bot = TwitchBot()
-bot.run()
+
+# Try-except for executable
+try:
+    bot.run()
+except Exception as e:
+    print(f"Bot crashed: {e}")
+finally:
+    input("Press Enter to close...")
