@@ -11,12 +11,13 @@ osuUsername = os.getenv("osuUsername")
 API_KEY = os.getenv("osuAuth")
 
 class TwitchBot(commands.Bot):
-    def __init__(self):
+    def __init__(self, rq_message):
         super().__init__(
             token=TOKEN,
             prefix="!",
             initial_channels=[CHANNEL]
         )
+        self.rq_message = rq_message
 
     def get_profile(self):
         profile_url = "https://osu.ppy.sh/api/get_user"
@@ -115,14 +116,21 @@ class TwitchBot(commands.Bot):
 
     @commands.command(name="rq")
     async def rq(self, ctx):
-        await ctx.send("If the title doesn't say anything about requests, assume you can request anything :D")
+        await ctx.send(self.rq_message)
 
-bot = TwitchBot()
 
 # Try-except for executable
-try:
+def main():
+    requests_or_not = input("Do you accept map requests this stream? (y/n)\n")
+
+    if requests_or_not == "y":
+        message = "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
+    elif requests_or_not == "n":
+        message = "I will not be accepting map requests this stream :/. Maybe next stream ;)"    
+    else:
+        print("Not a valid answer. Please enter 'y' or 'n'.")
+
+    bot = TwitchBot(message)
     bot.run()
-except Exception as e:
-    print(f"Bot crashed: {e}")
-finally:
-    input("Press Enter to close...")
+
+main()

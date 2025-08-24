@@ -65,3 +65,14 @@ This will show you how much hours the streamer has wasted on this silly game.
 ### !playcount
 
 Similar to `!playtime`, the sent message coming from this command will contain the playcount of the streamer.
+
+### !rq
+
+This function responds dynamically to the streamer's choice! When you run the bot, you'll be greeted with this question:
+
+```
+Do you accept map requests this stream? (y/n)
+```
+
+When the command `!rq` get activated in the Twitch chat and you chose "y" in the question, the responding message will be: "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
+If you chose no, this will be: "I will not be accepting map requests this stream :/. Maybe next stream ;)"
