@@ -43,6 +43,10 @@ class TwitchBot(commands.Bot):
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
 
+    @commands.command(name="test")
+    async def test(self, ctx):
+        await ctx.send("I'm responding! :D")
+
     @commands.command(name="cmds")
     async def cmds(self, ctx):
         await ctx.send(f"@{ctx.author.name} !np, !nppp, !rank, !playtime, !playcount, !rq")
