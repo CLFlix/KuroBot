@@ -119,7 +119,6 @@ class TwitchBot(commands.Bot):
         await ctx.send(self.rq_message)
 
 
-# Try-except for executable
 def main():
     requests_or_not = input("Do you accept map requests this stream? (y/n)\n")
 
@@ -131,6 +130,11 @@ def main():
         print("Not a valid answer. Please enter 'y' or 'n'.")
 
     bot = TwitchBot(message)
-    bot.run()
+    try:
+        bot.run()
+    except Exception as e:
+        print(f"Bot crashed: {e}")
+    finally:
+        input("Press Enter to close...")
 
 main()
