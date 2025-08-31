@@ -8,7 +8,7 @@ Before being able to run anything, you need to install some dependencies in orde
 pip install -r requirements.txt
 ```
 
-You will also need <a href="https://github.com/Piotrekol/StreamCompanion">StreamCompanion</a> in order for `!np` to work. The function uses a file that's part of StreamCompanion.
+You will also need <a href="https://github.com/Piotrekol/StreamCompanion">StreamCompanion</a> in order for `!np` and `!nppp` to work. These features work by taking the data StreamCompanion processes and shows you on the locally hosted json.
 
 ## Account and Authorization
 

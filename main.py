@@ -19,6 +19,11 @@ class TwitchBot(commands.Bot):
         )
         self.rq_message = rq_message
 
+    # print in console when bot is logged in and ready to be used
+    async def event_ready(self):
+        print(f"Logged in as {self.nick}")
+
+    # When osuAuth and osuUsername are filled in in the .env file, this method can look up your osu! profile
     def get_profile(self):
         profile_url = "https://osu.ppy.sh/api/get_user"
         params = {"k": API_KEY, "u": osuUsername}
@@ -27,6 +32,7 @@ class TwitchBot(commands.Bot):
         data = response.json()[0]
         return data
 
+    # When you have StreamCompanion running, the command !np and !nppp will request the map through this method
     # Since this endpoint is only called occasionally through !np, the
     # performance impact of doing this instead of websockets should be irrelevant.
     def get_map(self):
@@ -41,17 +47,17 @@ class TwitchBot(commands.Bot):
         data = response.json()
         return data
     
-    async def event_ready(self):
-        print(f"Logged in as {self.nick}")
-
+    # Quick testing
     @commands.command(name="test")
     async def test(self, ctx):
         await ctx.send("I'm responding! :D")
 
+    # show all commands
     @commands.command(name="cmds")
     async def cmds(self, ctx):
         await ctx.send(f"@{ctx.author.name} !np, !nppp, !rank, !playtime, !playcount, !rq")
 
+    # show now playing
     @commands.command(name="np")
     async def np(self, ctx):
         try:
@@ -77,6 +83,7 @@ class TwitchBot(commands.Bot):
         except ConnectionError as e:
             await ctx.send(f"@{ctx.author.name} {e}")
 
+    # show now playing with pp values for SS, 99% and 95%
     @commands.command(name="nppp") 
     async def nppp(self, ctx):
         try:
@@ -93,6 +100,7 @@ class TwitchBot(commands.Bot):
         except ConnectionError as e:
             await ctx.send(f"@{ctx.author.name} {e}")
 
+    # show current rank (global and country)
     @commands.command(name="rank")
     async def rank(self, ctx):
         data = self.get_profile()
@@ -100,6 +108,7 @@ class TwitchBot(commands.Bot):
 
         await ctx.send(f"@{ctx.author.name} Global Rank: #{global_rank}, Country Rank: #{country_rank}")
 
+    # show amount of playtime in hours
     @commands.command(name="playtime")
     async def playtime(self, ctx):
         data = self.get_profile()
@@ -107,6 +116,7 @@ class TwitchBot(commands.Bot):
 
         await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! for a total of {total_playtime} hours.")
 
+    # show playcount
     @commands.command(name="playcount")
     async def playcount(self, ctx):
         data = self.get_profile()
@@ -114,20 +124,25 @@ class TwitchBot(commands.Bot):
 
         await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! {playcount} times.")
 
+    # show the chat if you want to accept requests or not (check main)
     @commands.command(name="rq")
     async def rq(self, ctx):
         await ctx.send(self.rq_message)
 
 
 def main():
-    requests_or_not = input("Do you accept map requests this stream? (y/n)\n")
+    ask_for_requests = True
+    while ask_for_requests:
+        requests_or_not = input("Do you accept map requests this stream? (y/n)\n")
 
-    if requests_or_not == "y":
-        message = "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
-    elif requests_or_not == "n":
-        message = "I will not be accepting map requests this stream :/. Maybe next stream ;)"    
-    else:
-        print("Not a valid answer. Please enter 'y' or 'n'.")
+        if requests_or_not.lower() == "y":
+            message = "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
+            ask_for_requests = False
+        elif requests_or_not.lower() == "n":
+            message = "I will not be accepting map requests this stream :/. Maybe next stream ;)"
+            ask_for_requests = False
+        else:
+            print("Not a valid answer. Please enter 'y' or 'n'.")
 
     bot = TwitchBot(message)
     try:
