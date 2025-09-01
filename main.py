@@ -2,6 +2,7 @@ from twitchio.ext import commands
 import os
 import requests
 from dotenv import load_dotenv
+import random
 
 load_dotenv()
 
@@ -47,7 +48,7 @@ class TwitchBot(commands.Bot):
         data = response.json()
         return data
     
-    # Quick testing
+    # Quick testing, doesn't need to be in ?commands
     @commands.command(name="test")
     async def test(self, ctx):
         await ctx.send("I'm responding! :D")
@@ -55,7 +56,7 @@ class TwitchBot(commands.Bot):
     # show all commands
     @commands.command(name="commands")
     async def cmds(self, ctx):
-        await ctx.send(f"@{ctx.author.name} ?np, ?nppp, ?rank, ?playtime, ?playcount, ?rq")
+        await ctx.send(f"@{ctx.author.name} ?np, ?nppp, ?rank, ?playtime, ?playcount, ?rq, ?roll")
 
     # show now playing
     @commands.command(name="np")
@@ -128,6 +129,13 @@ class TwitchBot(commands.Bot):
     @commands.command(name="rq")
     async def rq(self, ctx):
         await ctx.send(self.rq_message)
+
+    ## Fun commands
+    # roll a random number between 1 and a specified amount, with 100 as a default
+    @commands.command(name="roll")
+    async def roll(self, ctx, amount=100):
+        random_number = random.randint(1, int(amount))
+        await ctx.send(f"@{ctx.author.name} You rolled {random_number}")
 
 
 def main():

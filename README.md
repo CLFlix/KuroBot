@@ -8,7 +8,7 @@ Before being able to run anything, you need to install some dependencies in orde
 pip install -r requirements.txt
 ```
 
-You will also need <a href="https://github.com/Piotrekol/StreamCompanion">StreamCompanion</a> in order for `!np` and `!nppp` to work. These features work by taking the data StreamCompanion processes and shows you on the locally hosted json.
+You will also need <a href="https://github.com/Piotrekol/StreamCompanion">StreamCompanion</a> in order for `?np` and `?nppp` to work. These features work by taking the data StreamCompanion processes and shows you on the locally hosted json.
 
 ## Account and Authorization
 
@@ -30,19 +30,19 @@ osuAuth:"YOUROSUAPIKEY"
 
 ## Commands
 
-### !cmds
+### ?commands
 
-The same as the classic "!commands" command, but purposely called `!cmds` to not trigger Nightbot or any other bots' "!commands" command. This will send a message in chat with a simple listing of all the commands available. If the amount of commands get too much for this, I'll try to find another way to make this a useful command without it being too cluttered.
+This will show all the commands the viewers can use with your bot!
 
-### !np
+### ?np
 
-`!np` is the well-known command where you can ask the bot what map the streamer is currently playing! Mods are also included. This will show you an output like this:
+`?np` is the well-known command where you can ask the bot what map the streamer is currently playing! Mods are also included. This will show you an output like this:
 
 ```
 @kurookamitv Now playing: Yousei Teikoku - Ira [Wrath] https://osu.ppy.sh/b/4426662
 ```
 
-### !nppp
+### ?nppp
 
 This will show the same thing as the command before this, including the pp amounts for SS, 99% and 95% FC.
 
@@ -50,7 +50,7 @@ This will show the same thing as the command before this, including the pp amoun
 @kurookamitv Now playing: Yousei Teikoku - Ira [Wrath] https://osu.ppy.sh/b/4426662 | PP: 95%: 453, 99%: 564, 100%: 615
 ```
 
-### !rank
+### ?rank
 
 This command will show you the rank of the account where `osuUsername` has been filled in. The output looks like this:
 
@@ -58,15 +58,15 @@ This command will show you the rank of the account where `osuUsername` has been 
 @kurookamitv Global Rank: #8440, Country Rank: #47
 ```
 
-### !playtime
+### ?playtime
 
 This will show you how much hours the streamer has wasted on this silly game.
 
-### !playcount
+### ?playcount
 
-Similar to `!playtime`, the sent message coming from this command will contain the playcount of the streamer.
+Similar to `?playtime`, the sent message coming from this command will contain the playcount of the streamer.
 
-### !rq
+### ?rq
 
 This function responds dynamically to the streamer's choice! When you run the bot, you'll be greeted with this question:
 
@@ -74,5 +74,5 @@ This function responds dynamically to the streamer's choice! When you run the bo
 Do you accept map requests this stream? (y/n)
 ```
 
-When the command `!rq` get activated in the Twitch chat and you chose "y" in the question, the responding message will be: "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
+When the command `?rq` get activated in the Twitch chat and you chose "y" in the question, the responding message will be: "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
 If you chose no, this will be: "I will not be accepting map requests this stream :/. Maybe next stream ;)"
