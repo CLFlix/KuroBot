@@ -14,7 +14,7 @@ class TwitchBot(commands.Bot):
     def __init__(self, rq_message):
         super().__init__(
             token=TOKEN,
-            prefix="!",
+            prefix="?",
             initial_channels=[CHANNEL]
         )
         self.rq_message = rq_message
@@ -53,9 +53,9 @@ class TwitchBot(commands.Bot):
         await ctx.send("I'm responding! :D")
 
     # show all commands
-    @commands.command(name="cmds")
+    @commands.command(name="commands")
     async def cmds(self, ctx):
-        await ctx.send(f"@{ctx.author.name} !np, !nppp, !rank, !playtime, !playcount, !rq")
+        await ctx.send(f"@{ctx.author.name} ?np, ?nppp, ?rank, ?playtime, ?playcount, ?rq")
 
     # show now playing
     @commands.command(name="np")
