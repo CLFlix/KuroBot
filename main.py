@@ -56,7 +56,9 @@ class TwitchBot(commands.Bot):
     # show all commands
     @commands.command(name="commands")
     async def cmds(self, ctx):
-        await ctx.send(f"@{ctx.author.name} ?np, ?nppp, ?rank, ?playtime, ?playcount, ?rq, ?roll, ?sus, ?owo")
+        hidden = {"commands", "test"}
+        command_list = ", ".join(command for command in self.commands.keys() if command not in hidden)
+        await ctx.send(f"@{ctx.author.name} Available commands: {command_list}")
 
     # show now playing
     @commands.command(name="np")

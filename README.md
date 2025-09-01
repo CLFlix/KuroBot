@@ -28,11 +28,15 @@ osuUsername:"_Kurookami_"
 osuAuth:"YOUROSUAPIKEY"
 ```
 
-## Commands
+## Useful Commands
+
+### ?test
+
+This just gives you a quick verification that the bot is ready to be used in your chat! It's recommended to run the bot before you start your stream, so you don't have to deal with this during stream.
 
 ### ?commands
 
-This will show all the commands the viewers can use with your bot!
+This will show all the commands the viewers can use with your bot! `?commands` itself since you already know this command if you just triggered it. `test` will also be left out of this since viewers don't need to test the bot once you verified it's running in your chat.
 
 ### ?np
 
@@ -77,6 +81,25 @@ Do you accept map requests this stream? (y/n)
 When the command `?rq` get activated in the Twitch chat and you chose "y" in the question, the responding message will be: "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
 If you chose no, this will be: "I will not be accepting map requests this stream :/. Maybe next stream ;)"
 
+## Fun commands
+
 ### ?roll `number`
 
 This will roll a randum number between 1 and `number` if it's specified like `?roll 1000`. If this is not specified, it will roll a random number between 1 and 100.
+
+### ?sus
+
+This command will simply reply with the username of who triggered it with ඞ behind it:
+
+```
+@KurookamiTV ඞ
+```
+
+### ?owo `message`
+
+After replacing all the l's and r's in the original `message`, the bot will reply with the same message in an owofied state.
+
+```
+Origial message: ?owo Hello, world!
+Bot's reply: @KurookamiTV Hewwo, wowwd!
+```
