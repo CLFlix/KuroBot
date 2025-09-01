@@ -76,3 +76,7 @@ Do you accept map requests this stream? (y/n)
 
 When the command `?rq` get activated in the Twitch chat and you chose "y" in the question, the responding message will be: "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
 If you chose no, this will be: "I will not be accepting map requests this stream :/. Maybe next stream ;)"
+
+### ?roll `number`
+
+This will roll a randum number between 1 and `number` if it's specified like `?roll 1000`. If this is not specified, it will roll a random number between 1 and 100.
