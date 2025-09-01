@@ -56,7 +56,7 @@ class TwitchBot(commands.Bot):
     # show all commands
     @commands.command(name="commands")
     async def cmds(self, ctx):
-        await ctx.send(f"@{ctx.author.name} ?np, ?nppp, ?rank, ?playtime, ?playcount, ?rq, ?roll")
+        await ctx.send(f"@{ctx.author.name} ?np, ?nppp, ?rank, ?playtime, ?playcount, ?rq, ?roll, ?sus, ?owo")
 
     # show now playing
     @commands.command(name="np")
@@ -136,6 +136,17 @@ class TwitchBot(commands.Bot):
     async def roll(self, ctx, amount=100):
         random_number = random.randint(1, int(amount))
         await ctx.send(f"@{ctx.author.name} You rolled {random_number}")
+
+    # yeah idk either
+    @commands.command(name="sus")
+    async def sus(self, ctx):
+        await ctx.send(f"@{ctx.author.name} ඞ")
+    
+    # replaces all r/l to w and sends it back in chat
+    @commands.command(name="owo")
+    async def owo(self, ctx, *, message: str = "Type in a message after '?owo' and I will owo-fy it."):
+        owofied_message = message.replace("l", "w").replace("r", "w")
+        await ctx.send(f"@{ctx.author.name} {owofied_message}")
 
 
 def main():
