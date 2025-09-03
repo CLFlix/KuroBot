@@ -150,6 +150,69 @@ class TwitchBot(commands.Bot):
         owofied_message = message.replace("l", "w").replace("r", "w")
         await ctx.send(f"@{ctx.author.name} {owofied_message}")
 
+    # rock paper scissors against bot
+    @commands.command(name="rps")
+    async def rps(self, ctx, message: str = "Enter 'rock', 'paper' or 'scissors'"):
+        # assign bot's choice
+        random_number = random.randint(1, 3)
+        match random_number:
+            case 1:
+                rps = 'rock'
+            case 2:
+                rps = 'paper'
+            case 3:
+                rps = 'scissors'
+        
+        base_reply = f"The bot chose {rps}. "
+        win = f"You win."
+        lose = f"You lose."
+        tie = f"It's a tie."
+
+        if message == "Enter 'rock', 'paper' or 'scissors'":
+            await ctx.send(f"@{ctx.author.name} You didn't enter a choice. Please enter 'rock', 'paper' or 'scissors'.")
+
+        elif message.lower() == 'rock':
+            match rps:
+                case 'rock':
+                    await ctx.send(base_reply + tie)
+                case 'paper':
+                    await ctx.send(base_reply + lose)
+                case 'scissors':
+                    await ctx.send(base_reply + win)
+        
+        elif message.lower() == 'paper':
+            match rps:
+                case 'rock':
+                    await ctx.send(base_reply + win)
+                case 'paper':
+                    await ctx.send(base_reply + tie)
+                case 'scissors':
+                    await ctx.send(base_reply + lose)
+        
+        elif message.lower() == 'scissors':
+            match rps:
+                case 'rock':
+                    await ctx.send(base_reply + lose)
+                case 'paper':
+                    await ctx.send(base_reply + win)
+                case 'scissors':
+                    await ctx.send(base_reply + tie)
+
+    @commands.command(name="mock")
+    async def mock(self, ctx, *, message: str = ""):
+        if not message:
+            await ctx.send(f"@{ctx.author.name} Enter a message and I will mock you ;)")
+            return
+        
+        result = ""
+        for i, letter in enumerate(message):
+            if i % 2 == 0:
+                result += letter.upper()
+            else:
+                result += letter.lower()
+        
+        await ctx.send(f"@{ctx.author.name} {result}")
+        
 
 def main():
     ask_for_requests = True
