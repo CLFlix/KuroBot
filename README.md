@@ -103,3 +103,11 @@ After replacing all the l's and r's in the original `message`, the bot will repl
 Origial message: ?owo Hello, world!
 Bot's reply: @KurookamiTV Hewwo, wowwd!
 ```
+
+### ?rps `choice`
+
+Play rock, paper, scissors with the bot! The player needs to type `?rps choice` in chat, with `choice` being one of the three choices: "rock", "paper" or "scissors". If the player wins, they get 3 points. If they lose, they get nothing (may be updated). If they tie, they get 1 point.
+
+### ?points
+
+Shows the player how many points this chatter has.

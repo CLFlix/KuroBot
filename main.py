@@ -37,6 +37,18 @@ class TwitchBot(commands.Bot):
                 else:
                     self.points[user] += 1
 
+    # display points
+    @commands.command(name="points")
+    async def points(self, ctx):
+        name = ctx.author.name
+        if name in self.points:
+            if self.points[name] == 1:
+                await ctx.send(f"@{name} You currently have 1 point.")
+            else:
+                await ctx.send(f"@{name} You currently have {self.points[name]} points.")
+        else:
+            await ctx.send(f"@{name} You currently have 0 points.")
+
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
