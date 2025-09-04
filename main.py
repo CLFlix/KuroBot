@@ -1,15 +1,17 @@
+from utils import *
+
 from twitchio.ext import commands
-import os
-import requests
 from dotenv import load_dotenv
+
+import os
 import random
 
 load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
 CHANNEL = os.getenv("CHANNEL")
-osuUsername = os.getenv("osuUsername")
-API_KEY = os.getenv("osuAuth")
+
+POINTS_FILE = r'points.json'
 
 class TwitchBot(commands.Bot):
     def __init__(self, rq_message):
@@ -19,35 +21,26 @@ class TwitchBot(commands.Bot):
             initial_channels=[CHANNEL]
         )
         self.rq_message = rq_message
+        self.points = get_points_data(POINTS_FILE)
+
+    # add points as result to rps game
+    def add_rps_points(self, user, rps_result):
+        match rps_result:
+            case "win":
+                if user not in self.points:
+                    self.points[user] = 3
+                else:
+                    self.points[user] += 3
+            case "tie":
+                if user not in self.points:
+                    self.points[user] = 1
+                else:
+                    self.points[user] += 1
 
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
 
-    # When osuAuth and osuUsername are filled in in the .env file, this method can look up your osu! profile
-    def get_profile(self):
-        profile_url = "https://osu.ppy.sh/api/get_user"
-        params = {"k": API_KEY, "u": osuUsername}
-        response = requests.get(url=profile_url, params=params)
-
-        data = response.json()[0]
-        return data
-
-    # When you have StreamCompanion running, the command !np and !nppp will request the map through this method
-    # Since this endpoint is only called occasionally through !np, the
-    # performance impact of doing this instead of websockets should be irrelevant.
-    def get_map(self):
-        companion_url = "http://localhost:20727/json"
-
-        try:
-            response = requests.get(companion_url)
-        except:
-            raise ConnectionError("StreamCompanion is not running or not accessible")
-        
-        response.encoding = 'utf-8-sig'
-        data = response.json()
-        return data
-    
     # Quick testing, doesn't need to be in ?commands
     @commands.command(name="test")
     async def test(self, ctx):
@@ -64,7 +57,7 @@ class TwitchBot(commands.Bot):
     @commands.command(name="np")
     async def np(self, ctx):
         try:
-            map_info = self.get_map()
+            map_info = get_map()
             
             mapid = map_info["mapid"]
             artist = map_info["artistRoman"] 
@@ -90,7 +83,7 @@ class TwitchBot(commands.Bot):
     @commands.command(name="nppp") 
     async def nppp(self, ctx):
         try:
-            map_info = self.get_map()
+            map_info = get_map()
             
             mapid = map_info["mapid"]
             artist = map_info["artistRoman"]
@@ -106,7 +99,7 @@ class TwitchBot(commands.Bot):
     # show current rank (global and country)
     @commands.command(name="rank")
     async def rank(self, ctx):
-        data = self.get_profile()
+        data = get_profile()
         global_rank, country_rank = data["pp_rank"], data["pp_country_rank"]
 
         await ctx.send(f"@{ctx.author.name} Global Rank: #{global_rank}, Country Rank: #{country_rank}")
@@ -114,7 +107,7 @@ class TwitchBot(commands.Bot):
     # show amount of playtime in hours
     @commands.command(name="playtime")
     async def playtime(self, ctx):
-        data = self.get_profile()
+        data = get_profile()
         total_playtime = int(data["total_seconds_played"]) // 3600
 
         await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! for a total of {total_playtime} hours.")
@@ -122,7 +115,7 @@ class TwitchBot(commands.Bot):
     # show playcount
     @commands.command(name="playcount")
     async def playcount(self, ctx):
-        data = self.get_profile()
+        data = get_profile()
         playcount = data["playcount"]
 
         await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! {playcount} times.")
@@ -174,29 +167,35 @@ class TwitchBot(commands.Bot):
         elif message.lower() == 'rock':
             match rps:
                 case 'rock':
-                    await ctx.send(base_reply + tie)
+                    await ctx.send(f"@{ctx.author.name} " + base_reply + tie)
+                    self.add_rps_points(ctx.author.name, "tie")
                 case 'paper':
-                    await ctx.send(base_reply + lose)
+                    await ctx.send(f"@{ctx.author.name} " + base_reply + lose)
                 case 'scissors':
-                    await ctx.send(base_reply + win)
+                    await ctx.send(f"@{ctx.author.name} " + base_reply + win)
+                    self.add_rps_points(ctx.author.name, "win")
         
         elif message.lower() == 'paper':
             match rps:
                 case 'rock':
-                    await ctx.send(base_reply + win)
+                    await ctx.send(f"@{ctx.author.name} " + base_reply + win)
+                    self.add_rps_points(ctx.author.name, "win")
                 case 'paper':
-                    await ctx.send(base_reply + tie)
+                    await ctx.send(f"@{ctx.author.name} " + base_reply + tie)
+                    self.add_rps_points(ctx.author.name, "tie")
                 case 'scissors':
-                    await ctx.send(base_reply + lose)
+                    await ctx.send(f"@{ctx.author.name} " + base_reply + lose)
         
         elif message.lower() == 'scissors':
             match rps:
                 case 'rock':
-                    await ctx.send(base_reply + lose)
+                    await ctx.send(f"@{ctx.author.name} " + base_reply + lose)
                 case 'paper':
-                    await ctx.send(base_reply + win)
+                    await ctx.send(f"@{ctx.author.name} " + base_reply + win)
+                    self.add_rps_points(ctx.author.name, "win")
                 case 'scissors':
-                    await ctx.send(base_reply + tie)
+                    await ctx.send(f"@{ctx.author.name} " + base_reply + tie)
+                    self.add_rps_points(ctx.author.name, "tie")
 
     @commands.command(name="mock")
     async def mock(self, ctx, *, message: str = ""):
@@ -234,6 +233,7 @@ def main():
     except Exception as e:
         print(f"Bot crashed: {e}")
     finally:
+        write_points_data(bot.points, POINTS_FILE)
         input("Press Enter to close...")
 
 main()

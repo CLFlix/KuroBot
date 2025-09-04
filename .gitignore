@@ -1,7 +1,17 @@
+# pycache
+__pycache__/
+
+# Dotenv
 .env
 
+# pyinstaller
 *.spec
 dist/
 build/
 
+# executable
 *.exe
+
+# Points file, this will be different for every streamer since this is influenced by who watches the streamer
+# Make a file in this directory with the exact same name
+points.json
