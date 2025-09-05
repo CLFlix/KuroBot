@@ -25,17 +25,17 @@ class TwitchBot(commands.Bot):
 
     # add points as result to rps game
     def add_rps_points(self, user, rps_result):
+        def add_points(user, amount):
+            if user not in self.points:
+                self.points[user] = amount 
+            else:
+                self.points[user] += amount
+
         match rps_result:
             case "win":
-                if user not in self.points:
-                    self.points[user] = 3
-                else:
-                    self.points[user] += 3
+                add_points(user, 3)
             case "tie":
-                if user not in self.points:
-                    self.points[user] = 1
-                else:
-                    self.points[user] += 1
+                add_points(user, 1)
 
     # display points
     @commands.command(name="points")
@@ -157,57 +157,42 @@ class TwitchBot(commands.Bot):
 
     # rock paper scissors against bot
     @commands.command(name="rps")
-    async def rps(self, ctx, message: str = "Enter 'rock', 'paper' or 'scissors'"):
-        # assign bot's choice
-        random_number = random.randint(1, 3)
-        match random_number:
-            case 1:
-                rps = 'rock'
-            case 2:
-                rps = 'paper'
-            case 3:
-                rps = 'scissors'
+    async def rps(self, ctx, choice):
+        options = ["rock", "paper", "scissors"]
         
-        base_reply = f"The bot chose {rps}. "
-        win = f"You win."
-        lose = f"You lose."
-        tie = f"It's a tie."
+        player_choice = choice.lower()
+        rps = random.choice(options)
 
-        if message == "Enter 'rock', 'paper' or 'scissors'":
-            await ctx.send(f"@{ctx.author.name} You didn't enter a choice. Please enter 'rock', 'paper' or 'scissors'.")
+        if player_choice not in options:
+            await ctx.send(f"@{ctx.author.name} please choose rock, paper or scissors.")
+            return
+        
 
-        elif message.lower() == 'rock':
-            match rps:
-                case 'rock':
-                    await ctx.send(f"@{ctx.author.name} " + base_reply + tie)
-                    self.add_rps_points(ctx.author.name, "tie")
-                case 'paper':
-                    await ctx.send(f"@{ctx.author.name} " + base_reply + lose)
-                case 'scissors':
-                    await ctx.send(f"@{ctx.author.name} " + base_reply + win)
-                    self.add_rps_points(ctx.author.name, "win")
-        
-        elif message.lower() == 'paper':
-            match rps:
-                case 'rock':
-                    await ctx.send(f"@{ctx.author.name} " + base_reply + win)
-                    self.add_rps_points(ctx.author.name, "win")
-                case 'paper':
-                    await ctx.send(f"@{ctx.author.name} " + base_reply + tie)
-                    self.add_rps_points(ctx.author.name, "tie")
-                case 'scissors':
-                    await ctx.send(f"@{ctx.author.name} " + base_reply + lose)
-        
-        elif message.lower() == 'scissors':
-            match rps:
-                case 'rock':
-                    await ctx.send(f"@{ctx.author.name} " + base_reply + lose)
-                case 'paper':
-                    await ctx.send(f"@{ctx.author.name} " + base_reply + win)
-                    self.add_rps_points(ctx.author.name, "win")
-                case 'scissors':
-                    await ctx.send(f"@{ctx.author.name} " + base_reply + tie)
-                    self.add_rps_points(ctx.author.name, "tie")
+        outcomes = {
+            ("rock", "rock"): "tie",
+            ("rock", "paper"): "lose",
+            ("rock", "scissors"): "win",
+            ("paper", "rock"): "win",
+            ("paper", "paper"): "tie",
+            ("paper", "scissors"): "lose",
+            ("scissors", "rock"): "lose",
+            ("scissors", "paper"): "win",
+            ("scissors", "scissors"): "tie",
+        }
+
+        result = outcomes[(player_choice, rps)]
+
+        base_reply = f"You chose {player_choice}. I chose {rps}. "
+        messages = {
+            "win": "You win! 🎉",
+            "lose": "You lose! 😢",
+            "tie": "It's a tie. 🤝"
+        }
+
+        await ctx.send(f"@{ctx.author.name} {base_reply}{messages[result]}")
+
+        if result in ("win", "tie"):
+            self.add_rps_points(ctx.author.name, result)
 
     @commands.command(name="mock")
     async def mock(self, ctx, *, message: str = ""):
