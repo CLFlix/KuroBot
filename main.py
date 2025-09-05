@@ -155,11 +155,27 @@ class TwitchBot(commands.Bot):
         owofied_message = message.replace("l", "w").replace("r", "w")
         await ctx.send(f"@{ctx.author.name} {owofied_message}")
 
+    # return your message in SpOnGeBoB cApItAlIzAtIoN
+    @commands.command(name="mock")
+    async def mock(self, ctx, *, message: str = ""):
+        if not message:
+            await ctx.send(f"@{ctx.author.name} Enter a message and I will mock you ;)")
+            return
+        
+        result = ""
+        for i, letter in enumerate(message):
+            if i % 2 == 0:
+                result += letter.upper()
+            else:
+                result += letter.lower()
+        
+        await ctx.send(f"@{ctx.author.name} {result}")
+
     # rock paper scissors against bot
     @commands.command(name="rps")
     async def rps(self, ctx, choice):
         options = ["rock", "paper", "scissors"]
-        
+
         player_choice = choice.lower()
         rps = random.choice(options)
 
@@ -167,7 +183,6 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{ctx.author.name} please choose rock, paper or scissors.")
             return
         
-
         outcomes = {
             ("rock", "rock"): "tie",
             ("rock", "paper"): "lose",
@@ -194,21 +209,6 @@ class TwitchBot(commands.Bot):
         if result in ("win", "tie"):
             self.add_rps_points(ctx.author.name, result)
 
-    @commands.command(name="mock")
-    async def mock(self, ctx, *, message: str = ""):
-        if not message:
-            await ctx.send(f"@{ctx.author.name} Enter a message and I will mock you ;)")
-            return
-        
-        result = ""
-        for i, letter in enumerate(message):
-            if i % 2 == 0:
-                result += letter.upper()
-            else:
-                result += letter.lower()
-        
-        await ctx.send(f"@{ctx.author.name} {result}")
-        
 
 def main():
     ask_for_requests = True

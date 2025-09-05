@@ -104,6 +104,10 @@ Origial message: ?owo Hello, world!
 Bot's reply: @KurookamiTV Hewwo, wowwd!
 ```
 
+### ?mock `message`
+
+When you use this command, the bot will return your message in SpOnGeBoB cApItAlIzAtIoN.
+
 ### ?rps `choice`
 
 Play rock, paper, scissors with the bot! The player needs to type `?rps choice` in chat, with `choice` being one of the three choices: "rock", "paper" or "scissors". If the player wins, they get 3 points. If they lose, they get nothing (may be updated). If they tie, they get 1 point.
