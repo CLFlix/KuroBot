@@ -81,6 +81,29 @@ class TwitchBot(commands.Bot):
         # this line is necessary to keep recognizing commands
         await self.handle_commands(message)
 
+    @commands.command(name="leaderboard")
+    async def leaderboard(self, ctx):
+        ranking = sorted(self.points.items(), key=lambda user: user[1], reverse=True)
+
+        try:
+            first, second, third = (
+                f"{ranking[0][0]}: {ranking[0][1]}", 
+                f"{ranking[1][0]}: {ranking[1][1]}", 
+                f"{ranking[2][0]}: {ranking[2][1]}"
+                )
+            await ctx.send(f"@{ctx.author.name} {first}, {second}, {third}")
+
+        except IndexError:
+            if ctx.author.name in self.points:
+                await ctx.send(f"@{ctx.author.name} There are less than 3 people in the ranking. You have {self.points[ctx.author.name]} points.")
+            else:
+                await ctx.send(f"@{ctx.author.name} There are less than 3 people in the ranking.")
+
+    # leaderboard alias
+    @commands.command(name="lb")
+    async def lb(self, ctx):
+        await self.leaderboard(ctx)
+
     # Quick testing, doesn't need to be in ?commands
     @commands.command(name="test")
     async def test(self, ctx):
