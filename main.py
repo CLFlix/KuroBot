@@ -71,7 +71,7 @@ class TwitchBot(commands.Bot):
         cooldown = 5
 
         user = message.author.name
-        added_points = round(len(message.content) / 4) + 1 # ensures there's at least 1 point earned
+        added_points = round(len(message.content) / 4)
 
         # prevent spamming
         if user not in self.last_point_time or (now - self.last_point_time[user]) >= cooldown:
@@ -87,8 +87,8 @@ class TwitchBot(commands.Bot):
 
         try:
             first, second, third = (
-                f"{ranking[0][0]}: {ranking[0][1]}", 
-                f"{ranking[1][0]}: {ranking[1][1]}", 
+                f"{ranking[0][0]}: {ranking[0][1]}",
+                f"{ranking[1][0]}: {ranking[1][1]}",
                 f"{ranking[2][0]}: {ranking[2][1]}"
                 )
             await ctx.send(f"@{ctx.author.name} {first}, {second}, {third}")
@@ -194,11 +194,6 @@ class TwitchBot(commands.Bot):
     async def roll(self, ctx, amount=100):
         random_number = random.randint(1, int(amount))
         await ctx.send(f"@{ctx.author.name} You rolled {random_number}")
-
-    # yeah idk either
-    @commands.command(name="sus")
-    async def sus(self, ctx):
-        await ctx.send(f"@{ctx.author.name} ඞ")
     
     # replaces all r/l to w and sends it back in chat
     @commands.command(name="owo")

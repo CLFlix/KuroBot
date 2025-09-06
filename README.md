@@ -87,14 +87,6 @@ If you chose no, this will be: "I will not be accepting map requests this stream
 
 This will roll a randum number between 1 and `number` if it's specified like `?roll 1000`. If this is not specified, it will roll a random number between 1 and 100.
 
-### ?sus
-
-This command will simply reply with the username of who triggered it with ඞ behind it:
-
-```
-@KurookamiTV ඞ
-```
-
 ### ?owo `message`
 
 After replacing all the l's and r's in the original `message`, the bot will reply with the same message in an owofied state.
@@ -114,4 +106,8 @@ Play rock, paper, scissors with the bot! The player needs to type `?rps choice` 
 
 ### ?points
 
-Shows the player how many points this chatter has.
+Shows the player how many points this chatter has. Every chatter gains points through this little formula: `round(message_length / 4)`. There's also a cooldown of 5 seconds, so chatters aren't able to spam for points.
+
+### ?leaderboard
+
+Shows the top 3 point earners. Alias: `?lb`
