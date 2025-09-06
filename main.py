@@ -22,20 +22,22 @@ class TwitchBot(commands.Bot):
         )
         self.rq_message = rq_message
         self.points = get_points_data(POINTS_FILE)
+        # manage cooldowns
+        self.last_point_time = {}
+
+    def add_points(self, user, amount):
+        if user not in self.points:
+            self.points[user] = amount 
+        else:
+            self.points[user] += amount
 
     # add points as result to rps game
     def add_rps_points(self, user, rps_result):
-        def add_points(user, amount):
-            if user not in self.points:
-                self.points[user] = amount 
-            else:
-                self.points[user] += amount
-
         match rps_result:
             case "win":
-                add_points(user, 3)
+                self.add_points(user, 3)
             case "tie":
-                add_points(user, 1)
+                self.add_points(user, 1)
 
     # display points
     @commands.command(name="points")
@@ -52,6 +54,32 @@ class TwitchBot(commands.Bot):
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
+    
+    # give people points for chatting
+    async def event_message(self, message):
+        # message.author can be None when the bot is checking it's own messages
+        if not message.author:
+            return
+        
+        # prevent points on command invoke
+        if message.content.startswith("?"):
+            await self.handle_commands(message)
+            return
+        
+        import time
+        now = time.time()
+        cooldown = 5
+
+        user = message.author.name
+        added_points = round(len(message.content) / 4) + 1 # ensures there's at least 1 point earned
+
+        # prevent spamming
+        if user not in self.last_point_time or (now - self.last_point_time[user]) >= cooldown:
+            self.add_points(user, added_points)
+            self.last_point_time[user] = now
+
+        # this line is necessary to keep recognizing commands
+        await self.handle_commands(message)
 
     # Quick testing, doesn't need to be in ?commands
     @commands.command(name="test")
