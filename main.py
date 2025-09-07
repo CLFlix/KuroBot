@@ -9,7 +9,10 @@ import random
 load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
+BROADCASTER_ID = os.getenv("BROADCASTER_ID")
 CHANNEL = os.getenv("CHANNEL")
+CLIENT_ID = os.getenv("CLIENT_ID")
+BOT_ACCESS_TOKEN = os.getenv("BOT_ACCESS_TOKEN")
 
 POINTS_FILE = r'points.json'
 FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
@@ -41,6 +44,30 @@ class TwitchBot(commands.Bot):
                 self.add_points(user, 3)
             case "tie":
                 self.add_points(user, 1)
+
+    # add VIP status to user
+    def add_vip(self, user_id):
+        url = "https://api.twitch.tv/helix/channels/vips"
+        headers = {
+            "Authorization": f"Bearer {BOT_ACCESS_TOKEN}",
+            "Client-Id": CLIENT_ID
+        }
+        params = {
+            "broadcaster_id": BROADCASTER_ID,
+            "user_id": user_id
+        }
+
+        try:
+            response = requests.post(url, headers=headers, params=params)
+        except ConnectionError:
+            return "Something went wrong assigning VIP status.."
+
+        if response.status_code == 204:
+            return True
+        else:
+            print(response.json())
+            return False
+
 
     ## events
     # print in console when bot is logged in and ready to be used
@@ -81,7 +108,7 @@ class TwitchBot(commands.Bot):
     # show all commands, don't show commands in hidden
     @commands.command(name="commands")
     async def cmds(self, ctx):
-        hidden = ["commands", "test", "lb"]
+        hidden = ["commands", "test", "lb", "claim"]
         command_list = ", ".join(command for command in self.commands.keys() if command not in hidden)
         await ctx.send(f"@{ctx.author.name} Available commands: {command_list}")
 
@@ -95,7 +122,7 @@ class TwitchBot(commands.Bot):
 
         self.bonus_claimed.append(user)
         self.add_points(user, 500)
-        await ctx.send(f"@{user} You just claimed 500 points!")
+        await ctx.send(f"@{user} You just claimed 500 points! Use ?commands to find out what you can do ;)")
 
     # display points
     @commands.command(name="points")
@@ -199,7 +226,7 @@ class TwitchBot(commands.Bot):
 
         await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! {playcount} times.")
 
-    # show the chat if you want to accept requests or not (check main)
+    # show the chat if you want to accept requests or not (self.rq_message comes from main())
     @commands.command(name="rq")
     async def rq(self, ctx):
         await ctx.send(self.rq_message)
@@ -270,6 +297,36 @@ class TwitchBot(commands.Bot):
 
         if result in ("win", "tie"):
             self.add_rps_points(ctx.author.name, result)
+
+    ## everything to do with redeeming points
+    # temporary VIP status
+    @commands.command(name="vip")
+    async def vip(self, ctx):
+        vip_cost = 10000
+        user = ctx.author.name
+
+        try:
+            user_data = requests.get("https://api.twitch.tv/helix/users",
+                                    headers={"Authorization": f"Bearer {BOT_ACCESS_TOKEN}", "Client-Id": CLIENT_ID},
+                                    params={"login": user}
+                                    ).json()
+        except ConnectionError:
+            await ctx.send("Something went wrong requesting user data.")
+            return
+        
+        if "data" in user_data and user_data["data"]:
+            user_id = user_data["data"][0]["id"]
+        
+        if user not in self.points:
+            await ctx.send(f"@{user} You don't have enough points! You need {vip_cost} more points.")
+            return
+        elif self.points[user] < vip_cost:
+            await ctx.send(f"@{user} You don't have enough points! You need {vip_cost - self.points[user]} more points.")
+            return
+        
+        if self.add_vip(user_id):
+            await ctx.send(f"@{self.nick} A temporary VIP status has been redeemed by @{user}!")
+            self.points[user] -= vip_cost
 
 
 def main():
