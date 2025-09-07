@@ -164,4 +164,4 @@ Shows the top 3 point earners. Alias: `?lb`
 
 ### ?vip
 
-Notifies the streamer that someone claimed the status of VIP for a limited amount of time and automatically tries to assign the VIP role to this user. The chatter will need {FILL IN POINTS AMOUNT} points for this.
+Notifies the streamer that someone claimed the status of VIP for a limited amount of time and automatically tries to assign the VIP role to this user. The chatter will need 10.000 points for this.
