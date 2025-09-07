@@ -15,3 +15,6 @@ build/
 # Points file, this will be different for every streamer since this is influenced by who watches the streamer
 # Make a file in this directory with the exact same name
 points.json
+
+# users that claimed the first time bonus
+first_time_bonus_claimed.txt

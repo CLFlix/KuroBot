@@ -47,3 +47,19 @@ def get_points_data(points_file):
 def write_points_data(viewer_points, points_file):
     with open(points_file, 'w', encoding='utf-8') as points_output:
         json.dump(viewer_points, points_output, indent=4)
+    print("Points data saved!")
+
+def get_bonus_claimed(first_time_bonus_file):
+    with open(first_time_bonus_file, 'r', encoding='utf-8') as file:
+        lines = file.readlines()
+
+    bonus_claimed = []
+    for line in lines:
+        bonus_claimed.append(line.strip().lower())
+
+    return bonus_claimed
+
+def write_bonus_claimed(bonus_claimed_list, first_time_bonus_file):
+    with open(first_time_bonus_file, 'w', encoding='utf-8') as file:
+        file.writelines(bonus_claimed_list)
+    print("First time bonus data saved!")

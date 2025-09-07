@@ -12,6 +12,7 @@ TOKEN = os.getenv("TOKEN")
 CHANNEL = os.getenv("CHANNEL")
 
 POINTS_FILE = r'points.json'
+FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
 
 class TwitchBot(commands.Bot):
     def __init__(self, rq_message):
@@ -22,7 +23,8 @@ class TwitchBot(commands.Bot):
         )
         self.rq_message = rq_message
         self.points = get_points_data(POINTS_FILE)
-        # manage cooldowns
+        self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
+        # manage chat message points cooldowns
         self.last_point_time = {}
 
     ## helper methods
@@ -82,6 +84,18 @@ class TwitchBot(commands.Bot):
         hidden = ["commands", "test", "lb"]
         command_list = ", ".join(command for command in self.commands.keys() if command not in hidden)
         await ctx.send(f"@{ctx.author.name} Available commands: {command_list}")
+
+    @commands.command(name="claim")
+    async def claim(self, ctx):
+        user = ctx.author.name
+
+        if user in self.bonus_claimed:
+            await ctx.send(f"@{user} You already claimed your first time bonus!")
+            return
+
+        self.bonus_claimed.append(user)
+        self.add_points(user, 500)
+        await ctx.send(f"@{user} You just claimed 500 points!")
 
     # display points
     @commands.command(name="points")
@@ -279,6 +293,7 @@ def main():
         print(f"Bot crashed: {e}")
     finally:
         write_points_data(bot.points, POINTS_FILE)
+        write_bonus_claimed(bot.bonus_claimed, FIRST_TIME_BONUS_FILE)
         input("Press Enter to close...")
 
 main()
