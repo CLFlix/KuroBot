@@ -13,7 +13,11 @@ API_KEY = os.getenv("osuAuth")
 def get_profile():
     profile_url = "https://osu.ppy.sh/api/get_user"
     params = {"k": API_KEY, "u": osuUsername}
-    response = requests.get(url=profile_url, params=params)
+
+    try:
+        response = requests.get(url=profile_url, params=params)
+    except:
+        raise ConnectionError("osu! API is not reachable or request failed.")
 
     data = response.json()[0]
     return data

@@ -25,6 +25,7 @@ class TwitchBot(commands.Bot):
         # manage cooldowns
         self.last_point_time = {}
 
+    ## helper methods
     def add_points(self, user, amount):
         if user not in self.points:
             self.points[user] = amount 
@@ -39,30 +40,19 @@ class TwitchBot(commands.Bot):
             case "tie":
                 self.add_points(user, 1)
 
-    # display points
-    @commands.command(name="points")
-    async def points(self, ctx):
-        name = ctx.author.name
-        if name in self.points:
-            if self.points[name] == 1:
-                await ctx.send(f"@{name} You currently have 1 point.")
-            else:
-                await ctx.send(f"@{name} You currently have {self.points[name]} points.")
-        else:
-            await ctx.send(f"@{name} You currently have 0 points.")
-
+    ## events
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
-    
+
     # give people points for chatting
     async def event_message(self, message):
         # message.author can be None when the bot is checking it's own messages
-        if not message.author:
+        if not message.author or message.author.name in ["nightbot", "streamelements"]:
             return
         
         # prevent points on command invoke
-        if message.content.startswith("?"):
+        if message.content.startswith("?") or message.content.startswith("!"):
             await self.handle_commands(message)
             return
         
@@ -80,6 +70,30 @@ class TwitchBot(commands.Bot):
 
         # this line is necessary to keep recognizing commands
         await self.handle_commands(message)
+
+    ## useful commands
+    @commands.command(name="test")
+    async def test(self, ctx):
+        await ctx.send("I'm responding! :D")
+
+    # show all commands, don't show commands in hidden
+    @commands.command(name="commands")
+    async def cmds(self, ctx):
+        hidden = ["commands", "test", "lb"]
+        command_list = ", ".join(command for command in self.commands.keys() if command not in hidden)
+        await ctx.send(f"@{ctx.author.name} Available commands: {command_list}")
+
+    # display points
+    @commands.command(name="points")
+    async def points(self, ctx):
+        name = ctx.author.name
+        if name in self.points:
+            if self.points[name] == 1:
+                await ctx.send(f"@{name} You currently have 1 point.")
+            else:
+                await ctx.send(f"@{name} You currently have {self.points[name]} points.")
+        else:
+            await ctx.send(f"@{name} You currently have 0 points.")
 
     @commands.command(name="leaderboard")
     async def leaderboard(self, ctx):
@@ -103,18 +117,6 @@ class TwitchBot(commands.Bot):
     @commands.command(name="lb")
     async def lb(self, ctx):
         await self.leaderboard(ctx)
-
-    # Quick testing, doesn't need to be in ?commands
-    @commands.command(name="test")
-    async def test(self, ctx):
-        await ctx.send("I'm responding! :D")
-
-    # show all commands
-    @commands.command(name="commands")
-    async def cmds(self, ctx):
-        hidden = {"commands", "test"}
-        command_list = ", ".join(command for command in self.commands.keys() if command not in hidden)
-        await ctx.send(f"@{ctx.author.name} Available commands: {command_list}")
 
     # show now playing
     @commands.command(name="np")
