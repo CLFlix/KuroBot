@@ -71,7 +71,6 @@ class TwitchBot(commands.Bot):
             print(response.json())
             return False, response.status_code
 
-
     ## events
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
