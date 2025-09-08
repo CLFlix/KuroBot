@@ -307,14 +307,31 @@ class TwitchBot(commands.Bot):
         memecam_cost = 500
         user = ctx.author.name
 
-        if user not in self.points:
-            await ctx.send(f"@{user} You don't have enough points! You need {memecam_cost} more points.")
-        
-        if self.points[user] < memecam_cost:
-            await ctx.send(f"@{user} You don't have enough points! You need {memecam_cost - self.points[user]} more points.")
+        if user in self.points:
+            # check points
+            if self.points[user] < memecam_cost:
+                await ctx.send(f"@{user} You don't have enough points! You need {memecam_cost - self.points[user]} more points.")
+            else:
+                await ctx.send(f"@{self.nick} You have to throw a silly effect over your camera for the next 10 minutes! This costed @{user} {memecam_cost} points.")
+                self.points[user] -= memecam_cost
         else:
-            await ctx.send(f"@{self.nick} You have to throw a silly effect over your camera for the next 10 minutes! This costed @{user} {memecam_cost} points.")
-            self.points[user] -= memecam_cost
+            await ctx.send(f"@{user} You don't have enough points! You need {memecam_cost} more points.")
+
+    # end stream with this map
+    @commands.command(name="endwith")
+    async def endwith(self, ctx):
+        user = ctx.author.name
+        endwith_cost = 300
+
+        if user in self.points:
+            # TODO: make generalized function for checking if the user can afford this
+            # check points
+            if self.points[user] < endwith_cost:
+                await ctx.send(f"@{user} You don't have enough points! You need {endwith_cost - self.points[user]} more points.")
+            else:
+                await ctx.send(f"@{self.nick} End the stream with this map! This costed @{user} {endwith_cost} points.")
+        else:
+            await ctx.send(f"@{user} You don't have enough points! You need {endwith_cost} more points.")
 
     # temporary VIP status
     @commands.command(name="vip")
