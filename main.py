@@ -1,4 +1,5 @@
 from utils import *
+from refresh_twitch_token import refresh_tokens
 
 from twitchio.ext import commands
 from dotenv import load_dotenv
@@ -63,10 +64,12 @@ class TwitchBot(commands.Bot):
             return "Something went wrong assigning VIP status.."
 
         if response.status_code == 204:
-            return True
+            return True, 204
+        elif response.status_code == 422: # user already is VIP
+            return False, 422
         else:
             print(response.json())
-            return False
+            return False, response.status_code
 
 
     ## events
@@ -302,21 +305,50 @@ class TwitchBot(commands.Bot):
     # temporary VIP status
     @commands.command(name="vip")
     async def vip(self, ctx):
+        global BOT_ACCESS_TOKEN, BOT_REFRESH_TOKEN
+
         vip_cost = 10000
         user = ctx.author.name
 
-        try:
-            user_data = requests.get("https://api.twitch.tv/helix/users",
-                                    headers={"Authorization": f"Bearer {BOT_ACCESS_TOKEN}", "Client-Id": CLIENT_ID},
-                                    params={"login": user}
-                                    ).json()
-        except ConnectionError:
-            await ctx.send("Something went wrong requesting user data.")
+        headers = {
+            "Authorization": f"Bearer {BOT_ACCESS_TOKEN}",
+            "Client-Id": CLIENT_ID
+        }
+
+        # initial try to get user id
+        response = requests.get(
+            "https://api.twitch.tv/helix/users",
+            headers=headers,
+            params={"login": user}
+        )
+
+        if response.status_code == 401: # Unauthorized: token expired
+            await ctx.send("Something went wrong, retrying process...")
+            try:
+                BOT_ACCESS_TOKEN = refresh_tokens()
+                print("Refreshed bot tokens")
+            except Exception as e:
+                await ctx.send(f"@{self.nick} Token refresh failed. Try again later.")
+                print(f"Refresh failed: {e}")
+                return
+            
+            # retry getting user id once
+            headers['Authorization'] = f"Bearer {BOT_ACCESS_TOKEN}"
+            response = requests.get(
+                "https://api.twitch.tv/helix/users",
+                headers=headers,
+                params={"login": user}
+            )
+
+        user_data = response.json()
+
+        if not user_data.get("data"):
+            await ctx.send(f"Couldn't fetch user ID for @{user}.")
             return
+
+        user_id = user_data["data"][0]["id"]
         
-        if "data" in user_data and user_data["data"]:
-            user_id = user_data["data"][0]["id"]
-        
+        # check points balance
         if user not in self.points:
             await ctx.send(f"@{user} You don't have enough points! You need {vip_cost} more points.")
             return
@@ -324,9 +356,16 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{user} You don't have enough points! You need {vip_cost - self.points[user]} more points.")
             return
         
-        if self.add_vip(user_id):
+        succes, status_code = self.add_vip(user_id)
+        if succes:
             await ctx.send(f"@{self.nick} A temporary VIP status has been redeemed by @{user}!")
             self.points[user] -= vip_cost
+        else:
+            match status_code:
+                case 422:
+                    await ctx.send(f"@{user} You already are a VIP!")
+                case _:
+                    await ctx.send(f"@{self.nick} Something went wrong. @{user} No points were deducted.")
 
 
 def main():

@@ -20,9 +20,11 @@ def get_refresh_token():
                             }
                         )
 
+    if response.status_code == 401:
+        raise ConnectionError("Double-check your credentials and try again. You might have to re-run 'get_twitch_refresh_token.py'. In that case, you don't have to run this one again.")
+
     try:
         tokens = response.json()
-
         ACCESS_TOKEN = tokens["access_token"]
         REFRESH_TOKEN = tokens["refresh_token"]
 

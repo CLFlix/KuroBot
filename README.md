@@ -53,7 +53,7 @@ https://id.twitch.tv/oauth2/authorize
 <sup>The only thing to replace here is \<YOUR_CLIENT_ID></sup>\
 If you need to log in, do this. You will end up on your redirect link of your twitch application, but you only need the URL of this page. In the URL, you can find `code=<AUTHORIZATION_CODE>`. Copy this authorization code and place it in the `.env` file with the variable name "CODE".
 
-Now you need to get your bot access token and refresh token, but don't worry, I handled that for you. Run the script "get_twitch_refresh_token.py" and you should see 2 new fields appear in the `.env` file called "BOT_ACCESS_TOKEN" and "BOT_REFRESH_TOKEN". When you run the bot and you notice that you're getting authorization errors after a while, this might be because the access token became invalid. Turn off the bot, run "refresh_twitch_token.py" and turn it on again. You can double-check if the fields have changed. If so, it should be all good and you can turn on the bot again.
+Now you need to get your bot access token and refresh token, but don't worry, I handled that for you. Run "get_twitch_refresh_token.exe" and you should see 2 new fields appear in the `.env` file called "BOT_ACCESS_TOKEN" and "BOT_REFRESH_TOKEN". The access token expires within a couple hours, but I've also accounted to automatically refresh them when they do. You don't have to worry about these tokens in any way.
 
 The result should be something like this:
 
@@ -69,7 +69,7 @@ CLIENT_ID="YOUR-CLIENT-ID"
 CLIENT_SECRET="YOUR-CLIENT-SECRET"
 CODE="AUTHORIZATION_CODE"
 BOT_ACCESS_TOKEN="BOT-ACCESS-TOKEN"
-REFRESH_TOKEN="REFRESH-TOKEN"
+BOT_REFRESH_TOKEN="REFRESH-TOKEN"
 ```
 
 ## Useful Commands
