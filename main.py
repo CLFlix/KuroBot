@@ -300,7 +300,22 @@ class TwitchBot(commands.Bot):
         if result in ("win", "tie"):
             self.add_rps_points(ctx.author.name, result)
 
-    ## everything to do with redeeming points
+    ## redeem points
+    # streamer meme cam
+    @commands.command(name="memecam")
+    async def memecam(self, ctx):
+        memecam_cost = 500
+        user = ctx.author.name
+
+        if user not in self.points:
+            await ctx.send(f"@{user} You don't have enough points! You need {memecam_cost} more points.")
+        
+        if self.points[user] < memecam_cost:
+            await ctx.send(f"@{user} You don't have enough points! You need {memecam_cost - self.points[user]} more points.")
+        else:
+            await ctx.send(f"@{self.nick} You have to throw a silly effect over your camera for the next 10 minutes! This costed @{user} {memecam_cost} points.")
+            self.points[user] -= memecam_cost
+
     # temporary VIP status
     @commands.command(name="vip")
     async def vip(self, ctx):
