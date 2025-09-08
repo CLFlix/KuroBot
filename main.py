@@ -46,6 +46,16 @@ class TwitchBot(commands.Bot):
             case "tie":
                 self.add_points(user, 1)
 
+    # check points for points redeeming
+    def check_points(self, user, item_cost):
+        if user in self.points:
+            if self.points[user] < item_cost:
+                return f"@{user} You don't have enough points! You need {item_cost - self.points[user]} more points!"
+            else:
+                return f"This costed @{user} {item_cost} points."
+        else:
+            return f"@{user} You don't have enough points! You need {item_cost} more points!"
+
     # add VIP status to user
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"
@@ -79,7 +89,7 @@ class TwitchBot(commands.Bot):
     # give people points for chatting
     async def event_message(self, message):
         # message.author can be None when the bot is checking it's own messages
-        if not message.author or message.author.name in ["nightbot", "streamelements"]:
+        if not message.author or message.author.name in ["nightbot", "streamelements", "ronniabot"]:
             return
         
         # prevent points on command invoke
@@ -304,34 +314,28 @@ class TwitchBot(commands.Bot):
     # streamer meme cam
     @commands.command(name="memecam")
     async def memecam(self, ctx):
-        memecam_cost = 500
         user = ctx.author.name
+        memecam_cost = 500
 
-        if user in self.points:
-            # check points
-            if self.points[user] < memecam_cost:
-                await ctx.send(f"@{user} You don't have enough points! You need {memecam_cost - self.points[user]} more points.")
-            else:
-                await ctx.send(f"@{self.nick} You have to throw a silly effect over your camera for the next 10 minutes! This costed @{user} {memecam_cost} points.")
-                self.points[user] -= memecam_cost
+        afford_message = self.check_points(user, memecam_cost)
+        if afford_message.startswith("This"):
+            await ctx.send(f"@{self.nick} You have to throw a silly effect over your camera for the next 10 minutes! {afford_message}")
+            self.points[user] -= memecam_cost
         else:
-            await ctx.send(f"@{user} You don't have enough points! You need {memecam_cost} more points.")
+            await ctx.send(afford_message)
 
     # end stream with this map
     @commands.command(name="endwith")
-    async def endwith(self, ctx):
+    async def endwith(self, ctx, map_link):
         user = ctx.author.name
         endwith_cost = 300
 
-        if user in self.points:
-            # TODO: make generalized function for checking if the user can afford this
-            # check points
-            if self.points[user] < endwith_cost:
-                await ctx.send(f"@{user} You don't have enough points! You need {endwith_cost - self.points[user]} more points.")
-            else:
-                await ctx.send(f"@{self.nick} End the stream with this map! This costed @{user} {endwith_cost} points.")
+        afford_message = self.check_points(user, endwith_cost)
+        if afford_message.startswith("This"):
+            await ctx.send(f"@{self.nick} You have to end stream with {map_link} {afford_message}")
+            self.points[user] -= endwith_cost
         else:
-            await ctx.send(f"@{user} You don't have enough points! You need {endwith_cost} more points.")
+            await ctx.send(afford_message)
 
     # temporary VIP status
     @commands.command(name="vip")
@@ -379,24 +383,21 @@ class TwitchBot(commands.Bot):
 
         user_id = user_data["data"][0]["id"]
         
-        # check points balance
-        if user not in self.points:
-            await ctx.send(f"@{user} You don't have enough points! You need {vip_cost} more points.")
-            return
-        elif self.points[user] < vip_cost:
-            await ctx.send(f"@{user} You don't have enough points! You need {vip_cost - self.points[user]} more points.")
-            return
-        
-        succes, status_code = self.add_vip(user_id)
-        if succes:
-            await ctx.send(f"@{self.nick} A temporary VIP status has been redeemed by @{user}!")
-            self.points[user] -= vip_cost
-        else:
+        afford_message = self.check_points(user, vip_cost) # check points balance
+        succes, status_code = self.add_vip(user_id) # try adding VIP
+
+        if not succes:
             match status_code:
                 case 422:
                     await ctx.send(f"@{user} You already are a VIP!")
                 case _:
                     await ctx.send(f"@{self.nick} Something went wrong. @{user} No points were deducted.")
+        else:
+            if afford_message.startswith("This"):
+                await ctx.send(f"{self.nick} A temporary VIP status has been redeemed by @{user}! {afford_message}")
+                self.points[user] -= vip_cost
+            else:
+                await ctx.send(afford_message)
 
 
 def main():
