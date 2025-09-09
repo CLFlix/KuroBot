@@ -280,9 +280,13 @@ class TwitchBot(commands.Bot):
 
     # rock paper scissors against bot
     @commands.command(name="rps")
-    async def rps(self, ctx, choice):
+    async def rps(self, ctx, choice=None):
         options = ["rock", "paper", "scissors"]
 
+        if not choice:
+            await ctx.send(f"@{ctx.author.name} please choose rock, paper or scissors.")
+            return
+        
         player_choice = choice.lower()
         rps = random.choice(options)
 
