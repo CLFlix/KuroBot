@@ -1,4 +1,4 @@
-# README
+# KuroBot
 
 ## Installation
 
@@ -161,6 +161,14 @@ Shows the player how many points this chatter has. Every chatter gains points th
 Shows the top 3 point earners. Alias: `?lb`
 
 ## Points redeeming
+
+### ?memecam
+
+This allows a chatter to redeem 500 points to make the streamer turn on a silly filter or modify their camera in any other meme-ish way for 10 minutes!
+
+### ?endwith `map_link`
+
+By redeeming 300 points, a chatter can trigger this command with the osu! beatmap's link of their choice. This map will be the one that has to be the last map of the stream / session.
 
 ### ?vip
 
