@@ -37,6 +37,17 @@ def get_map():
     data = response.json()
     return data
 
+# receive mods and take away the comma
+def format_mods(mods):
+    formatted_mods = mods
+
+    if formatted_mods == "NM":
+        formatted_mods = None
+    elif len(formatted_mods) > 2:
+        formatted_mods = formatted_mods.replace(",", "")
+    
+    return formatted_mods
+
 # Get the points of every viewer
 def get_points_data(points_file):
     with open(points_file, 'r', encoding='utf-8') as points:

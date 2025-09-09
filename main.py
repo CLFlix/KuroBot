@@ -139,32 +139,26 @@ class TwitchBot(commands.Bot):
     # display points
     @commands.command(name="points")
     async def points(self, ctx):
-        name = ctx.author.name
-        if name in self.points:
-            if self.points[name] == 1:
-                await ctx.send(f"@{name} You currently have 1 point.")
+        user = ctx.author.name
+        if user in self.points:
+            if self.points[user] == 1:
+                await ctx.send(f"@{user} You currently have 1 point.")
             else:
-                await ctx.send(f"@{name} You currently have {self.points[name]} points.")
+                await ctx.send(f"@{user} You currently have {self.points[user]} points.")
         else:
-            await ctx.send(f"@{name} You currently have 0 points.")
+            await ctx.send(f"@{user} You currently have 0 points.")
 
     @commands.command(name="leaderboard")
     async def leaderboard(self, ctx):
         ranking = sorted(self.points.items(), key=lambda user: user[1], reverse=True)
 
-        try:
-            first, second, third = (
-                f"{ranking[0][0]}: {ranking[0][1]}",
-                f"{ranking[1][0]}: {ranking[1][1]}",
-                f"{ranking[2][0]}: {ranking[2][1]}"
-                )
-            await ctx.send(f"@{ctx.author.name} {first}, {second}, {third}")
+        if not ranking:
+            await ctx.send(f"@{ctx.author.name} No one is on the leaderboard yet!")
+            return
 
-        except IndexError:
-            if ctx.author.name in self.points:
-                await ctx.send(f"@{ctx.author.name} There are less than 3 people in the ranking. You have {self.points[ctx.author.name]} points.")
-            else:
-                await ctx.send(f"@{ctx.author.name} There are less than 3 people in the ranking.")
+        top_n = 3
+        top_users = [f"{user}: {points}" for user, points in ranking[:top_n]]
+        await ctx.send(f"@{ctx.author.name} " + ", ".join(top_users))
 
     # leaderboard alias
     @commands.command(name="lb")
@@ -183,16 +177,12 @@ class TwitchBot(commands.Bot):
             diffname = map_info["diffName"]
             mods = map_info["mods"]
 
-            # Do nothing if there's only 1 mod
-            if mods == "NM":
-                mods = None
-            elif len(mods) > 2:
-                mods = mods.replace(",", "")
+            formatted_mods = format_mods(mods)
 
-            if not mods:
-                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid}")
+            if formatted_mods:
+                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] +{formatted_mods} https://osu.ppy.sh/b/{mapid}")
             else:
-                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] +{mods} https://osu.ppy.sh/b/{mapid}")
+                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid}")
                 
         except ConnectionError as e:
             await ctx.send(f"@{ctx.author.name} {e}")
@@ -207,36 +197,52 @@ class TwitchBot(commands.Bot):
             artist = map_info["artistRoman"]
             title = map_info["titleRoman"] 
             diffname = map_info["diffName"]
+            mods = map_info["mods"]
             
-            pp_str = f"95%: {map_info['osu_95PP']:.0f}, 99%: {map_info['osu_99PP']:.0f}, 100%: {map_info['osu_SSPP']:.0f}"
-            
-            await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid} | PP: {pp_str}")
+            formatted_mods = format_mods(mods)
+
+            if formatted_mods:
+                pp_str = f"95%: {map_info['osu_m95PP']:.0f}, 99%: {map_info['osu_m99PP']:.0f}, 100%: {map_info['osu_mSSPP']:.0f}"
+                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] +{formatted_mods} https://osu.ppy.sh/b/{mapid} | PP: {pp_str}")
+            else:
+                pp_str = f"95%: {map_info['osu_95PP']:.0f}, 99%: {map_info['osu_99PP']:.0f}, 100%: {map_info['osu_SSPP']:.0f}"
+                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid} | PP: {pp_str}")
+
         except ConnectionError as e:
             await ctx.send(f"@{ctx.author.name} {e}")
 
     # show current rank (global and country)
     @commands.command(name="rank")
     async def rank(self, ctx):
-        data = get_profile()
-        global_rank, country_rank = data["pp_rank"], data["pp_country_rank"]
+        try:
+            data = get_profile()
+            global_rank, country_rank = data["pp_rank"], data["pp_country_rank"]
 
-        await ctx.send(f"@{ctx.author.name} Global Rank: #{global_rank}, Country Rank: #{country_rank}")
+            await ctx.send(f"@{ctx.author.name} Global Rank: #{global_rank}, Country Rank: #{country_rank}")
+        except ConnectionError as e:
+            await ctx.send(f"@{ctx.author.name} {e}")
 
     # show amount of playtime in hours
     @commands.command(name="playtime")
     async def playtime(self, ctx):
-        data = get_profile()
-        total_playtime = int(data["total_seconds_played"]) // 3600
+        try:
+            data = get_profile()
+            total_playtime = int(data["total_seconds_played"]) // 3600
 
-        await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! for a total of {total_playtime} hours.")
+            await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! for a total of {total_playtime} hours.")
+        except ConnectionError as e:
+            await ctx.send(f"@{ctx.author.name} {e}")
 
     # show playcount
     @commands.command(name="playcount")
     async def playcount(self, ctx):
-        data = get_profile()
-        playcount = data["playcount"]
+        try:
+            data = get_profile()
+            playcount = data["playcount"]
 
-        await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! {playcount} times.")
+            await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! {playcount} times.")
+        except ConnectionError as e:
+            await ctx.send(f"@{ctx.author.name} {e}")
 
     # show the chat if you want to accept requests or not (self.rq_message comes from main())
     @commands.command(name="rq")
