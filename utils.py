@@ -61,5 +61,6 @@ def get_bonus_claimed(first_time_bonus_file):
 
 def write_bonus_claimed(bonus_claimed_list, first_time_bonus_file):
     with open(first_time_bonus_file, 'w', encoding='utf-8') as file:
-        file.writelines(bonus_claimed_list)
+        for user in bonus_claimed_list:
+            file.write(f"{user}\n")
     print("First time bonus data saved!")
