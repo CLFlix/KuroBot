@@ -1,5 +1,6 @@
 from utils import *
 from refresh_twitch_token import refresh_tokens
+from eventsub_listener import eventsub_listener
 
 from twitchio.ext import commands
 from dotenv import load_dotenv
@@ -56,6 +57,9 @@ class TwitchBot(commands.Bot):
         else:
             return f"@{user} You don't have enough points! You need {item_cost} more points!"
 
+    # handle twitch points redemptions
+    # def handle_redemptions(self, ctx, event):
+        
     # add VIP status to user
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"
@@ -85,6 +89,7 @@ class TwitchBot(commands.Bot):
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
+        self.loop.create_task(eventsub_listener())
 
     # give people points for chatting
     async def event_message(self, message):
