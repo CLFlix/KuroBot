@@ -1,6 +1,9 @@
 # vs code
 .vscode/
 
+# virtual environment
+venv/
+
 # pycache
 __pycache__/
 
