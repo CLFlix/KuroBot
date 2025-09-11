@@ -27,5 +27,4 @@ def refresh_tokens():
     set_key(r'.env', "BOT_ACCESS_TOKEN", NEW_ACCESS_TOKEN)
     set_key(r'.env', "BOT_REFRESH_TOKEN", NEW_REFRESH_TOKEN)
 
-    global BOT_ACCESS_TOKEN
     return NEW_ACCESS_TOKEN

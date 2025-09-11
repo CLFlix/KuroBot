@@ -355,7 +355,7 @@ class TwitchBot(commands.Bot):
     # temporary VIP status
     @commands.command(name="vip")
     async def vip(self, ctx):
-        global BOT_ACCESS_TOKEN, BOT_REFRESH_TOKEN
+        global BOT_ACCESS_TOKEN
 
         vip_cost = 10000
         user = ctx.author.name
