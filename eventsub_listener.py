@@ -4,29 +4,18 @@ import json
 import requests
 
 from dotenv import load_dotenv
+from refresh_redemptions_access_token import refresh_token_redemptions
 
 load_dotenv()
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 BROADCASTER_ID = os.getenv("BROADCASTER_ID")
-CODE_SCOPE_REDEMPTIONS = os.getenv("CODE_SCOPE_REDEMPTIONS")
-
-# Not the same token as BOT_ACCESS_TOKEN
-def get_app_token():
-    response = requests.post(
-        "https://id.twitch.tv/oauth2/token",
-        data={
-            "client_id": CLIENT_ID,
-            "client_secret": CLIENT_SECRET,
-            "grant_type": "client_credentials"
-        }
-    )
-    response.raise_for_status()
-    return response.json()["access_token"]
+ACCESS_TOKEN_REDEMPTIONS = os.getenv("ACCESS_TOKEN_REDEMPTIONS")
 
 # channel points redemption listener
 async def eventsub_listener():
+    global ACCESS_TOKEN_REDEMPTIONS
     url = "wss://eventsub.wss.twitch.tv/ws"
 
     async with websockets.connect(url) as ws:
@@ -39,6 +28,12 @@ async def eventsub_listener():
             print("Received session_welcome from Twitch")
             session_id = data["payload"]["session"]["id"]
 
+            headers = {
+                    "Authorization": f"Bearer {ACCESS_TOKEN_REDEMPTIONS}",
+                    "Client-Id": CLIENT_ID,
+                    "Content-Type": "application/json"
+                }
+
             sub = {
                 "type": "channel.channel_points_custom_reward_redemption.add",
                 "version": 1,
@@ -49,17 +44,35 @@ async def eventsub_listener():
                 }
             }
 
+            # initial try to create subscription
             response = requests.post(
                 "https://api.twitch.tv/helix/eventsub/subscriptions",
-                headers={
-                    "Authorization": f"Bearer {CODE_SCOPE_REDEMPTIONS}",
-                    "Client-Id": CLIENT_ID,
-                    "Content-Type": "application/json"
-                },
+                headers=headers,
                 json=sub
             )
 
-            print("Subscription response:", response.status_code, response.text)
+            if response.status_code == 401:
+                print("EventSub Listener couldn't connect. Retrying once...")
+
+                try:
+                    # refresh access token for redemption listener, then retry subscription
+                    ACCESS_TOKEN_REDEMPTIONS = refresh_token_redemptions()
+                    print("Refreshed redemption listener token")
+                except Exception as e:
+                    print(f"Refresh failed: {e}")
+                    return
+
+                response = requests.post(
+                    "https://api.twitch.tv/helix/eventsub/subscriptions",
+                    headers=headers,
+                    json=sub
+                )
+
+                if response.status_code != 200: # if second try fails, stop trying to create subscription
+                    print(f"Second try to create EventSub Listener failed. This part of the bot won't work this session. Response: {response.text}")
+                    return
+                
+        print("Listening for redemptions...")
         
         # wait for incoming notifications
         async for message in ws:
