@@ -75,14 +75,17 @@ async def eventsub_listener(redemption_handler):
         print("Listening for redemptions...")
         
         # wait for incoming notifications
-        async for message in ws:
-            data = json.loads(message)
-            msg_type = data["metadata"]["message_type"]
+        try:
+            async for message in ws:
+                data = json.loads(message)
+                msg_type = data["metadata"]["message_type"]
 
-            if msg_type == "notification":
-                event = data["payload"]["event"]
-                redemption_handler(event)
-            elif msg_type == "revocation":
-                revocation_reason = data["payload"]["status"]
-                print(f"The redemption subscription has been revoked. Reason: {revocation_reason}")
-                redemption_handler(msg_type)
+                if msg_type == "notification":
+                    event = data["payload"]["event"]
+                    await redemption_handler(event)
+                elif msg_type == "revocation":
+                    revocation_reason = data["payload"]["status"]
+                    print(f"The redemption subscription has been revoked. Reason: {revocation_reason}")
+                    await redemption_handler(msg_type)
+        except Exception as e:
+            print(f"EventSub Listener crashed: {e}")

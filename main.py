@@ -58,20 +58,19 @@ class TwitchBot(commands.Bot):
             return f"@{user} You don't have enough points! You need {item_cost} more points!"
 
     # handle twitch points redemptions
-    def handle_redemptions(self, event):
+    async def handle_redemptions(self, event):
         channel = self.get_channel(CHANNEL)
-        
         if event == "revocation":
             channel.send("Please check the console and contact the bot dev with this issue.")
-            
-        redemption = event["title"]
+        
+        redemption = event["reward"]["title"]
         if redemption.startswith("Exchange"):
-            user = event["user_name"]
-            cost = event["cost"]
+            user = event["user_name"].lower()
+            cost = event["reward"]["cost"]
 
             self.add_points(user, cost)
 
-            channel.send(f"@{user} Your redemption has been acknowlged.")
+            await channel.send(f"@{user} Your redemption has been acknowlged.")
 
     # add VIP status to user
     def add_vip(self, user_id):
@@ -247,7 +246,7 @@ class TwitchBot(commands.Bot):
             data = get_profile()
             total_playtime = int(data["total_seconds_played"]) // 3600
 
-            await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! for a total of {total_playtime} hours.")
+            await ctx.send(f"@{ctx.author.name} {osuUsername} has played osu! for a total of {total_playtime} hours.")
         except ConnectionError as e:
             await ctx.send(f"@{ctx.author.name} {e}")
 
@@ -258,7 +257,7 @@ class TwitchBot(commands.Bot):
             data = get_profile()
             playcount = data["playcount"]
 
-            await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! {playcount} times.")
+            await ctx.send(f"@{ctx.author.name} {osuUsername} has played osu! {playcount} times.")
         except ConnectionError as e:
             await ctx.send(f"@{ctx.author.name} {e}")
 
