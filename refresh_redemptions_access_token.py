@@ -17,7 +17,7 @@ def refresh_token_redemptions():
         "grant_type": "refresh_token"
     }
 
-    response = requests.get(url, params=params)
+    response = requests.post(url, params=params)
 
     if response.status_code != 200:
         raise RuntimeError(f"Failed to refresh: {response.text}")
