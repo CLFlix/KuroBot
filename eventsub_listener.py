@@ -14,7 +14,7 @@ BROADCASTER_ID = os.getenv("BROADCASTER_ID")
 ACCESS_TOKEN_REDEMPTIONS = os.getenv("ACCESS_TOKEN_REDEMPTIONS")
 
 # channel points redemption listener
-async def eventsub_listener():
+async def eventsub_listener(redemption_handler):
     global ACCESS_TOKEN_REDEMPTIONS
     url = "wss://eventsub.wss.twitch.tv/ws"
 
@@ -80,7 +80,9 @@ async def eventsub_listener():
             msg_type = data["metadata"]["message_type"]
 
             if msg_type == "notification":
-                print(message)
-                # handler function coming later (in main)
-            elif msg_type == "session_keepalive":
-                print("Received keepalive message\nREMOVE THIS FOR PRODUCTION")
+                event = data["payload"]["event"]
+                redemption_handler(event)
+            elif msg_type == "revocation":
+                revocation_reason = data["payload"]["status"]
+                print(f"The redemption subscription has been revoked. Reason: {revocation_reason}")
+                redemption_handler(msg_type)

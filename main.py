@@ -58,8 +58,21 @@ class TwitchBot(commands.Bot):
             return f"@{user} You don't have enough points! You need {item_cost} more points!"
 
     # handle twitch points redemptions
-    # def handle_redemptions(self, ctx, event):
+    def handle_redemptions(self, event):
+        channel = self.get_channel(CHANNEL)
         
+        if event == "revocation":
+            channel.send("Please check the console and contact the bot dev with this issue.")
+            
+        redemption = event["title"]
+        if redemption.startswith("Exchange"):
+            user = event["user_name"]
+            cost = event["cost"]
+
+            self.add_points(user, cost)
+
+            channel.send(f"@{user} Your redemption has been acknowlged.")
+
     # add VIP status to user
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"
@@ -89,7 +102,7 @@ class TwitchBot(commands.Bot):
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
-        self.loop.create_task(eventsub_listener())
+        self.loop.create_task(eventsub_listener(self.handle_redemptions))
 
     # give people points for chatting
     async def event_message(self, message):
