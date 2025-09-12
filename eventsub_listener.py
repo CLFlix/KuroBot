@@ -62,6 +62,7 @@ async def eventsub_listener(redemption_handler):
                     print(f"Refresh failed: {e}")
                     return
 
+                headers["Authorization"] = f"Bearer {ACCESS_TOKEN_REDEMPTIONS}"
                 response = requests.post(
                     "https://api.twitch.tv/helix/eventsub/subscriptions",
                     headers=headers,
