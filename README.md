@@ -15,32 +15,50 @@ You will also need <a href="https://github.com/Piotrekol/StreamCompanion">Stream
 You will need to fill in some fields in a `.env` file within this folder:
 
 The `CHANNEL` field has to be filled with the channel you want the bot to chat in, if you use it normally, this will be your own channel name.\
-`TOKEN` is one you can't show anyone, that's why the `.env` file is hidden here. You can easily find this token by going to Twitch on your browser and opening the `Network` tab in F12. Then you look for any `gql` entry and look for `Authorization` in the `Headers` section. The value will be `OAuth YOUROAUTHTOKEN`.\
+`TOKEN` will be your account token to essentially log your bot into your account to chat. You can easily find this token by going to Twitch on your browser and opening the `Network` tab in F12. Then you look for any `gql` entry. If you don't see any pop up, simply refresh the page and you should see them coming in. Click on the entry and look for `Authorization` in the `Headers` section. The value will be `OAuth YOUROAUTHTOKEN`.\
 `osuUsername` is self-explanatory.\
 `osuAuth` is the authorization key you need for any request to the osu! API. You can find the details on how to get this on the bottom of your osu! account settings page.\
 **The following are optional if you want to be able to assign VIP status through the bot. This won't work without these values.**\
-First of all you'll need a **client ID** of a Twitch Application, so you can contact the twitch API.
+First of all you'll need a **client ID** and a **client secret** of a Twitch Application, so you can contact the twitch API.
+
+---
 
 1. Go to [Twitch Developer Console --> Applications](https://dev.twitch.tv/console/apps)
 2. Log in
-3. Register your bot. You can give it any name you want as long as it's valid. The redirect URL can be `http:localhost`. Category: Chat Bot
-4. After creating, click on your freshly registered app and copy the client ID in the `.env` file with the variable name "CLIENT_ID".
-5. You can also create a Client Secret which you'll also need. Create one and paste the secret in the `.env` file with the name "CLIENT_SECRET".
+3. Register your bot. You can give it any name you want as long as it's valid. The redirect URL **should** be set to `http:localhost`. Category: Chat Bot
+4. After creating, click "Manage" on your freshly registered app and copy the client ID in the `.env` file with the variable name "CLIENT_ID".
+5. You will also need a client secret, which you can find further down. Create a new secret and copy that over to the `.env` file with the variable name "CLIENT_SECRET".
 
-Your **broadcaster ID** is the ID you, the streamer, have on Twitch. You can quickly access it by throwing this is your terminal:
+---
+
+Your **broadcaster ID** is the ID you, the streamer, have on Twitch. You can access it by throwing this is your terminal:
 
 ```
-curl -H "Authorization: Bearer <YOUR_TOKEN>" \
-     -H "Client-Id: <YOUR_CLIENT_ID>" \
-     https://api.twitch.tv/helix/users
+curl -X POST "https://id.twitch.tv/oauth2/token" ^
+     -H "Content-Type: application/x-www-form-urlencoded" ^
+     -d "client_id=<YOUR_CLIENT_ID>" ^
+     -d "client_secret=<YOUR_CLIENT_SECRET>" ^
+     -d "grant_type=client_credentials"
 ```
 
-<sup>Replace \<YOUR_TOKEN> and \<YOUR_CLIENT_ID> with your actual data</sup>\
-Then look for `"id":"123456789"`. This is your "BROADCASTER_ID" in your `.env`.
+<sup>Replace \<YOUR_CLIENT_ID> and \<YOUR_CLIENT_SECRET> with the values you just saved into the `.env` file.</sup>\
+The access token you get out of this will be used to get your broadcaster ID in the next query:
 
-_Notice: The last thing you need can be done in 2 ways. I'm using the long-term setup, otherwise you'll have to manually get your bot token after a certain period, since that token expires within a couple hours._
+```
+curl -X GET https://api.twitch.tv/helix/users ^
+     -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>" ^
+     -H "Client-Id: <YOUR_CLIENT_ID>"
+```
 
-The last thing you need is a **token with VIP scope**. For safety reasons, your Twitch Application also needs a valid token to contact the Twitch API. This setup will include a couple steps to automatically refresh the token using a code and a refresh token. The first step is retrieving the code by pasting this url in your browser:
+<sup>Replace \<YOUR_ACCESS_TOKEN> and \<YOUR_CLIENT_ID> with your actual data</sup>\
+Then look for `"id":"123456789"`. This should become your "BROADCASTER_ID" in your `.env`.\
+**If you run into the revocation function error, type `curl -k -X` instead of `curl -X`. This tells Windows to skip SSL certificate verification.**
+
+---
+
+_Notice: The last thing you need can be done in 2 ways. I'm using the long-term setup, otherwise you'll have to manually get your bot token after a certain period, as that token expires within a couple hours._
+
+The last thing you need is a **token with VIP scope**. For safety reasons, your Twitch Application also needs a valid token to contact the Twitch API. This setup will include a couple steps to automatically refresh the token using a code and a refresh token. The first step is retrieving the code by pasting this url in your **browser**:
 
 ```
 https://id.twitch.tv/oauth2/authorize
@@ -55,7 +73,9 @@ If you need to log in, do this. You will end up on your redirect link of your tw
 
 Now you need to get your bot access token and refresh token, but don't worry, I handled that for you. Run "get_twitch_refresh_token.exe" and you should see 2 new fields appear in the `.env` file called "BOT_ACCESS_TOKEN" and "BOT_REFRESH_TOKEN". The access token expires within a couple hours, but I've also accounted to automatically refresh them when they do. You don't have to worry about these tokens in any way.
 
-The result should be something like this:
+---
+
+If you've completed the setup process, your `.env` file should look something like this (order doesn't matter):
 
 ```
 TOKEN="YOUROAUTHTOKEN"
