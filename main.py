@@ -14,6 +14,7 @@ BROADCASTER_ID = os.getenv("BROADCASTER_ID")
 CHANNEL = os.getenv("CHANNEL")
 CLIENT_ID = os.getenv("CLIENT_ID")
 BOT_ACCESS_TOKEN = os.getenv("BOT_ACCESS_TOKEN")
+osuUsername = os.getenv("osuUsername")
 
 POINTS_FILE = r'points.json'
 FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
@@ -229,7 +230,7 @@ class TwitchBot(commands.Bot):
             data = get_profile()
             total_playtime = int(data["total_seconds_played"]) // 3600
 
-            await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! for a total of {total_playtime} hours.")
+            await ctx.send(f"@{ctx.author.name} {osuUsername} has played osu! for a total of {total_playtime} hours.")
         except ConnectionError as e:
             await ctx.send(f"@{ctx.author.name} {e}")
 
@@ -240,7 +241,7 @@ class TwitchBot(commands.Bot):
             data = get_profile()
             playcount = data["playcount"]
 
-            await ctx.send(f"@{ctx.author.name} _Kurookami_ has played osu! {playcount} times.")
+            await ctx.send(f"@{ctx.author.name} {osuUsername} has played osu! {playcount} times.")
         except ConnectionError as e:
             await ctx.send(f"@{ctx.author.name} {e}")
 
