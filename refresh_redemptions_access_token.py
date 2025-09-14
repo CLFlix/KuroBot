@@ -23,7 +23,8 @@ def refresh_token_redemptions():
         raise RuntimeError(f"Failed to refresh: {response.text}")
 
     tokens = response.json()
-    NEW_ACCESS_TOKEN, NEW_REFRESH_TOKEN = tokens["access_token"], tokens["refresh_token"]
+    NEW_ACCESS_TOKEN = tokens["access_token"]
+    NEW_REFRESH_TOKEN = tokens["refresh_token"]
 
     set_key(r'.env', "ACCESS_TOKEN_REDEMPTIONS", NEW_ACCESS_TOKEN)
     set_key(r'.env', "REFRESH_TOKEN_REDEMPTIONS", NEW_REFRESH_TOKEN)
