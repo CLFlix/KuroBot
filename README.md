@@ -84,7 +84,7 @@ https://id.twitch.tv/oauth2/authorize
 <sup>Replace \<YOUR_CLIENT_ID> with your actual client ID.</sup>\
 The code that you get from this output should be saved under "CODE_REDEMPTIONS".
 
-With these codes, you can get the access and refresh tokens. But don't worry, I handled that part for you. Run "get_twitch_refresh_token.exe" and "get_redemptions_access_token.exe". After execution, you should see 4 new fields appear in the `.env` file called "BOT_ACCESS_TOKEN", "BOT_REFRESH_TOKEN", "ACCESS_TOKEN_REDEMPTIONS" and "REFRESH_TOKEN_REDEMPTIONS". When these tokens expire, the code should automatically trigger a token refresh and it should try to connect once more. If this is not the case, create an issue on the github page and I'll look into it. Manually restarting the bot should make it connect either way, though.
+With these codes, you can get the access and refresh tokens. But don't worry, I handled that part for you. Run "GetVIPAccessToken.exe" and "GetRedemptionsAccessToken.exe". After execution, you should see 4 new fields appear in the `.env` file called "BOT_ACCESS_TOKEN", "BOT_REFRESH_TOKEN", "ACCESS_TOKEN_REDEMPTIONS" and "REFRESH_TOKEN_REDEMPTIONS". When these tokens expire, the code should automatically trigger a token refresh and it should try to connect once more. If this is not the case, create an issue on the github page and I'll look into it. Manually restarting the bot should make it connect either way, though.
 
 ---
 
