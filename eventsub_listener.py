@@ -35,7 +35,7 @@ async def eventsub_listener(redemption_handler):
 
             sub = {
                 "type": "channel.channel_points_custom_reward_redemption.add",
-                "version": 1,
+                "version": "1",
                 "condition": {"broadcaster_user_id": BROADCASTER_ID},
                 "transport": {
                     "method": "websocket",
@@ -68,7 +68,7 @@ async def eventsub_listener(redemption_handler):
                     json=sub
                 )
 
-                if response.status_code != 200: # if second try fails, stop trying to create subscription
+                if response.status_code not in (200, 202): # if second try fails, stop trying to create subscription
                     print(f"Second try to create EventSub Listener failed. This part of the bot won't work this session. Response: {response.text}")
                     return
                 
