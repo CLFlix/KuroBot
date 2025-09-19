@@ -71,7 +71,21 @@ https://id.twitch.tv/oauth2/authorize
 <sup>The only thing to replace here is \<YOUR_CLIENT_ID></sup>\
 If you need to log in, do this. You will end up on your redirect link of your twitch application, but you only need the URL of this page. In the URL, you can find `code=<AUTHORIZATION_CODE>`. Copy this authorization code and place it in the `.env` file with the variable name "CODE".
 
-Now you need to get your bot access token and refresh token, but don't worry, I handled that for you. Run "get_twitch_refresh_token.exe" and you should see 2 new fields appear in the `.env` file called "BOT_ACCESS_TOKEN" and "BOT_REFRESH_TOKEN". The access token expires within a couple hours, but I've also accounted to automatically refresh them when they do. You don't have to worry about these tokens in any way.
+_If you know you're not able or going to use Twitch's built-in channel points system, you can skip this url and the "GetRedemptionsAccessToken.exe" executable in the next step._\
+To get the bot to listen to channel points redemptions, you'll basically do the same thing as the above, only the last line changes.
+
+```
+https://id.twitch.tv/oauth2/authorize
+  ?client_id=<YOUR_CLIENT_ID>
+  &redirect_uri=http://localhost
+  &response_type=code
+  &scope=channel:read:redemptions
+```
+
+<sup>Replace \<YOUR_CLIENT_ID> with your actual client ID.</sup>\
+The code that you get from this output should be saved under "CODE_REDEMPTIONS".
+
+With these codes, you can get the access and refresh tokens. But don't worry, I handled that part for you. Run "GetVIPAccessToken.exe" and "GetRedemptionsAccessToken.exe". After execution, you should see 4 new fields appear in the `.env` file called "BOT_ACCESS_TOKEN", "BOT_REFRESH_TOKEN", "ACCESS_TOKEN_REDEMPTIONS" and "REFRESH_TOKEN_REDEMPTIONS". When these tokens expire, the code should automatically trigger a token refresh and it should try to connect once more. If this is not the case, create an issue with the details of the error on the github page and I'll look into it. Manually restarting the bot should make it connect either way, though.
 
 ---
 
@@ -90,7 +104,16 @@ CLIENT_SECRET="YOUR-CLIENT-SECRET"
 CODE="AUTHORIZATION_CODE"
 BOT_ACCESS_TOKEN="BOT-ACCESS-TOKEN"
 BOT_REFRESH_TOKEN="REFRESH-TOKEN"
+
+# Affiliate stuff
+CODE_REDEMPTIONS="AUTHORIZATION_CODE_WITH_SCOPE_REDEMPTIONS"
+ACCESS_TOKEN_REDEMPTIONS="ACCESS_TOKEN_WITH_SCOPE_REDEMPTIONS"
+REFRESH_TOKEN_REDEMPTIONS="REFRESH_TOKEN_WITH_SCOPE_REDEMPTIONS"
 ```
+
+## Redemptions
+
+This bot also listens to all redemptions made using Twitch channel points. With how it stands right now, the bot will only acknowledge rewards starting with "Exchange". This makes the bot retrieve the user that redeemed it and the cost of this reward, and add the cost to the user's bot <a href="#points">points</a>.
 
 ## Useful Commands
 

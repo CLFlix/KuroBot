@@ -1,5 +1,6 @@
 from utils import *
 from refresh_twitch_token import refresh_tokens
+from eventsub_listener import eventsub_listener
 
 from twitchio.ext import commands
 from dotenv import load_dotenv
@@ -20,15 +21,19 @@ POINTS_FILE = r'points.json'
 FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
 
 class TwitchBot(commands.Bot):
-    def __init__(self, rq_message):
+    def __init__(self, rq_message, affiliate):
         super().__init__(
             token=TOKEN,
             prefix="?",
             initial_channels=[CHANNEL]
         )
+
         self.rq_message = rq_message
+        self.affiliate = affiliate
+
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
+
         # manage chat message points cooldowns
         self.last_point_time = {}
 
@@ -56,6 +61,21 @@ class TwitchBot(commands.Bot):
                 return f"This costed @{user} {item_cost} points."
         else:
             return f"@{user} You don't have enough points! You need {item_cost} more points!"
+
+    # handle twitch points redemptions
+    async def handle_redemptions(self, event):
+        channel = self.get_channel(CHANNEL)
+        if event == "revocation":
+            channel.send("Please check the console and contact the bot dev with this issue.")
+        
+        redemption = event["reward"]["title"]
+        if redemption.startswith("Exchange"):
+            user = event["user_name"].lower()
+            cost = event["reward"]["cost"]
+
+            self.add_points(user, cost)
+
+            await channel.send(f"@{user} Your redemption has been acknowlged.")
 
     # add VIP status to user
     def add_vip(self, user_id):
@@ -86,6 +106,8 @@ class TwitchBot(commands.Bot):
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
+        if self.affiliate:
+            self.loop.create_task(eventsub_listener(self.handle_redemptions))
 
     # give people points for chatting
     async def event_message(self, message):
@@ -351,7 +373,7 @@ class TwitchBot(commands.Bot):
     # temporary VIP status
     @commands.command(name="vip")
     async def vip(self, ctx):
-        global BOT_ACCESS_TOKEN, BOT_REFRESH_TOKEN
+        global BOT_ACCESS_TOKEN
 
         vip_cost = 10000
         user = ctx.author.name
@@ -425,7 +447,20 @@ def main():
         else:
             print("Not a valid answer. Please enter 'y' or 'n'.")
 
-    bot = TwitchBot(message)
+    ask_for_affiliate = True
+    while ask_for_affiliate:
+        affiliate_or_not = input("Are you a Twitch Affiliate or Partner? (y/n)\n")
+
+        if affiliate_or_not.lower() == "y":
+            affiliate = True
+            ask_for_affiliate = False
+        elif affiliate_or_not.lower() == "n":
+            affiliate = False
+            ask_for_affiliate = False
+        else:
+            print("Not a valid answer. Please enter 'y' or 'n'.")
+
+    bot = TwitchBot(message, affiliate)
     try:
         bot.run()
     except Exception as e:
