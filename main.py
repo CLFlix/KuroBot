@@ -15,6 +15,7 @@ BROADCASTER_ID = os.getenv("BROADCASTER_ID")
 CHANNEL = os.getenv("CHANNEL")
 CLIENT_ID = os.getenv("CLIENT_ID")
 BOT_ACCESS_TOKEN = os.getenv("BOT_ACCESS_TOKEN")
+osuUsername = os.getenv("osuUsername")
 
 POINTS_FILE = r'points.json'
 FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
