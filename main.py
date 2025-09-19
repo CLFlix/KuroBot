@@ -20,15 +20,19 @@ POINTS_FILE = r'points.json'
 FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
 
 class TwitchBot(commands.Bot):
-    def __init__(self, rq_message):
+    def __init__(self, rq_message, affiliate):
         super().__init__(
             token=TOKEN,
             prefix="?",
             initial_channels=[CHANNEL]
         )
+
         self.rq_message = rq_message
+        self.affiliate = affiliate
+
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
+
         # manage chat message points cooldowns
         self.last_point_time = {}
 
@@ -101,7 +105,8 @@ class TwitchBot(commands.Bot):
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
-        self.loop.create_task(eventsub_listener(self.handle_redemptions))
+        if self.affiliate:
+            self.loop.create_task(eventsub_listener(self.handle_redemptions))
 
     # give people points for chatting
     async def event_message(self, message):
@@ -441,7 +446,20 @@ def main():
         else:
             print("Not a valid answer. Please enter 'y' or 'n'.")
 
-    bot = TwitchBot(message)
+    ask_for_affiliate = True
+    while ask_for_affiliate:
+        affiliate_or_not = input("Are you a Twitch Affiliate or Partner? (y/n)\n")
+
+        if affiliate_or_not.lower() == "y":
+            affiliate = True
+            ask_for_affiliate = False
+        elif affiliate_or_not.lower() == "n":
+            affiliate = False
+            ask_for_affiliate = False
+        else:
+            print("Not a valid answer. Please enter 'y' or 'n'.")
+
+    bot = TwitchBot(message, affiliate)
     try:
         bot.run()
     except Exception as e:
