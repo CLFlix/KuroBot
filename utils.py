@@ -3,11 +3,23 @@ from dotenv import load_dotenv
 import requests
 import os
 import json
+from datetime import datetime as dt
 
 load_dotenv()
 
 osuUsername = os.getenv("osuUsername")
 API_KEY = os.getenv("osuAuth")
+
+# wipe log file
+def clean_logs(log_file):
+    with open(log_file, 'w', encoding='utf-8') as logs:
+        logs.write("")
+
+# log errors to a file
+def log_error(log_file, error):
+    with open(log_file, 'a', encoding='utf-8') as logs:
+        logs.write(f"{dt.now()} - {error}")
+    print(f"Error logged in {log_file}")
 
 # When osuAuth and osuUsername are filled in in the .env file, this method can look up your osu! profile
 def get_profile():

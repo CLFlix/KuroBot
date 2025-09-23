@@ -19,6 +19,7 @@ osuUsername = os.getenv("osuUsername")
 
 POINTS_FILE = r'points.json'
 FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
+LOG_FILE = r'log.txt'
 
 class TwitchBot(commands.Bot):
     def __init__(self, rq_message, affiliate):
@@ -208,7 +209,8 @@ class TwitchBot(commands.Bot):
                 await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid}")
                 
         except ConnectionError as e:
-            await ctx.send(f"@{ctx.author.name} {e}")
+            await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
+            log_error(LOG_FILE, e)
 
     # show now playing with pp values for SS, 99% and 95%
     @commands.command(name="nppp") 
@@ -232,7 +234,8 @@ class TwitchBot(commands.Bot):
                 await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid} | PP: {pp_str}")
 
         except ConnectionError as e:
-            await ctx.send(f"@{ctx.author.name} {e}")
+            await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
+            log_error(LOG_FILE, e)
 
     # show current rank (global and country)
     @commands.command(name="rank")
@@ -243,7 +246,8 @@ class TwitchBot(commands.Bot):
 
             await ctx.send(f"@{ctx.author.name} Global Rank: #{global_rank}, Country Rank: #{country_rank}")
         except ConnectionError as e:
-            await ctx.send(f"@{ctx.author.name} {e}")
+            await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
+            log_error(LOG_FILE, e)
 
     # show amount of playtime in hours
     @commands.command(name="playtime")
@@ -254,7 +258,8 @@ class TwitchBot(commands.Bot):
 
             await ctx.send(f"@{ctx.author.name} {osuUsername} has played osu! for a total of {total_playtime} hours.")
         except ConnectionError as e:
-            await ctx.send(f"@{ctx.author.name} {e}")
+            await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
+            log_error(LOG_FILE, e)
 
     # show playcount
     @commands.command(name="playcount")
@@ -265,7 +270,8 @@ class TwitchBot(commands.Bot):
 
             await ctx.send(f"@{ctx.author.name} {osuUsername} has played osu! {playcount} times.")
         except ConnectionError as e:
-            await ctx.send(f"@{ctx.author.name} {e}")
+            await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
+            log_error(LOG_FILE, e)
 
     # show the chat if you want to accept requests or not (self.rq_message comes from main())
     @commands.command(name="rq")
@@ -391,13 +397,12 @@ class TwitchBot(commands.Bot):
         )
 
         if response.status_code == 401: # Unauthorized: token expired
-            await ctx.send("Something went wrong, retrying process...")
             try:
                 BOT_ACCESS_TOKEN = refresh_tokens()
                 print("Refreshed bot tokens")
             except Exception as e:
-                await ctx.send(f"@{self.nick} Token refresh failed. Try again later.")
-                print(f"Refresh failed: {e}")
+                await ctx.send(f"@{self.nick}, @{user} Token refresh failed. Try again later.")
+                log_error(LOG_FILE, e)
                 return
             
             # retry getting user id once
@@ -461,6 +466,7 @@ def main():
             print("Not a valid answer. Please enter 'y' or 'n'.")
 
     bot = TwitchBot(message, affiliate)
+    clean_logs(LOG_FILE)
     try:
         bot.run()
     except Exception as e:

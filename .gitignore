@@ -24,3 +24,6 @@ points.json
 
 # users that claimed the first time bonus
 first_time_bonus_claimed.txt
+
+# logs
+log.txt
