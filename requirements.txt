@@ -1,3 +1,4 @@
+dotenv
 twitchio<3
 requests
 python-dotenv
