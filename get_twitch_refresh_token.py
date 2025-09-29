@@ -1,5 +1,6 @@
-import requests
 import os
+import requests
+
 from dotenv import load_dotenv, set_key
 
 load_dotenv()
@@ -25,11 +26,11 @@ def get_refresh_token():
 
     try:
         tokens = response.json()
-        ACCESS_TOKEN = tokens["access_token"]
-        REFRESH_TOKEN = tokens["refresh_token"]
 
+        ACCESS_TOKEN, REFRESH_TOKEN = tokens["access_token"], tokens["refresh_token"]
         set_key(r'.env', "BOT_ACCESS_TOKEN", ACCESS_TOKEN)
         set_key(r'.env', "BOT_REFRESH_TOKEN", REFRESH_TOKEN)
+        
     except requests.exceptions.JSONDecodeError:
         print("Double-check your credentials and try again.")
 
