@@ -1,5 +1,6 @@
 from utils import *
 from refresh_twitch_token import refresh_tokens
+from refresh_polls_access_token import refresh_token_polls
 from eventsub_listener import eventsub_listener
 
 from twitchio.ext import commands
@@ -16,6 +17,7 @@ CHANNEL = os.getenv("CHANNEL")
 CLIENT_ID = os.getenv("CLIENT_ID")
 BOT_ACCESS_TOKEN = os.getenv("BOT_ACCESS_TOKEN")
 osuUsername = os.getenv("osuUsername")
+ACCESS_TOKEN_POLLS = os.getenv("ACCESS_TOKEN_POLLS")
 
 POINTS_FILE = r'points.json'
 FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
@@ -102,6 +104,48 @@ class TwitchBot(commands.Bot):
         else:
             print(response.json())
             return False, response.status_code
+    
+    def create_poll(self, title, choices, duration):
+        uri = "https://api.twitch.tv/helix/polls"
+        headers = {
+            "Authorization": f"Bearer {ACCESS_TOKEN_POLLS}",
+            "Client-Id": CLIENT_ID,
+            "Content-Type": "application/json"
+        }
+
+        body = {
+            "broadcaster_id": BROADCASTER_ID,
+            "title": title,
+            "choices": [{"title": choice} for choice in choices],
+            "duration": duration,
+            "channel_points_voting_enabled": False
+        }
+
+        response = requests.post(uri, headers=headers, json=body)
+
+        if response.status_code == 401:
+            try:
+                new_polls_token = refresh_token_polls()
+                print("Refreshed poll token")
+            except Exception as e:
+                print(f"Refresh failed: {e}")
+                return
+            
+            headers["Authorization"] = f"Bearer {new_polls_token}"
+            response = requests.post(uri, headers=headers, json=body)
+
+            if response.status_code not in (200, 202):
+                log_error(LOG_FILE, response.text)
+                raise ConnectionError("Error creating poll.")
+            
+            return True
+        
+        elif response.status_code == 200:
+            return True
+        else:
+            log_error(LOG_FILE, response.text)
+            return False
+
 
     ## events
     # print in console when bot is logged in and ready to be used
@@ -437,6 +481,30 @@ class TwitchBot(commands.Bot):
             else:
                 await ctx.send(afford_message)
 
+    @commands.command(name="poll")
+    async def poll(self, ctx, *, message):
+        user = ctx.author.name
+
+        with open(r'mods_list.txt', 'r', encoding='utf-8') as mods_list:
+            mods = mods_list.readlines()
+
+        mods = [user.strip() for user in mods]
+        if user not in mods:
+            await ctx.send(f"@{user} You do not have permission to use this command!")
+            return
+        
+        title = message[:message.find("?") + 1]
+        choices_list = message[message.find("?") + 1:].split(" ")
+        choices = choices_list[1:]
+        duration = 120
+
+        created_poll = self.create_poll(title, choices, duration)
+
+        if created_poll:
+            return
+        else:
+            await ctx.send(f"@{user} Couldn't create poll, check the log file.")
+            return
 
 def main():
     ask_for_requests = True

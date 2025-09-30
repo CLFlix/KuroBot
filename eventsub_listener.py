@@ -18,8 +18,6 @@ async def eventsub_listener(redemption_handler):
     url = "wss://eventsub.wss.twitch.tv/ws"
 
     async with websockets.connect(url) as ws:
-        print("Connected to Twitch EventSub WebSocket")
-
         msg = await ws.recv()
         data = json.loads(msg)
 

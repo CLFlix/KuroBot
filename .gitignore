@@ -22,8 +22,8 @@ build/
 # Make a file in this directory with the exact same name
 points.json
 
-# users that claimed the first time bonus
-first_time_bonus_claimed.txt
+# first_time_bonus_claimed.txt & mods_list.txt & log.txt
+*.txt
 
 # logs
 log.txt
