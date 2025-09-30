@@ -4,7 +4,7 @@ import json
 import requests
 
 from dotenv import load_dotenv
-from refresh_redemptions_access_token import refresh_token_redemptions
+from token_refreshers.refresh_redemptions_access_token import refresh_token_redemptions
 
 load_dotenv()
 

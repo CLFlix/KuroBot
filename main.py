@@ -1,6 +1,6 @@
 from utils import *
-from refresh_twitch_token import refresh_tokens
-from refresh_polls_access_token import refresh_token_polls
+from token_refreshers.refresh_twitch_token import refresh_tokens
+from token_refreshers.refresh_polls_access_token import refresh_token_polls
 from eventsub_listener import eventsub_listener
 
 from twitchio.ext import commands
