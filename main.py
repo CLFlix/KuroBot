@@ -15,9 +15,11 @@ TOKEN = os.getenv("TOKEN")
 BROADCASTER_ID = os.getenv("BROADCASTER_ID")
 CHANNEL = os.getenv("CHANNEL")
 CLIENT_ID = os.getenv("CLIENT_ID")
-BOT_ACCESS_TOKEN = os.getenv("BOT_ACCESS_TOKEN")
-osuUsername = os.getenv("osuUsername")
+
+ACCESS_TOKEN_VIP = os.getenv("ACCESS_TOKEN_VIP")
 ACCESS_TOKEN_POLLS = os.getenv("ACCESS_TOKEN_POLLS")
+
+osuUsername = os.getenv("osuUsername")
 
 POINTS_FILE = r'points.json'
 FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
@@ -84,7 +86,7 @@ class TwitchBot(commands.Bot):
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"
         headers = {
-            "Authorization": f"Bearer {BOT_ACCESS_TOKEN}",
+            "Authorization": f"Bearer {ACCESS_TOKEN_VIP}",
             "Client-Id": CLIENT_ID
         }
         params = {
@@ -423,13 +425,13 @@ class TwitchBot(commands.Bot):
     # temporary VIP status
     @commands.command(name="vip")
     async def vip(self, ctx):
-        global BOT_ACCESS_TOKEN
+        global ACCESS_TOKEN_VIP
 
         vip_cost = 10000
         user = ctx.author.name
 
         headers = {
-            "Authorization": f"Bearer {BOT_ACCESS_TOKEN}",
+            "Authorization": f"Bearer {ACCESS_TOKEN_VIP}",
             "Client-Id": CLIENT_ID
         }
 
@@ -442,7 +444,7 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401: # Unauthorized: token expired
             try:
-                BOT_ACCESS_TOKEN = refresh_tokens()
+                ACCESS_TOKEN_VIP = refresh_tokens()
                 print("Refreshed bot tokens")
             except Exception as e:
                 await ctx.send(f"@{self.nick}, @{user} Token refresh failed. Try again later.")
@@ -450,7 +452,7 @@ class TwitchBot(commands.Bot):
                 return
             
             # retry getting user id once
-            headers['Authorization'] = f"Bearer {BOT_ACCESS_TOKEN}"
+            headers['Authorization'] = f"Bearer {ACCESS_TOKEN_VIP}"
             response = requests.get(
                 "https://api.twitch.tv/helix/users",
                 headers=headers,

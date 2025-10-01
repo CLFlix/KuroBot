@@ -27,8 +27,8 @@ def get_refresh_token():
         tokens = response.json()
 
         ACCESS_TOKEN, REFRESH_TOKEN = tokens["access_token"], tokens["refresh_token"]
-        set_key(r'.env', "BOT_ACCESS_TOKEN", ACCESS_TOKEN)
-        set_key(r'.env', "BOT_REFRESH_TOKEN", REFRESH_TOKEN)
+        set_key(r'.env', "ACCESS_TOKEN_VIP", ACCESS_TOKEN)
+        set_key(r'.env', "REFRESH_TOKEN_VIP", REFRESH_TOKEN)
         
     except requests.exceptions.JSONDecodeError:
         print("Double-check your credentials and try again.")
