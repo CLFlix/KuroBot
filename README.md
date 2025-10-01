@@ -117,6 +117,8 @@ This bot also listens to all redemptions made using Twitch channel points. With 
 
 ## Useful Commands
 
+<sup>I'll be working on a website to show all the commands in a better way, since this list system is not the best way...</sup>
+
 ### ?test
 
 This just gives you a quick verification that the bot is ready to be used in your chat! It's recommended to run the bot before you start your stream, so you don't have to deal with this during stream.
@@ -167,6 +169,16 @@ Do you accept map requests this stream? (y/n)
 
 When the command `?rq` get activated in the Twitch chat and you chose "y" in the question, the responding message will be: "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
 If you chose no, this will be: "I will not be accepting map requests this stream :/. Maybe next stream ;)"
+
+## ?poll
+
+With this command, you can start a poll that will run for 2 minutes. The command will have to be built like this:
+
+```
+?poll Is this a question? Yes No
+```
+
+The command will take everything until the '?' and take that as a question. Then it will look for all the spaces and make each word a choice of the poll. This means that you won't be able to use spaces in one choice. I'll be working on that soon. The choices of this poll would be: 1. Yes, 2. No.
 
 ## Fun commands
 
