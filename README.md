@@ -82,10 +82,25 @@ https://id.twitch.tv/oauth2/authorize
   &scope=channel:read:redemptions
 ```
 
-<sup>Replace \<YOUR_CLIENT_ID> with your actual client ID.</sup>\
+<sup>Replace \<YOUR_CLIENT_ID> with your actual client ID.</sup>
 The code that you get from this output should be saved under "CODE_REDEMPTIONS".
 
-With these codes, you can get the access and refresh tokens. But don't worry, I handled that part for you. Run "GetVIPAccessToken.exe" and "GetRedemptionsAccessToken.exe". After execution, you should see 4 new fields appear in the `.env` file called "BOT_ACCESS_TOKEN", "BOT_REFRESH_TOKEN", "ACCESS_TOKEN_REDEMPTIONS" and "REFRESH_TOKEN_REDEMPTIONS". When these tokens expire, the code should automatically trigger a token refresh and it should try to connect once more. If this is not the case, create an issue with the details of the error on the github page and I'll look into it. Manually restarting the bot should make it connect either way, though.
+Same thing goes for polls.
+
+```
+https://id.twitch.tv/oauth2/authorize
+  ?client_id=<YOUR_CLIENT_ID>
+  &redirect_uri=http://localhost
+  &response_type=code
+  &scope=channel:manage:polls
+```
+
+<sup>Replace \<YOUR_CLIENT_ID> with your actual client ID.</sup>\
+The code that you get from this output should be saved under "CODE_POLLS".
+
+With these codes, you can get the access and refresh tokens. Don't worry, this was all for your manual insertions. I handled getting access and refresh tokens for you. Run "GetVIPAccessToken.exe", "GetRedemptionsAccessToken.exe" and "GetPollAccessToken.exe". After execution, you should see 6 new fields appear in the `.env` file with their tokens as values: 3 access token fields and 3 refresh token fields. **Never share ANY of these with anyone.**
+
+When these tokens expire, the code should automatically trigger a token refresh and it should try to connect once more. If this is not the case, create an issue with the details of the error on the github page and I'll look into it. Manually restarting the bot should make it connect either way, though.
 
 ---
 
@@ -187,7 +202,7 @@ With this command, you can start a poll that will run for 2 minutes. The command
 ?poll Is this a question? Yes No
 ```
 
-The command will take everything until the '?' and take that as a question. Then it will look for all the spaces and make each word a choice of the poll. This means that you won't be able to use spaces in one choice. I'll be working on that soon. The choices of this poll would be: 1. Yes, 2. No.
+The command will take everything until the '?' and take that as a question. Then it will look for all the spaces and make each word a choice of the poll. This means that you won't be able to use spaces in one choice. I'll be working on that soon. The choices of this poll would be: 1. Yes, 2. No. You can have a maximum number of 5 options in a poll.
 
 ## Fun commands
 
