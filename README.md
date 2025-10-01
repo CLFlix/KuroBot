@@ -2,13 +2,20 @@
 
 ## Installation
 
+### For developers:
+
 Before being able to run anything, you need to install some dependencies in order for the script to work. Open command prompt and navigate to this folder and run:
 
 ```
 pip install -r requirements.txt
 ```
 
-You will also need <a href="https://github.com/Piotrekol/StreamCompanion">StreamCompanion</a> in order for `?np` and `?nppp` to work. These features work by taking the data StreamCompanion processes and shows you on the locally hosted json.
+---
+
+### All users:
+
+You will need <a href="https://github.com/Piotrekol/StreamCompanion">StreamCompanion</a> in order for `?np` and `?nppp` to work. These features work by taking the data StreamCompanion processes and shows you on the locally hosted json.\
+Also create a file in the same folder as the executable called `points.json`. This is were all the points of all the users will be stored. Simply open the file once and place `{}` inside it.
 
 ## Account and Authorization
 
