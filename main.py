@@ -188,7 +188,7 @@ class TwitchBot(commands.Bot):
     # show all commands, don't show commands in hidden
     @commands.command(name="commands")
     async def cmds(self, ctx):
-        hidden = ["commands", "test", "lb", "claim"]
+        hidden = ["commands", "test", "lb", "claim", "poll"]
         command_list = ", ".join(command for command in self.commands.keys() if command not in hidden)
         await ctx.send(f"@{ctx.author.name} Available commands: {command_list}")
 
