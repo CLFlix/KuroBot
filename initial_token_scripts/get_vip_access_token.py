@@ -7,14 +7,14 @@ load_dotenv()
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-CODE = os.getenv("CODE")
+CODE_VIP = os.getenv("CODE_VIP")
 
 def get_refresh_token():
     uri = "https://id.twitch.tv/oauth2/token"
     params = {
         "client_id": CLIENT_ID,
         "client_secret": CLIENT_SECRET,
-        "code": CODE,
+        "code": CODE_VIP,
         "grant_type": "authorization_code",
         "redirect_uri": "http:localhost"
     }
