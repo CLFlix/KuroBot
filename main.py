@@ -61,12 +61,12 @@ class TwitchBot(commands.Bot):
     def remove_points(self, user, item_cost):
         if user in self.points:
             if self.points[user] < item_cost:
-                return f"@{user} You don't have enough points! You need {item_cost - self.points[user]} more points!"
+                return False, f"@{user} You don't have enough points! You need {item_cost - self.points[user]} more points!"
             else:
                 self.points[user] -= item_cost
-                return f"This costed @{user} {item_cost} points."
+                return True, f"This costed @{user} {item_cost} points."
         else:
-            return f"@{user} You don't have enough points! You need {item_cost} more points!"
+            return False, f"@{user} You don't have enough points! You need {item_cost} more points!"
 
     # handle twitch points redemptions
     async def handle_redemptions(self, event):
@@ -136,7 +136,7 @@ class TwitchBot(commands.Bot):
         elif response.status_code == 422: # user already is VIP
             return False, 422
         else:
-            print(response.json())
+            log_error(LOG_FILE, response.text)
             return False, response.status_code
     
     def create_poll(self, title, choices, duration):
@@ -459,9 +459,9 @@ class TwitchBot(commands.Bot):
         user = ctx.author.name
         memecam_cost = 500
 
-        afford_message = self.remove_points(user, memecam_cost)
+        can_afford, afford_message = self.remove_points(user, memecam_cost)
 
-        if afford_message.startswith("This"):
+        if can_afford:
             await ctx.send(f"@{self.nick} You have to throw a silly effect over your camera for the next 10 minutes! {afford_message}")
         else:
             await ctx.send(afford_message)
@@ -472,9 +472,9 @@ class TwitchBot(commands.Bot):
         user = ctx.author.name
         endwith_cost = 300
 
-        afford_message = self.remove_points(user, endwith_cost)
+        can_afford, afford_message = self.remove_points(user, endwith_cost)
 
-        if afford_message.startswith("This"):
+        if can_afford:
             await ctx.send(f"@{self.nick} You have to end stream with {map_link}! {afford_message}")
         else:
             await ctx.send(afford_message)
@@ -511,9 +511,9 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{gifter} That user doesn't exist on Twitch!")
             return
 
-        afford_message = self.remove_points(gifter, amount)
+        can_afford, afford_message = self.remove_points(gifter, amount)
 
-        if afford_message.startswith("This"):
+        if can_afford:
             await ctx.send(f"How generous! @{gifter} gifted {amount} points to @{receiver}!")
             self.add_points(receiver, amount)
             return
@@ -528,6 +528,12 @@ class TwitchBot(commands.Bot):
         vip_cost = 10000
         user = ctx.author.name
         user_original_points = self.points[user] if user in self.points else 0
+
+        can_afford, afford_message = self.remove_points(user, vip_cost)
+        
+        if not can_afford:
+            await ctx.send(afford_message)
+            return
 
         headers = {
             "Authorization": f"Bearer {ACCESS_TOKEN_VIP}",
@@ -565,26 +571,13 @@ class TwitchBot(commands.Bot):
             return
 
         user_id = user_data["data"][0]["id"]
-        
-        afford_message = self.remove_points(user, vip_cost)
-        
-        if user in self.points and self.points[user] == user_original_points:
-            await ctx.send(afford_message)
-            return
-        
-        def readd_points_in_case_of_error():
-            if user not in self.points:
-                return
-            
-            if self.points[user] != user_original_points:
-                self.points[user] += vip_cost
-                
+                        
         succes, status_code = self.add_vip(user_id) # try adding VIP
 
         if succes:
             await ctx.send(f"{self.nick} A temporary VIP status has been redeemed by @{user}! {afford_message}")
         else:
-            readd_points_in_case_of_error()
+            self.points[user] += vip_cost
             match status_code:
                 case 422:
                     await ctx.send(f"@{user} You already are a VIP!")
