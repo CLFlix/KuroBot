@@ -527,7 +527,6 @@ class TwitchBot(commands.Bot):
 
         vip_cost = 10000
         user = ctx.author.name
-        user_original_points = self.points[user] if user in self.points else 0
 
         can_afford, afford_message = self.remove_points(user, vip_cost)
         
