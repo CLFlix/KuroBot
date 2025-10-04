@@ -82,6 +82,37 @@ class TwitchBot(commands.Bot):
 
             await channel.send(f"@{user} Your redemption has been acknowlged.")
 
+    # check if a user exists
+    async def user_exists(self, username) -> bool:
+        global ACCESS_TOKEN_VIP
+
+        url = f"https://api.twitch.tv/helix/users?login={username}"
+        headers = {
+            "Authorization": f"Bearer {ACCESS_TOKEN_VIP}",
+            "Client-Id": CLIENT_ID
+        }
+
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == 401:
+            try:
+                ACCESS_TOKEN_VIP = refresh_tokens()
+                print("Refreshed bot tokens")
+            except Exception as e:
+                log_error(LOG_FILE, e)
+                print("Something went wrong refreshing VIP access token, used to check if a user exists.")
+                return False
+            
+            headers["Authorization"] = f"Bearer {ACCESS_TOKEN_VIP}"
+            requests.get(url, headers=headers)
+
+            if response.status_code not in (200, 203):
+                print(f"Failed to check user: {response.text}")
+                return False
+
+        data = response.json()
+        return len(data["data"]) > 0
+
     # add VIP status to user
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"
@@ -446,6 +477,42 @@ class TwitchBot(commands.Bot):
             self.points[user] -= endwith_cost
         else:
             await ctx.send(afford_message)
+
+    @commands.command(name="gift")
+    async def gift(self, ctx, *, message: str):
+        gifter = ctx.author.name
+
+        message = message.split()
+        if len(message) != 2:
+            await ctx.send("Make sure you send the command in this format: '?gift @<user> <amount>'")
+            return
+        
+        # remove "@" from receiver
+        receiver = message[0][1:].lower()
+        amount = int(message[1])
+
+        if receiver.lower() == gifter:
+            await ctx.send(f"@{gifter} You cant gift points to yourself!")
+            return
+
+        user_exists: bool = await self.user_exists(receiver)
+
+        if not user_exists:
+            await ctx.send(f"@{gifter} That user doesn't exist on Twitch!")
+            return
+
+        # TODO: change check_points to remove_points
+        # logic: check_points always happens before subtracting points from the user
+        # and happens nowhere else
+        afford_message = self.check_points(gifter, amount)
+
+        if afford_message.startswith("This"):
+            await ctx.send(f"How generous! @{gifter} gifted {amount} points to @{receiver}!")
+            self.points[gifter] -= amount
+            self.add_points(receiver, amount)
+            return
+            
+        await ctx.send(afford_message)
 
     # temporary VIP status
     @commands.command(name="vip")
