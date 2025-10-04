@@ -186,6 +186,31 @@ class TwitchBot(commands.Bot):
     @commands.command(name="test")
     async def test(self, ctx):
         await ctx.send("I'm responding! :D")
+    
+    @commands.command(name="poll")
+    async def poll(self, ctx, *, message):
+        user = ctx.author.name
+
+        with open(r'mods_list.txt', 'r', encoding='utf-8') as mods_list:
+            mods = mods_list.readlines()
+
+        mods = [user.strip() for user in mods]
+        if user not in mods:
+            await ctx.send(f"@{user} You do not have permission to use this command!")
+            return
+        
+        title = message[:message.find("?") + 1]
+        choices_list = message[message.find("?") + 1:].split(" ")
+        choices = choices_list[1:]
+        duration = 120
+
+        created_poll = self.create_poll(title, choices, duration)
+
+        if created_poll:
+            return
+        else:
+            await ctx.send(f"@{user} Couldn't create poll, check the log file.")
+            return
 
     # show all commands, don't show commands in hidden
     @commands.command(name="commands")
@@ -483,30 +508,6 @@ class TwitchBot(commands.Bot):
             else:
                 await ctx.send(afford_message)
 
-    @commands.command(name="poll")
-    async def poll(self, ctx, *, message):
-        user = ctx.author.name
-
-        with open(r'mods_list.txt', 'r', encoding='utf-8') as mods_list:
-            mods = mods_list.readlines()
-
-        mods = [user.strip() for user in mods]
-        if user not in mods:
-            await ctx.send(f"@{user} You do not have permission to use this command!")
-            return
-        
-        title = message[:message.find("?") + 1]
-        choices_list = message[message.find("?") + 1:].split(" ")
-        choices = choices_list[1:]
-        duration = 120
-
-        created_poll = self.create_poll(title, choices, duration)
-
-        if created_poll:
-            return
-        else:
-            await ctx.send(f"@{user} Couldn't create poll, check the log file.")
-            return
 
 def main():
     ask_for_requests = True
