@@ -58,11 +58,12 @@ class TwitchBot(commands.Bot):
                 self.add_points(user, 1)
 
     # check points for points redeeming
-    def check_points(self, user, item_cost):
+    def remove_points(self, user, item_cost):
         if user in self.points:
             if self.points[user] < item_cost:
                 return f"@{user} You don't have enough points! You need {item_cost - self.points[user]} more points!"
             else:
+                self.points[user] -= item_cost
                 return f"This costed @{user} {item_cost} points."
         else:
             return f"@{user} You don't have enough points! You need {item_cost} more points!"
@@ -458,10 +459,10 @@ class TwitchBot(commands.Bot):
         user = ctx.author.name
         memecam_cost = 500
 
-        afford_message = self.check_points(user, memecam_cost)
+        afford_message = self.remove_points(user, memecam_cost)
+
         if afford_message.startswith("This"):
             await ctx.send(f"@{self.nick} You have to throw a silly effect over your camera for the next 10 minutes! {afford_message}")
-            self.points[user] -= memecam_cost
         else:
             await ctx.send(afford_message)
 
@@ -471,10 +472,10 @@ class TwitchBot(commands.Bot):
         user = ctx.author.name
         endwith_cost = 300
 
-        afford_message = self.check_points(user, endwith_cost)
+        afford_message = self.remove_points(user, endwith_cost)
+
         if afford_message.startswith("This"):
-            await ctx.send(f"@{self.nick} You have to end stream with {map_link} {afford_message}")
-            self.points[user] -= endwith_cost
+            await ctx.send(f"@{self.nick} You have to end stream with {map_link}! {afford_message}")
         else:
             await ctx.send(afford_message)
 
@@ -484,12 +485,21 @@ class TwitchBot(commands.Bot):
 
         message = message.split()
         if len(message) != 2:
-            await ctx.send("Make sure you send the command in this format: '?gift @<user> <amount>'")
+            await ctx.send(f"@{gifter} Make sure you send the command in this format: '?gift @<user> <amount>'")
             return
-        
-        # remove "@" from receiver
+
+        # remove "@" from receiver + case consistency for points
         receiver = message[0][1:].lower()
-        amount = int(message[1])
+
+        try:
+            amount = int(message[1])
+        except ValueError:
+            await ctx.send(f"@{gifter} Make sure you send the command in this format: '?gift @<user> <amount>'")
+            return
+
+        if amount <= 0:
+            await ctx.send(f"@{gifter} You must gift a positive amount of points!")
+            return
 
         if receiver.lower() == gifter:
             await ctx.send(f"@{gifter} You cant gift points to yourself!")
@@ -501,14 +511,10 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{gifter} That user doesn't exist on Twitch!")
             return
 
-        # TODO: change check_points to remove_points
-        # logic: check_points always happens before subtracting points from the user
-        # and happens nowhere else
-        afford_message = self.check_points(gifter, amount)
+        afford_message = self.remove_points(gifter, amount)
 
         if afford_message.startswith("This"):
             await ctx.send(f"How generous! @{gifter} gifted {amount} points to @{receiver}!")
-            self.points[gifter] -= amount
             self.add_points(receiver, amount)
             return
             
@@ -521,6 +527,7 @@ class TwitchBot(commands.Bot):
 
         vip_cost = 10000
         user = ctx.author.name
+        user_original_points = self.points[user] if user in self.points else 0
 
         headers = {
             "Authorization": f"Bearer {ACCESS_TOKEN_VIP}",
@@ -559,21 +566,30 @@ class TwitchBot(commands.Bot):
 
         user_id = user_data["data"][0]["id"]
         
-        afford_message = self.check_points(user, vip_cost) # check points balance
+        afford_message = self.remove_points(user, vip_cost)
+        
+        if user in self.points and self.points[user] == user_original_points:
+            await ctx.send(afford_message)
+            return
+        
+        def readd_points_in_case_of_error():
+            if user not in self.points:
+                return
+            
+            if self.points[user] != user_original_points:
+                self.points[user] += vip_cost
+                
         succes, status_code = self.add_vip(user_id) # try adding VIP
 
-        if not succes:
+        if succes:
+            await ctx.send(f"{self.nick} A temporary VIP status has been redeemed by @{user}! {afford_message}")
+        else:
+            readd_points_in_case_of_error()
             match status_code:
                 case 422:
                     await ctx.send(f"@{user} You already are a VIP!")
                 case _:
                     await ctx.send(f"@{self.nick} Something went wrong. @{user} No points were deducted.")
-        else:
-            if afford_message.startswith("This"):
-                await ctx.send(f"{self.nick} A temporary VIP status has been redeemed by @{user}! {afford_message}")
-                self.points[user] -= vip_cost
-            else:
-                await ctx.send(afford_message)
 
 
 def main():
