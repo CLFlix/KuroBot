@@ -256,6 +256,10 @@ This allows a chatter to redeem 500 points to make the streamer turn on a silly 
 
 By redeeming 300 points, a chatter can trigger this command with the osu! beatmap's link of their choice. This map will be the one that has to be the last map of the stream / session.
 
+### ?gift <@username> \<amount>
+
+You can gift someone points by using this command! It sounds as easy as it is: by gifting some user some amount of points, this amount will be subtracted from your points and added to the receiver's amount of points.
+
 ### ?vip
 
 Notifies the streamer that someone claimed the status of VIP for a limited amount of time and automatically tries to assign the VIP role to this user. The chatter will need 10.000 points for this.\
