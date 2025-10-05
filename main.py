@@ -292,6 +292,7 @@ class TwitchBot(commands.Bot):
     async def lb(self, ctx):
         await self.leaderboard(ctx)
 
+    ## osu related
     # show now playing
     @commands.command(name="np")
     async def np(self, ctx):
@@ -374,6 +375,26 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{ctx.author.name} {osuUsername} has played osu! {playcount} times.")
         except ConnectionError as e:
             await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
+            log_error(LOG_FILE, e)
+
+    # get general stats at once
+    @commands.command(name="osustats")
+    async def osustats(self, ctx):
+        try:
+            data = get_profile()
+            global_rank, country_rank, pp, total_playtime, playcount = (
+                data["pp_rank"],
+                data["pp_country_rank"],
+                data["pp_raw"],
+                int(data["total_seconds_played"]) // 3600,
+                data["playcount"]
+            )
+
+            formatted_message = f"{osuUsername}: #{global_rank}, Country rank: #{country_rank} - pp: {pp} - Playtime: {total_playtime}h - Playcount: {playcount}"
+            await ctx.send(f"@{ctx.author.name} {formatted_message}")
+            
+        except ConnectionError as e:
+            await ctx.send(f"@{self.nick} @{ctx.author.name} Something went wrong getting osu! profile.")
             log_error(LOG_FILE, e)
 
     # show the chat if you want to accept requests or not (self.rq_message comes from main())
