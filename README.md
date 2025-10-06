@@ -116,8 +116,8 @@ If you've completed the setup process, your `.env` file should look something li
 ```
 TOKEN="YOUROAUTHTOKEN"
 CHANNEL="KurookamiTV"
-osuUsername:"_Kurookami_"
-osuAuth:"YOUROSUAPIKEY"
+osuUsername="_Kurookami_"
+osuAuth="YOUROSUAPIKEY"
 
 # Optional:
 # General info
