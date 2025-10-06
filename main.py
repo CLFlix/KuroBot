@@ -105,7 +105,7 @@ class TwitchBot(commands.Bot):
                 return False
             
             headers["Authorization"] = f"Bearer {ACCESS_TOKEN_VIP}"
-            requests.get(url, headers=headers)
+            response = requests.get(url, headers=headers)
 
             if response.status_code not in (200, 203):
                 print(f"Failed to check user: {response.text}")
