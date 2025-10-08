@@ -12,5 +12,23 @@ export default function Commands() {
     CommandsService.getAllCommands().then(setCommands);
   }, []);
 
-  return <CommandsTable commandsList={commands} />;
+  const grouped = commands.reduce<Record<string, Command[]>>((acc, cmd) => {
+    const cat = cmd.category || "other";
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(cmd);
+    return acc;
+  }, {});
+
+  return (
+    <div className="space-y-8">
+      {Object.entries(grouped).map(([category, list]) => (
+        <section key={category}>
+          <h2 className="text-xl font-bold mb-2 capitalize">
+            {category} commands
+          </h2>
+          <CommandsTable commandsList={list} />
+        </section>
+      ))}
+    </div>
+  );
 }
