@@ -25,5 +25,12 @@ points.json
 # first_time_bonus_claimed.txt & mods_list.txt & log.txt
 *.txt
 
-# logs
-log.txt
+# dependencies
+node_modules/
+
+# next.js
+.next/
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
