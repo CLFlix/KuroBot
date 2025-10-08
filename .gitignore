@@ -24,6 +24,7 @@ points.json
 
 # first_time_bonus_claimed.txt & mods_list.txt & log.txt
 *.txt
+!commands.txt
 
 # dependencies
 node_modules/

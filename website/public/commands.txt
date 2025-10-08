@@ -1,0 +1,22 @@
+claim - After using this command, you will have claimed your first 500 bot points. You can obtain more points by chatting in the Twitch chat. - useful
+commands - Display all the available commands in the Twitch chat! - useful
+endwith - Redeeming 300 of the user's points, the streamer has to end the stream or current osu! session with the specified map. - redeem
+gift - You can gift points to another user, if you have enough points to do so. '?gift @KurookamiTV 500' will subtract 500 points from the invoker, and add 500 points to KurookamiTV's total. - redeem
+lb - Alias for '?leaderboard'. - useful
+leaderboard - '?leaderboard' will show you the top 3 bot point earners of this channel. - useful
+memecam - Redeeming 500 of the user's points, the streamer has to turn on an effect / filter over their camera for the next 10 minutes. - redeem
+mock - Hanging in the same style a 'owo', this command will return your message in SpOnGeBoB cApItAlIzAtIoN. - fun
+np - This will display the map that the streamer is currently playing. - osu
+nppp - This will make the bot reply with the map the streamer is currently playing, along with the pp values for SS, 99% and 95%. - osu
+osustats - This command is some other commands combined. It will show the rank, country rank, total pp, playtime and playcount of the streamer. - osu
+owo - This command will return your message after replacing all the l's and r's with w's. This way, 'Hello world' becomes 'Hewwo wowwd'. - fun
+playcount - This will show the playcount of the streamer. - osu
+playtime - Show how much time the streamer wasted playing osu!. - osu
+points - This command will show you how many bot points you have in this Twitch channel! - useful
+poll - Using this command with the necessary parameters will create a poll of 2 minutes. - useful
+rank - Make the bot display the streamer's osu! rank in chat! - osu
+roll - If you don't specify the maximum, this command will roll a random number between 1 and 100. By specifying the maximum like 'roll 1000', this will roll any number between 1 and the specified number, in this case 1000. - fun
+rps - Play rock, paper, scissors with the bot! If you win, you get 3 points. If you tie with the bot, you gain 1 point. - fun
+rq - The streamer can decide whether they want to receive beatmap requests. This command will then show whether they accept those requests or not. - osu
+test - This command can be used right before streaming to check if the bot is working and responding. - useful
+vip - Redeeming 10.000 points, you can claim VIP status on the streamer's Twitch channel! The bot will reply with a message saying this is temporary, but the streamer can, of course, decide theirselves whether this is permanent or not. - redeem
