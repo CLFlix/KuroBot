@@ -42,6 +42,13 @@ class TwitchBot(commands.Bot):
         # manage chat message points cooldowns
         self.last_point_time = {}
 
+    ## export commands
+    def export_commands(self):
+        with open(r'website/public/commands.txt', 'w', encoding='utf-8') as commands_file:
+            for name, cmd in self.commands.items():
+                commands_file.write(f"{name} - {getattr(cmd, "description", "/")} - {getattr(cmd, "category", "/")}\n")
+        print("Commands succesfully exported to 'website/public/commands.txt'")
+
     ## helper methods
     def add_points(self, user, amount):
         if user not in self.points:
@@ -185,6 +192,7 @@ class TwitchBot(commands.Bot):
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
+        self.export_commands()
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
 
@@ -363,7 +371,7 @@ class TwitchBot(commands.Bot):
             log_error(LOG_FILE, e)
     nppp.category = "osu"
     nppp.description = "This will make the bot reply with the map the streamer " \
-    "is currently playing, along with the pp values for SS, 99\% and 95\%."
+    "is currently playing, along with the pp values for SS, 99% and 95%."
 
     # show current rank (global and country)
     @commands.command(name="rank")
