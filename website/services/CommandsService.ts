@@ -8,15 +8,19 @@ const getAllCommands = async (): Promise<Command[]> => {
     .trim()
     .split("\n")
     .map((line) => {
-      const [name, description] = line.split(":").map((p) => p.trim());
-      return { name, description } as Command;
+      const [name, description, category] = line
+        .split(" - ")
+        .map((p) => p.trim());
+
+      return {
+        name,
+        description,
+        category: (category || "/") as Command["category"],
+      };
     });
 
   return commands;
 };
 
-const CommandsService = () => ({
-  getAllCommands,
-});
-
-export default CommandsService();
+const CommandsService = { getAllCommands };
+export default CommandsService;
