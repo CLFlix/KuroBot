@@ -1,9 +1,14 @@
-import Header from "@/component/Header";
+import Header from "@/components/Header";
+import CommandsClientView from "./CommandsClientView";
 
-function Commands() {
+async function Commands() {
   return (
     <>
       <Header />
+      <main className="ml-auto">
+        <h1 className="text-2xl text-center">Commands</h1>
+        <CommandsClientView />
+      </main>
     </>
   );
 }
