@@ -20,15 +20,15 @@ export default function Commands() {
   }, {});
 
   return (
-    <div className="space-y-8">
+    <>
       {Object.entries(grouped).map(([category, list]) => (
         <section key={category}>
-          <h2 className="text-xl font-bold mb-2 capitalize">
+          <h2 className="text-center text-2xl font-bold mb-2 capitalize">
             {category} commands
           </h2>
           <CommandsTable commandsList={list} />
         </section>
       ))}
-    </div>
+    </>
   );
 }

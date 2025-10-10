@@ -9,26 +9,30 @@ type Props = {
 const CommandsTable: React.FC<Props> = ({ commandsList }: Props) => {
   return (
     <>
-      {commandsList && (
-        <table className="min-w-full border border-gray-300 text-left">
-          <thead className="bg-blue-900 text-white">
-            <tr>
-              <th className="p-2 w-1/6">Command</th>
-              <th className="p-2 max-w-[400px] truncate">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {commandsList.map((command, index) => (
-              <tr key={index} className="border-t border-gray-300">
-                <td className="p-2 font-mono">{command.name}</td>
-                <td className="p-2 max-w-[400px] whitespace-normal break-words">
-                  {command.description}
-                </td>
+      <div className="flex justify-center mb-5">
+        {commandsList && (
+          <table className="text-left">
+            <thead className="bg-purple-600 text-white">
+              <tr>
+                <th className="p-2 w-1/6 text-center">Command</th>
+                <th className="p-2 max-w-[200px] truncate text-center">
+                  Description
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+            <tbody>
+              {commandsList.map((command, index) => (
+                <tr key={index} className="border border-gray-800">
+                  <td className="p-2 font-mono text-center">{command.name}</td>
+                  <td className="p-2 font-sans max-w-[700px] whitespace-normal break-words">
+                    {command.description}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </>
   );
 };
