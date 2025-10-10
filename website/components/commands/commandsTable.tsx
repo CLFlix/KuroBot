@@ -22,8 +22,8 @@ const CommandsTable: React.FC<Props> = ({ commandsList }: Props) => {
             </thead>
             <tbody>
               {commandsList.map((command, index) => (
-                <tr key={index} className="border border-gray-800">
-                  <td className="p-2 font-mono text-center">{command.name}</td>
+                <tr key={index} className="border border-gray-800 odd:bg-gray-800 even:bg-gray-700 hover:bg-gray-900">
+                  <td className="p-2 font-mono text-center bg-gray-900">{command.name}</td>
                   <td className="p-2 font-sans max-w-[700px] whitespace-normal break-words">
                     {command.description}
                   </td>
