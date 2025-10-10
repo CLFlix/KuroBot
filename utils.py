@@ -73,13 +73,17 @@ def write_points_data(viewer_points, points_file):
     print("Points data saved!")
 
 def get_bonus_claimed(first_time_bonus_file):
-    with open(first_time_bonus_file, 'r', encoding='utf-8') as file:
-        lines = file.readlines()
-
     bonus_claimed = []
-    for line in lines:
-        bonus_claimed.append(line.strip().lower())
+    try:
+        with open(first_time_bonus_file, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
 
+        for line in lines:
+            bonus_claimed.append(line.strip().lower())
+
+    except FileNotFoundError:
+        with open("first_time_bonus_claimed.txt", 'w', encoding='utf-8') as bonus_claimed_file:
+            bonus_claimed_file.write("")
     return bonus_claimed
 
 def write_bonus_claimed(bonus_claimed_list, first_time_bonus_file):

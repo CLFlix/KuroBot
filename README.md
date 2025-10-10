@@ -244,7 +244,7 @@ Play rock, paper, scissors with the bot! The player needs to type `?rps choice` 
 
 ### ?claim
 
-Users can claim 500 points upon first arrival in your chat! The username will be added to a file called `first_time_bonus_claimed.txt` and they won't be able to claim it again.
+Users can claim 500 points upon first arrival in your chat! The username will be added to a file called `first_time_bonus_claimed.txt` and they won't be able to claim it again unless manually removed from the list.
 
 ### ?points
 
