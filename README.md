@@ -176,7 +176,7 @@ This will show the same thing as the command before this, including the pp amoun
 
 ### ?rank
 
-This command will show you the rank of the account where `osuUsername` has been filled in. The output looks like this:
+This command will show you the rank of the account where `osuUsername` has been filled in.
 
 ```
 @kurookamitv Global Rank: #8440, Country Rank: #47
@@ -189,6 +189,14 @@ This will show you how much hours the streamer has wasted on this silly game.
 ### ?playcount
 
 Similar to `?playtime`, the sent message coming from this command will contain the playcount of the streamer.
+
+### ?osustats
+
+Combining `?rank`, `?playtime` and `?playcount`, this command will tell you what rank the streamer is, how many pp they have, for how much hours they have played osu! and how many plays they have in the game. <sub>I might update this to be able to receive usernames and look up other users than the streamer</sub>
+
+```
+@kurookamitv _Kurookami_: #7394, Country rank: #44 - pp: 9807.84 - Playtime: 1610h - Playcount: 90863
+```
 
 ### ?rq
 
