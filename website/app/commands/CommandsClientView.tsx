@@ -24,20 +24,18 @@ export default function Commands() {
       category.toLowerCase() === "osu" ? "osu!" : category;
 
     return (
-      <>
-        <section key={category}>
-          <h2
-            className={
-              displayCategory === "osu!"
-                ? "text-center text-2xl font-bold mb-2"
-                : "text-center text-2xl font-bold mb-2 capitalize"
-            }
-          >
-            {displayCategory} commands
-          </h2>
-          <CommandsTable commandsList={list} />
-        </section>
-      </>
+      <section key={category}>
+        <h2
+          className={
+            displayCategory === "osu!"
+              ? "text-center text-2xl font-bold mb-2"
+              : "text-center text-2xl font-bold mb-2 capitalize"
+          }
+        >
+          {displayCategory} commands
+        </h2>
+        <CommandsTable commandsList={list} />
+      </section>
     );
   });
 }
