@@ -7,7 +7,7 @@ const Header = () => {
   const pathname = usePathname();
 
   const links = [
-    { href: "/", label: "Home" },
+    { href: "/", label: "KuroBot" },
     { href: "/commands", label: "Commands" },
     { href: "/about", label: "About" },
   ];

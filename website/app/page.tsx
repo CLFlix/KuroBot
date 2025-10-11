@@ -9,7 +9,7 @@ function Home() {
       <main className="flex flex-col items-center justify-center flex-1">
         <Image src="/wip.png" width={200} height={200} alt="Attention board" />
         <section className="text-center mt-4">
-          <h1 className="text-3xl">Home</h1>
+          <h1 className="text-3xl">KuroBot</h1>
           <p>Work in progress...</p>
         </section>
       </main>
