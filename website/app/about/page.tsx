@@ -83,16 +83,47 @@ function About() {
         </section>
         <section>
           <h1 className="text-3xl font-bold mt-4">Links</h1>
-          <div className="flex flex-col gap-1">
-            <a href="https://www.twitch.tv/kurookamitv">Twitch</a>
-
-            <a href="https://www.youtube.com/@Doku_Kurookami">YouTube</a>
-
-            <a href="https://www.tiktok.com/@_kurookami_osu">TikTok</a>
-
-            <a href="https://discord.gg/4HAbQm2tdp">Discord</a>
-
-            <a href="https://github.com/CLFlix/KuroBot">GitHub Repo</a>
+          <div className="flex flex-col gap-1 text-blue-400 text-xl">
+            <span>
+              <a
+                href="https://www.twitch.tv/kurookamitv"
+                className="hover:underline"
+              >
+                Twitch
+              </a>
+            </span>
+            <span>
+              <a
+                href="https://www.youtube.com/@Doku_Kurookami"
+                className="hover:underline"
+              >
+                YouTube
+              </a>
+            </span>
+            <span>
+              <a
+                href="https://www.tiktok.com/@_kurookami_osu"
+                className="hover:underline"
+              >
+                TikTok
+              </a>
+            </span>
+            <span>
+              <a
+                href="https://discord.gg/4HAbQm2tdp"
+                className="hover:underline"
+              >
+                Discord
+              </a>
+            </span>
+            <span>
+              <a
+                href="https://github.com/CLFlix/KuroBot"
+                className="hover:underline"
+              >
+                GitHub Repo
+              </a>
+            </span>
           </div>
         </section>
       </main>
