@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import CommandsClientView from "./CommandsClientView";
 
 async function Commands() {
@@ -10,6 +11,7 @@ async function Commands() {
           <CommandsClientView />
         </section>
       </main>
+      <Footer />
     </>
   );
 }
