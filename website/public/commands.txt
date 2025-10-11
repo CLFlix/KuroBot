@@ -13,7 +13,7 @@ playcount - This will show the playcount of the streamer. - osu
 playtime - Show how much time the streamer wasted playing osu!. - osu
 osustats - This command is some other commands combined. It will show the rank, country rank, total pp, playtime and playcount of the streamer. - osu
 owo - This command will return your message after replacing all the l's and r's with w's. This way, 'Hello world' becomes 'Hewwo wowwd'. - fun
-mock - Hanging in the same style a 'owo', this command will return your message in SpOnGeBoB cApItAlIzAtIoN. - fun
+mock - Hanging in the same style as 'owo', this command will return your message in SpOnGeBoB cApItAlIzAtIoN. - fun
 rps - Play rock, paper, scissors with the bot! If you win, you get 3 points. If you tie with the bot, you gain 1 point. - fun
 roll - If you don't specify the maximum, this command will roll a random number between 1 and 100. By specifying the maximum like 'roll 1000', this will roll any number between 1 and the specified number, in this case 1000. - fun
 endwith - Redeeming 300 of the user's points, the streamer has to end the stream or current osu! session with the specified map. - redeem

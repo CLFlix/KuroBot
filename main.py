@@ -484,7 +484,7 @@ class TwitchBot(commands.Bot):
         
         await ctx.send(f"@{ctx.author.name} {result}")
     mock.category = "fun"
-    mock.description = "Hanging in the same style a 'owo', this command " \
+    mock.description = "Hanging in the same style as 'owo', this command " \
     "will return your message in SpOnGeBoB cApItAlIzAtIoN."
 
     # rock paper scissors against bot
