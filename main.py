@@ -1,6 +1,5 @@
 from utils import *
-from token_refreshers.refresh_vip_token import refresh_tokens
-from token_refreshers.refresh_polls_access_token import refresh_token_polls
+from refresh_access_token import refresh_access_token
 from eventsub_listener import eventsub_listener
 
 from twitchio.ext import commands
@@ -97,7 +96,7 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401:
             try:
-                ACCESS_TOKEN_VIP = refresh_tokens()
+                ACCESS_TOKEN_VIP = refresh_access_token("VIP")
             except Exception as e:
                 log_error(LOG_FILE, e)
                 print("Something went wrong refreshing VIP access token, used to check if a user exists.")
@@ -158,7 +157,7 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401:
             try:
-                new_polls_token = refresh_token_polls()
+                new_polls_token = refresh_access_token("POLLS")
             except Exception as e:
                 print(f"Refresh failed: {e}")
                 return
@@ -571,7 +570,7 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401: # Unauthorized: token expired
             try:
-                ACCESS_TOKEN_VIP = refresh_tokens()
+                ACCESS_TOKEN_VIP = refresh_access_token("VIP")
             except Exception as e:
                 await ctx.send(f"@{self.nick}, @{user} Token refresh failed. Try again later.")
                 log_error(LOG_FILE, e)

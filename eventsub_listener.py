@@ -4,7 +4,7 @@ import json
 import requests
 
 from dotenv import load_dotenv
-from token_refreshers.refresh_redemptions_access_token import refresh_token_redemptions
+from refresh_access_token import refresh_access_token
 
 load_dotenv()
 
@@ -53,7 +53,7 @@ async def eventsub_listener(redemption_handler):
 
                 try:
                     # refresh access token for redemption listener, then retry subscription
-                    new_token = refresh_token_redemptions()
+                    new_token = refresh_access_token("REDEMPTIONS")
                     print("Refreshed redemption listener token")
                 except Exception as e:
                     print(f"Refresh failed: {e}")
