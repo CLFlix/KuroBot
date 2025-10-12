@@ -6,7 +6,7 @@ async function Commands() {
   return (
     <>
       <Header />
-      <main className="mt-2">
+      <main className="mt-2 max-lg:mb-13">
         <section className="grid grid-cols-2 max-lg:grid-cols-1">
           <CommandsClientView />
         </section>
