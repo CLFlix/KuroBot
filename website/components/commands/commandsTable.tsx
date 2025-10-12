@@ -12,7 +12,7 @@ const CommandsTable: React.FC<Props> = ({ commandsList }: Props) => {
       <div className="flex justify-center mb-5">
         {commandsList && (
           <table className="text-left">
-            <thead className="bg-purple-600 text-white">
+            <thead className="bg-gradient-to-br from-purple-700 to-purple-500 text-white">
               <tr>
                 <th className="p-2 w-1/6 text-center">Command</th>
                 <th className="p-2 max-w-[200px] truncate text-center">
@@ -22,8 +22,11 @@ const CommandsTable: React.FC<Props> = ({ commandsList }: Props) => {
             </thead>
             <tbody>
               {commandsList.map((command, index) => (
-                <tr key={index} className="border border-gray-800 odd:bg-gray-800 even:bg-gray-700 hover:bg-gray-900">
-                  <td className="p-2 font-mono text-center bg-gray-900">{command.name}</td>
+                <tr
+                  key={index}
+                  className="border border-gray-900 hover:font-semibold hover:text- bg-gradient-to-br from-gray-900 to-gray-700"
+                >
+                  <td className="p-2 font-mono text-center">{command.name}</td>
                   <td className="p-2 font-sans max-w-[700px] whitespace-normal break-words">
                     {command.description}
                   </td>
