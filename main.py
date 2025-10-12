@@ -398,6 +398,16 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{self.nick} @{ctx.author.name} Something went wrong getting osu! profile.")
             log_error(LOG_FILE, e)
 
+    @commands.command(name="profile")
+    async def profile(self, ctx):
+        try:
+            data = get_profile()
+            user_id = data["user_id"]
+            await ctx.send(f"@{ctx.author.name} https://osu.ppy.sh/users/{user_id}")
+        except ConnectionError as e:
+            await ctx.send(f"@{self.nick} @{ctx.author.name} Something went wrong getting osu! profile.")
+            log_error(LOG_FILE, e)
+
     # show the chat if you want to accept requests or not (self.rq_message comes from main())
     @commands.command(name="rq")
     async def rq(self, ctx):
