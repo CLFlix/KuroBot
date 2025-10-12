@@ -7,7 +7,7 @@ function About() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="ml-5 mt-2 mr-5 font-sans">
-        <section className="grid grid-cols-2">
+        <section className="grid grid-cols-2 max-lg:grid-cols-1">
           <div>
             <h1 className="text-3xl font-bold">Me!</h1>
             <p>
@@ -33,6 +33,7 @@ function About() {
               height={256}
               src={"/kurookami_logo.jpg"}
               alt="Kurookami logo"
+              className="max-lg:hidden"
             ></Image>
           </div>
         </section>

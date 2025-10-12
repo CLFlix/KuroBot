@@ -7,7 +7,7 @@ async function Commands() {
     <>
       <Header />
       <main className="mt-2">
-        <section className="grid grid-cols-2">
+        <section className="grid grid-cols-2 max-lg:grid-cols-1">
           <CommandsClientView />
         </section>
       </main>
