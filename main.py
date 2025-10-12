@@ -159,7 +159,6 @@ class TwitchBot(commands.Bot):
         if response.status_code == 401:
             try:
                 new_polls_token = refresh_token_polls()
-                print("Refreshed poll token")
             except Exception as e:
                 print(f"Refresh failed: {e}")
                 return
@@ -573,7 +572,6 @@ class TwitchBot(commands.Bot):
         if response.status_code == 401: # Unauthorized: token expired
             try:
                 ACCESS_TOKEN_VIP = refresh_tokens()
-                print("Refreshed bot tokens")
             except Exception as e:
                 await ctx.send(f"@{self.nick}, @{user} Token refresh failed. Try again later.")
                 log_error(LOG_FILE, e)
