@@ -256,7 +256,7 @@ class TwitchBot(commands.Bot):
             return
     poll.category = "useful"
     poll.description = "Using this command with the necessary parameters will " \
-    "create a poll of 2 minutes."
+    "create a poll of 2 minutes. (moderator only)"
 
     # show all commands, don't show commands in hidden
     @commands.command(name="commands")
