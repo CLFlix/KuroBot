@@ -448,6 +448,8 @@ class TwitchBot(commands.Bot):
         except ConnectionError as e:
             await ctx.send(f"@{self.nick} @{ctx.author.name} Something went wrong getting osu! profile.")
             log_error(LOG_FILE, e)
+    profile.category = "osu"
+    profile.description = "Show the link to the osu! profile of the streamer!"
 
     # show the chat if you want to accept requests or not (self.rq_message comes from main())
     @commands.command(name="rq")
