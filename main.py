@@ -98,7 +98,6 @@ class TwitchBot(commands.Bot):
         if response.status_code == 401:
             try:
                 ACCESS_TOKEN_VIP = refresh_tokens()
-                print("Refreshed bot tokens")
             except Exception as e:
                 log_error(LOG_FILE, e)
                 print("Something went wrong refreshing VIP access token, used to check if a user exists.")
@@ -229,6 +228,10 @@ class TwitchBot(commands.Bot):
         mods = [user.strip() for user in mods]
         if user not in mods:
             await ctx.send(f"@{user} You do not have permission to use this command!")
+            return
+        
+        if not self.affiliate:
+            await ctx.send(f"@{user} This channel is not Affiliate / Partner!")
             return
         
         title = message[:message.find("?") + 1]
