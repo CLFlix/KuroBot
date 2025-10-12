@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer className="min-w-full fixed bottom-0 font-sans footer items-center">
+    <footer className="min-w-full fixed bottom-0 max-lg:relative font-sans footer items-center">
       <nav className="bg-gray-900 flex gap-7 max-lg:gap-3 py-2 justify-center">
         <a href="https://www.twitch.tv/kurookamitv">Twitch</a>
 

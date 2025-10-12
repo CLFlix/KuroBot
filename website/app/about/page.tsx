@@ -4,9 +4,9 @@ import Image from "next/image";
 
 function About() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <Header />
-      <main className="ml-5 mt-2 mr-5 font-sans">
+      <main className="m-5 mb-10 mt-3 max-lg:mb-3 font-sans">
         <section className="grid grid-cols-2 max-lg:grid-cols-1">
           <div>
             <h1 className="text-3xl font-bold">Me!</h1>
@@ -33,7 +33,7 @@ function About() {
               height={256}
               src={"/kurookami_logo.jpg"}
               alt="Kurookami logo"
-              className="max-lg:hidden"
+              className="max-xl:hidden"
             ></Image>
           </div>
         </section>
@@ -53,7 +53,7 @@ function About() {
           </p>
         </section>
         <section className="grid grid-cols-2 max-lg:grid-cols-1">
-          <section className="max-lg:mb-13">
+          <section>
             <h1 className="text-3xl font-bold mt-4">Contribute</h1>
             <h1 className="text-xl font-bold">Developers:</h1>
             <p>
@@ -129,9 +129,13 @@ function About() {
             </div>
           </section>
         </section>
+        <section className="text-center mt-4">
+          <h1 className="text-3xl font-bold">Download</h1>
+          <p className="font-bold">[REPLACE WITH LINK TO RELEASE]</p>
+        </section>
       </main>
       <Footer />
-    </div>
+    </>
   );
 }
 
