@@ -17,6 +17,7 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 
 ACCESS_TOKEN_VIP = os.getenv("ACCESS_TOKEN_VIP")
 ACCESS_TOKEN_POLLS = os.getenv("ACCESS_TOKEN_POLLS")
+ACCESS_TOKEN_MODS = os.getenv("ACCESS_TOKEN_MODS")
 
 osuUsername = os.getenv("osuUsername")
 
@@ -81,6 +82,30 @@ class TwitchBot(commands.Bot):
             self.add_points(user, cost)
 
             await channel.send(f"@{user} Your redemption has been acknowlged.")
+
+    async def get_mods_list(self):
+        uri = "https://api.twitch.tv/helix/moderation/moderators"
+        headers = {
+            "Authorization": f"Bearer {ACCESS_TOKEN_MODS}",
+            "Client-Id": CLIENT_ID
+        }
+        params = {"broadcaster_id": BROADCASTER_ID}
+
+
+        response = requests.get(uri, headers=headers, params=params)
+
+        try:
+            data = response.json()["data"]
+            mods_list = [mod["user_login"] for mod in data]
+
+            with open("mods_list.txt", 'w', encoding='utf-8') as mods_file:
+                for mod in mods_list:
+                    mods_file.write(f"{mod}\n")
+            print("Wrote mods list in 'mods_list.txt'")
+
+        except requests.exceptions.JSONDecodeError:
+            raise RuntimeError("Couldn't get moderators list.")
+        
 
     # check if a user exists
     async def user_exists(self, username) -> bool:
@@ -182,6 +207,7 @@ class TwitchBot(commands.Bot):
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
+        await self.get_mods_list()
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
 
