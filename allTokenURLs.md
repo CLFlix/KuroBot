@@ -56,6 +56,18 @@ https://id.twitch.tv/oauth2/authorize
 
 Result: CODE_POLLS
 
+### Moderation Code
+
+```
+https://id.twitch.tv/oauth2/authorize
+  ?client_id=<YOUR_CLIENT_ID>
+  &redirect_uri=http://localhost
+  &response_type=code
+  &scope=moderation:read
+```
+
+Result: CODE_MODS
+
 ### Result after execution of intial token scripts
 
 ```

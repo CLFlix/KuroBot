@@ -105,7 +105,20 @@ https://id.twitch.tv/oauth2/authorize
 <sup>Replace \<YOUR_CLIENT_ID> with your actual client ID.</sup>\
 The code that you get from this output should be saved under "CODE_POLLS".
 
-With these codes, you can get the access and refresh tokens. Don't worry, this was all for your manual insertions. I handled getting access and refresh tokens for you. Run "GetVIPAccessToken.exe", "GetRedemptionsAccessToken.exe" and "GetPollAccessToken.exe". After execution, you should see 6 new fields appear in the `.env` file with their tokens as values: 3 access token fields and 3 refresh token fields. **Never share ANY of these with anyone.**
+And for reading mods list.
+
+```
+https://id.twitch.tv/oauth2/authorize
+  ?client_id=<YOUR_CLIENT_ID>
+  &redirect_uri=http://localhost
+  &response_type=code
+  &scope=channel:manage:polls
+```
+
+<sup>Replace \<YOUR_CLIENT_ID> with your actual client ID.</sup>\
+The code that you get from this output should be saved under "CODE_MODS".
+
+With these codes, you can get the access and refresh tokens. Don't worry, this was all for your manual insertions. I handled getting access and refresh tokens for you. Run "GetVIPAccessToken.exe", "GetRedemptionsAccessToken.exe", "GetPollAccessToken.exe" and "GetModsAccessToken.exe". After execution, you should see 8 new fields appear in the `.env` file with their tokens as values: 3 access token fields and 3 refresh token fields. **Never share ANY of these with anyone.**
 
 When these tokens expire, the code should automatically trigger a token refresh and it should try to connect once more. If this is not the case, create an issue with the details of the error on the github page and I'll look into it. Manually restarting the bot should make it connect either way, though.
 
@@ -139,6 +152,11 @@ REFRESH_TOKEN_REDEMPTIONS="REFRESH_TOKEN_WITH_SCOPE_REDEMPTIONS"
 CODE_POLLS="AUTHORIZATION_CODE_WITH_SCOPE_POLLS"
 ACCESS_TOKEN_POLLS="ACCESS_TOKEN_WITH_SCOPE_POLLS"
 REFRESH_TOKEN_POLLS="REFRESH_TOKEN_WITH_SCOPE_POLLS"
+
+# Mods Tokens
+CODE_MODS="AUTHORIZATION_CODE_WITH_SCOPE_MODS"
+ACCESS_TOKEN_MODS="ACCESS_TOKEN_WITH_SCOPE_MODS"
+REFRESH_TOKEN_MODS="REFRESH_TOKEN_WITH_SCOPE_MODS"
 
 ```
 
