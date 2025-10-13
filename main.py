@@ -42,6 +42,13 @@ class TwitchBot(commands.Bot):
         # manage chat message points cooldowns
         self.last_point_time = {}
 
+    ## export commands
+    def export_commands(self):
+        with open(r'website/public/commands.txt', 'w', encoding='utf-8') as commands_file:
+            for name, cmd in self.commands.items():
+                commands_file.write(f"{name} - {getattr(cmd, "description", "/")} - {getattr(cmd, "category", "/")}\n")
+        print("Commands succesfully exported to 'website/public/commands.txt'")
+
     ## helper methods
     def add_points(self, user, amount):
         if user not in self.points:
@@ -208,6 +215,7 @@ class TwitchBot(commands.Bot):
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
         await self.get_mods_list()
+        self.export_commands()
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
 
@@ -241,7 +249,10 @@ class TwitchBot(commands.Bot):
     @commands.command(name="test")
     async def test(self, ctx):
         await ctx.send("I'm responding! :D")
-    
+    test.category = "useful"
+    test.description = "This command can be used right before streaming to check " \
+    "if the bot is working and responding."
+
     @commands.command(name="poll")
     async def poll(self, ctx, *, message):
         user = ctx.author.name
@@ -270,6 +281,9 @@ class TwitchBot(commands.Bot):
         else:
             await ctx.send(f"@{user} Couldn't create poll, check the log file.")
             return
+    poll.category = "useful"
+    poll.description = "Using this command with the necessary parameters will " \
+    "create a poll of 2 minutes. (moderator only)"
 
     # show all commands, don't show commands in hidden
     @commands.command(name="commands")
@@ -277,6 +291,8 @@ class TwitchBot(commands.Bot):
         hidden = ["commands", "test", "lb", "claim", "poll"]
         command_list = ", ".join(command for command in self.commands.keys() if command not in hidden)
         await ctx.send(f"@{ctx.author.name} Available commands: {command_list}")
+    cmds.category = "useful"
+    cmds.description = "Display all the available commands in the Twitch chat!"
 
     @commands.command(name="claim")
     async def claim(self, ctx):
@@ -289,6 +305,9 @@ class TwitchBot(commands.Bot):
         self.bonus_claimed.append(user)
         self.add_points(user, 500)
         await ctx.send(f"@{user} You just claimed 500 points! Use ?commands to find out what you can do ;)")
+    claim.category = "useful"
+    claim.description = "After using this command, you will have claimed your " \
+    "first 500 bot points. You can obtain more points by chatting in the Twitch chat."
 
     # display points
     @commands.command(name="points")
@@ -301,6 +320,8 @@ class TwitchBot(commands.Bot):
                 await ctx.send(f"@{user} You currently have {self.points[user]} points.")
         else:
             await ctx.send(f"@{user} You currently have 0 points.")
+    points.category = "useful"
+    points.description = "This command will show you how many bot points you have in this Twitch channel!"
 
     @commands.command(name="leaderboard")
     async def leaderboard(self, ctx):
@@ -313,11 +334,16 @@ class TwitchBot(commands.Bot):
         top_n = 3
         top_users = [f"{user}: {points}" for user, points in ranking[:top_n]]
         await ctx.send(f"@{ctx.author.name} " + ", ".join(top_users))
+    leaderboard.category = "useful"
+    leaderboard.description = "'?leaderboard' will show you the top 3 " \
+    "bot point earners of this channel."
 
     # leaderboard alias
     @commands.command(name="lb")
     async def lb(self, ctx):
         await self.leaderboard(ctx)
+    lb.category = "useful"
+    lb.description = "Alias for '?leaderboard'."
 
     ## osu related
     # show now playing
@@ -342,6 +368,9 @@ class TwitchBot(commands.Bot):
         except ConnectionError as e:
             await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
             log_error(LOG_FILE, e)
+    np.category = "osu"
+    np.description = "This will display the map that the streamer " \
+    "is currently playing."
 
     # show now playing with pp values for SS, 99% and 95%
     @commands.command(name="nppp") 
@@ -367,6 +396,9 @@ class TwitchBot(commands.Bot):
         except ConnectionError as e:
             await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
             log_error(LOG_FILE, e)
+    nppp.category = "osu"
+    nppp.description = "This will make the bot reply with the map the streamer " \
+    "is currently playing, along with the pp values for SS, 99% and 95%."
 
     # show current rank (global and country)
     @commands.command(name="rank")
@@ -379,6 +411,8 @@ class TwitchBot(commands.Bot):
         except ConnectionError as e:
             await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
             log_error(LOG_FILE, e)
+    rank.category = "osu"
+    rank.description = "Make the bot display the streamer's osu! rank in chat!"
 
     # show amount of playtime in hours
     @commands.command(name="playtime")
@@ -391,6 +425,8 @@ class TwitchBot(commands.Bot):
         except ConnectionError as e:
             await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
             log_error(LOG_FILE, e)
+    playtime.category = "osu"
+    playtime.description = "Show how much time the streamer wasted playing osu!."
 
     # show playcount
     @commands.command(name="playcount")
@@ -403,6 +439,8 @@ class TwitchBot(commands.Bot):
         except ConnectionError as e:
             await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
             log_error(LOG_FILE, e)
+    playcount.category = "osu"
+    playcount.description = "This will show the playcount of the streamer."
 
     # get general stats at once
     @commands.command(name="osustats")
@@ -423,6 +461,9 @@ class TwitchBot(commands.Bot):
         except ConnectionError as e:
             await ctx.send(f"@{self.nick} @{ctx.author.name} Something went wrong getting osu! profile.")
             log_error(LOG_FILE, e)
+    osustats.category = "osu"
+    osustats.description = "This command is some other commands combined. " \
+    "It will show the rank, country rank, total pp, playtime and playcount of the streamer."
 
     @commands.command(name="profile")
     async def profile(self, ctx):
@@ -433,11 +474,16 @@ class TwitchBot(commands.Bot):
         except ConnectionError as e:
             await ctx.send(f"@{self.nick} @{ctx.author.name} Something went wrong getting osu! profile.")
             log_error(LOG_FILE, e)
+    profile.category = "osu"
+    profile.description = "Show the link to the osu! profile of the streamer!"
 
     # show the chat if you want to accept requests or not (self.rq_message comes from main())
     @commands.command(name="rq")
     async def rq(self, ctx):
         await ctx.send(self.rq_message)
+    rq.category = "osu"
+    rq.description = "The streamer can decide whether they want to receive " \
+    "beatmap requests. This command will then show whether they accept those requests or not."
 
     ## Fun commands
     # roll a random number between 1 and a specified amount, with 100 as a default
@@ -445,12 +491,21 @@ class TwitchBot(commands.Bot):
     async def roll(self, ctx, amount=100):
         random_number = random.randint(1, int(amount))
         await ctx.send(f"@{ctx.author.name} You rolled {random_number}")
+    roll.category = "fun"
+    roll.description = "If you don't specify the maximum, this command will " \
+    "roll a random number between 1 and 100. By specifying the maximum like " \
+    "'roll 1000', this will roll any number between 1 and the specified number, " \
+    "in this case 1000."
     
     # replaces all r/l to w and sends it back in chat
     @commands.command(name="owo")
     async def owo(self, ctx, *, message: str = "Type in a message after '?owo' and I will owo-fy it."):
         owofied_message = message.replace("l", "w").replace("r", "w")
         await ctx.send(f"@{ctx.author.name} {owofied_message}")
+    owo.category = "fun"
+    owo.description = "This command will return your message after " \
+    "replacing all the l's and r's with w's. This way, 'Hello world' " \
+    "becomes 'Hewwo wowwd'."
 
     # return your message in SpOnGeBoB cApItAlIzAtIoN
     @commands.command(name="mock")
@@ -467,6 +522,9 @@ class TwitchBot(commands.Bot):
                 result += letter.lower()
         
         await ctx.send(f"@{ctx.author.name} {result}")
+    mock.category = "fun"
+    mock.description = "Hanging in the same style as 'owo', this command " \
+    "will return your message in SpOnGeBoB cApItAlIzAtIoN."
 
     # rock paper scissors against bot
     @commands.command(name="rps")
@@ -509,6 +567,9 @@ class TwitchBot(commands.Bot):
 
         if result in ("win", "tie"):
             self.add_rps_points(ctx.author.name, result)
+    rps.category = "fun"
+    rps.description = "Play rock, paper, scissors with the bot! If you win, " \
+    "you get 3 points. If you tie with the bot, you gain 1 point."
 
     ## redeem points
     @commands.command(name="bonk")
@@ -535,6 +596,10 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{self.nick} You have to throw a silly effect over your camera for the next 10 minutes! {afford_message}")
         else:
             await ctx.send(afford_message)
+    memecam.category = "redeem"
+    memecam.description = "Redeeming 500 of the user's points, " \
+    "the streamer has to turn on an effect / filter over their camera " \
+    "for the next 10 minutes."
 
     # end stream with this map
     @commands.command(name="endwith")
@@ -548,6 +613,10 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{self.nick} You have to end stream with {map_link}! {afford_message}")
         else:
             await ctx.send(afford_message)
+    endwith.category = "redeem"
+    endwith.description = "Redeeming 300 of the user's points, " \
+    "the streamer has to end the stream or current osu! session " \
+    "with the specified map."
 
     @commands.command(name="gift")
     async def gift(self, ctx, *, message: str):
@@ -589,6 +658,10 @@ class TwitchBot(commands.Bot):
             return
             
         await ctx.send(afford_message)
+    gift.category = "redeem"
+    gift.description = "You can gift points to another user, if you " \
+    "have enough points to do so. '?gift @KurookamiTV 500' will subtract " \
+    "500 points from the invoker, and add 500 points to KurookamiTV's total."
 
     # temporary VIP status
     @commands.command(name="vip")
@@ -651,6 +724,12 @@ class TwitchBot(commands.Bot):
                     await ctx.send(f"@{user} You already are a VIP!")
                 case _:
                     await ctx.send(f"@{self.nick} Something went wrong. @{user} No points were deducted.")
+    vip.category = "redeem"
+    vip.description = "Redeeming 10.000 points, you can " \
+    "claim VIP status on the streamer's Twitch channel! " \
+    "The bot will reply with a message saying this is temporary, " \
+    "but the streamer can, of course, decide theirselves whether " \
+    "this is permanent or not."
 
 
 def main():
