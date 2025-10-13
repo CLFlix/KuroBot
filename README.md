@@ -278,6 +278,10 @@ Shows the top 3 point earners. Alias: `?lb`
 
 ## Points redeeming
 
+### ?bonk
+
+Redeeming 1500 points, you can make the streamer shut up for 5 minutes! They don't necessarily have to mute their mic, but they just can't talk.
+
 ### ?memecam
 
 This allows a chatter to redeem 500 points to make the streamer turn on a silly filter or modify their camera in any other meme-ish way for 10 minutes!
