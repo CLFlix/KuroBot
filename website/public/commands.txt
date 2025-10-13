@@ -17,6 +17,7 @@ owo - This command will return your message after replacing all the l's and r's 
 mock - Hanging in the same style as 'owo', this command will return your message in SpOnGeBoB cApItAlIzAtIoN. - fun
 rps - Play rock, paper, scissors with the bot! If you win, you get 3 points. If you tie with the bot, you gain 1 point. - fun
 roll - If you don't specify the maximum, this command will roll a random number between 1 and 100. By specifying the maximum like 'roll 1000', this will roll any number between 1 and the specified number, in this case 1000. - fun
+bonk - Redeeming 1500 points, the streamer cannot speak for the next 5 minutes! - redeem
 endwith - Redeeming 300 of the user's points, the streamer has to end the stream or current osu! session with the specified map. - redeem
 memecam - Redeeming 500 of the user's points, the streamer has to turn on an effect / filter over their camera for the next 10 minutes. - redeem
 gift - You can gift points to another user, if you have enough points to do so. '?gift @KurookamiTV 500' will subtract 500 points from the invoker, and add 500 points to KurookamiTV's total. - redeem
