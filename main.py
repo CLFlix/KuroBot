@@ -583,6 +583,8 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{self.nick} You can't speak for the next 5 minutes!")
         else:
             await ctx.send(afford_message)
+    bonk.category = "redeem"
+    bonk.description = "Redeeming 1500 points, the streamer cannot speak for the next 5 minutes!"
 
     # streamer meme cam
     @commands.command(name="memecam")
