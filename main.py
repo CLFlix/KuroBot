@@ -485,6 +485,18 @@ class TwitchBot(commands.Bot):
             self.add_rps_points(ctx.author.name, result)
 
     ## redeem points
+    @commands.command(name="bonk")
+    async def bonk(self, ctx):
+        user = ctx.author.name
+        bonk_cost = 1500
+
+        can_afford, afford_message = self.remove_points(user, bonk_cost)
+
+        if can_afford:
+            await ctx.send(f"@{self.nick} You can't speak for the next 5 minutes!")
+        else:
+            await ctx.send(afford_message)
+
     # streamer meme cam
     @commands.command(name="memecam")
     async def memecam(self, ctx):
