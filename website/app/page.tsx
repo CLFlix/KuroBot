@@ -1,11 +1,8 @@
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
 import Link from "next/link";
 
 function Home() {
   return (
     <>
-      <Header />
       <main className="mt-3 ml-5 mr-5 font-sans">
         <section className="flex flex-col text-center font-sans">
           <h1 className="font-bold text-3xl">
@@ -64,8 +61,17 @@ function Home() {
             </p>
           </div>
         </section>
+        <div>
+          <p className="text-center mt-4">
+            <sup>
+              If the website looks scuffed, I'm not a very good front-end dev,
+              so I didn't expect it to be wonderful either hihi
+              <br />
+              I'm just happy it looks okay
+            </sup>
+          </p>
+        </div>
       </main>
-      <Footer />
     </>
   );
 }

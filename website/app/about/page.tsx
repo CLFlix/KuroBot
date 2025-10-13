@@ -1,11 +1,8 @@
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
 import Image from "next/image";
 
 function About() {
   return (
     <>
-      <Header />
       <main className="m-5 mb-10 mt-3 max-lg:mb-3 font-sans">
         <section className="grid grid-cols-2 max-lg:grid-cols-1">
           <div>
@@ -134,7 +131,6 @@ function About() {
           <p className="font-bold">[REPLACE WITH LINK TO RELEASE]</p>
         </section>
       </main>
-      <Footer />
     </>
   );
 }
