@@ -86,7 +86,14 @@ function Home() {
           <h1 className="text-3xl font-bold">Quick Setup</h1>
           <p className="text-lg">
             Download the bot, create a points.json with "<code>{"{}"}</code>" in
-            it, get the codes, run the token scripts and run the bot!
+            it,{" "}
+            <a
+              href="https://github.com/CLFlix/KuroBot/blob/main/allTokenURLs.md"
+              className="text-blue-400 hover:underline"
+            >
+              get the codes
+            </a>
+            , run the token scripts and run the bot!
           </p>
         </section>
       </main>
