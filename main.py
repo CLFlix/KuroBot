@@ -101,6 +101,20 @@ class TwitchBot(commands.Bot):
 
         response = requests.get(uri, headers=headers, params=params)
 
+        if response.status_code == 401:
+            try:
+                new_token = refresh_access_token("MODS")
+                headers["Authorization"] = f"Bearer {new_token}"
+            except Exception as e:
+                log_error(LOG_FILE, e)
+                print("Something went wrong refreshing mods access token.")
+
+            response = requests.get(uri, headers=headers, params=params)
+
+            if response.status_code not in (200, 203):
+                log_error(LOG_FILE, response.text)
+                raise ConnectionError("Error getting mods list. More detailed error in log.txt")
+
         try:
             data = response.json()["data"]
             mods_list = [mod["user_login"] for mod in data]
@@ -131,7 +145,7 @@ class TwitchBot(commands.Bot):
                 ACCESS_TOKEN_VIP = refresh_access_token("VIP")
             except Exception as e:
                 log_error(LOG_FILE, e)
-                print("Something went wrong refreshing VIP access token, used to check if a user exists.")
+                print("Something went wrong refreshing VIP access token.")
                 return False
             
             headers["Authorization"] = f"Bearer {ACCESS_TOKEN_VIP}"
@@ -199,7 +213,7 @@ class TwitchBot(commands.Bot):
 
             if response.status_code not in (200, 202):
                 log_error(LOG_FILE, response.text)
-                raise ConnectionError("Error creating poll.")
+                raise ConnectionError("Error creating poll. Error details in log.txt")
             
             return True
         
@@ -575,16 +589,16 @@ class TwitchBot(commands.Bot):
     @commands.command(name="bonk")
     async def bonk(self, ctx):
         user = ctx.author.name
-        bonk_cost = 1500
+        bonk_cost = 2500
 
         can_afford, afford_message = self.remove_points(user, bonk_cost)
 
         if can_afford:
-            await ctx.send(f"@{self.nick} You can't speak for the next 5 minutes!")
+            await ctx.send(f"@{self.nick} You can't speak for the next 5 minutes! {afford_message}")
         else:
             await ctx.send(afford_message)
     bonk.category = "redeem"
-    bonk.description = "Redeeming 1500 points, the streamer cannot speak for the next 5 minutes!"
+    bonk.description = "Redeeming 2500 points, the streamer cannot speak for the next 5 minutes!"
 
     # streamer meme cam
     @commands.command(name="memecam")
