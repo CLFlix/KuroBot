@@ -10,6 +10,7 @@ CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 REFRESH_TOKEN_VIP = os.getenv("REFRESH_TOKEN_VIP")
 REFRESH_TOKEN_POLLS = os.getenv("REFRESH_TOKEN_POLLS")
 REFRESH_TOKEN_REDEMPTIONS = os.getenv("REFRESH_TOKEN_REDEMPTIONS")
+REFRESH_TOKEN_MODS = os.getenv("REFRESH_TOKEN_MODS")
 
 def refresh_access_token(token_type: str):
     match token_type.lower():
@@ -22,6 +23,9 @@ def refresh_access_token(token_type: str):
         case "redemptions":
             REFRESH_TOKEN = REFRESH_TOKEN_REDEMPTIONS
             ACCESS_TOKEN_FIELD, REFRESH_TOKEN_FIELD = "ACCESS_TOKEN_REDEMPTIONS", "REFRESH_TOKEN_REDEMPTIONS"
+        case "mods":
+            REFRESH_TOKEN = REFRESH_TOKEN_MODS
+            ACCESS_TOKEN_FIELD, REFRESH_TOKEN_FIELD = "ACCESS_TOKEN_MODS", "REFRESH_TOKEN_MODS"
 
     uri = "https://id.twitch.tv/oauth2/token"
     params = {
