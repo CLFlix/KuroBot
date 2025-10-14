@@ -111,7 +111,7 @@ class TwitchBot(commands.Bot):
 
             response = requests.get(uri, headers=headers, params=params)
 
-            if response.status_code not in (200, 203):
+            if response.status_code != 200:
                 log_error(LOG_FILE, response.text)
                 raise ConnectionError("Error getting mods list. More detailed error in log.txt")
 
@@ -122,7 +122,6 @@ class TwitchBot(commands.Bot):
             with open("mods_list.txt", 'w', encoding='utf-8') as mods_file:
                 for mod in mods_list:
                     mods_file.write(f"{mod}\n")
-            print("Wrote mods list in 'mods_list.txt'")
 
         except requests.exceptions.JSONDecodeError:
             raise RuntimeError("Couldn't get moderators list.")
