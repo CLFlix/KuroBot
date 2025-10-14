@@ -2,10 +2,13 @@
   "name": "kurobot",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://clflix.github.io/kurobot",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "start": "react-scripts start",
+    "build": "react-script build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "next": "15.5.2",
