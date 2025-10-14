@@ -61,16 +61,34 @@ function Home() {
             </p>
           </div>
         </section>
-        <div>
-          <p className="text-center mt-4">
-            <sup>
-              If the website looks scuffed, I'm not a very good front-end dev,
-              so I didn't expect it to be wonderful either hihi
-              <br />
-              I'm just happy it looks okay
-            </sup>
+        <section className="text-center mt-4">
+          <h1 className="text-3xl font-bold">Open-Source</h1>
+          <p className="text-lg">
+            This project is completely open-source! The{" "}
+            <a
+              href="https://github.com/CLFlix/KuroBot"
+              className="text-blue-400 hover:underline"
+            >
+              GitHub repo
+            </a>{" "}
+            can be found right here! You can help develop this bot or leave
+            suggestions in the{" "}
+            <a
+              href="http://github.com/CLFlix/KuroBot/discussions/categories/suggestions"
+              className="text-blue-400 hover:underline"
+            >
+              Discussions page
+            </a>
+            !
           </p>
-        </div>
+        </section>
+        <section className="text-center mt-4">
+          <h1 className="text-3xl font-bold">Quick Setup</h1>
+          <p className="text-lg">
+            Download the bot, create a points.json with "<code>{"{}"}</code>" in
+            it, get the codes, run the token scripts and run the bot!
+          </p>
+        </section>
       </main>
     </>
   );
