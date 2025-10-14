@@ -69,7 +69,7 @@ function About() {
               Even if you don't know how to code, you can still contribute to
               the project! On the GitHub repo, there's a{" "}
               <a
-                href="https://github.com/CLFlix/KuroBot/discussions"
+                href="https://github.com/CLFlix/KuroBot/discussions/categories/suggestions"
                 className="text-blue-400 hover:underline"
               >
                 Discussions page
