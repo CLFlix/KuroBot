@@ -16,7 +16,7 @@ def get_refresh_token():
         "client_secret": CLIENT_SECRET,
         "code": CODE_VIP,
         "grant_type": "authorization_code",
-        "redirect_uri": "http:localhost"
+        "redirect_uri": "http://localhost"
     }
     response = requests.post(uri, params=params)
 
