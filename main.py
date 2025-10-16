@@ -228,7 +228,7 @@ class TwitchBot(commands.Bot):
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
         await self.get_mods_list()
-        # self.export_commands()
+        # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
 
