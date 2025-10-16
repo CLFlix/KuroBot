@@ -19,6 +19,8 @@ rps - Play rock, paper, scissors with the bot! If you win, you get 3 points. If 
 roll - If you don't specify the maximum, this command will roll a random number between 1 and 100. By specifying the maximum like 'roll 1000', this will roll any number between 1 and the specified number, in this case 1000. - fun
 bonk - Redeeming 2500 points, the streamer cannot speak for the next 5 minutes! - redeem
 endwith - Redeeming 300 of the user's points, the streamer has to end the stream or current osu! session with the specified map. - redeem
+invert - For 250 points, you can make the streamer turn their camera upside-down. - redeem
+zoom - Make the streamer zoom in their camera for 10 minutes for 500 points! - redeem
 memecam - Redeeming 500 of the user's points, the streamer has to turn on an effect / filter over their camera for the next 10 minutes. - redeem
 gift - You can gift points to another user, if you have enough points to do so. '?gift @KurookamiTV 500' will subtract 500 points from the invoker, and add 500 points to KurookamiTV's total. - redeem
 vip - Redeeming 10.000 points, you can claim VIP status on the streamer's Twitch channel! The bot will reply with a message saying this is temporary, but the streamer can, of course, decide theirselves whether this is permanent or not. - redeem
