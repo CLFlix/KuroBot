@@ -648,6 +648,21 @@ class TwitchBot(commands.Bot):
     zoom.category = "redeem"
     zoom.description = "Make the streamer zoom in their camera for 10 minutes for 500 points!"
 
+    @commands.command(name="invert")
+    async def invert(self, ctx):
+        user = ctx.author.name
+        invert_cost = 250
+
+        can_afford, afford_message = self.remove_points(user, invert_cost)
+
+        if not can_afford:
+            await ctx.send(afford_message)
+            return
+
+        await ctx.send(f"@{self.nick} Turn your camera upside-down for the next 10 minutes! {afford_message}")
+    invert.category = "redeem"
+    invert.description = "For 250 points, you can make the streamer turn their camera upside-down."
+
     @commands.command(name="gift")
     async def gift(self, ctx, *, message: str):
         gifter = ctx.author.name
