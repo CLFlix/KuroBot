@@ -633,6 +633,21 @@ class TwitchBot(commands.Bot):
     "the streamer has to end the stream or current osu! session " \
     "with the specified map."
 
+    @commands.command(name="zoom")
+    async def zoom(self, ctx):
+        user = ctx.author.name
+        zoom_cost = 500
+
+        can_afford, afford_message = self.remove_points(user, zoom_cost)
+
+        if not can_afford:
+            await ctx.send(afford_message)
+            return
+        
+        await ctx.send(f"@{self.nick} You now have to zoom in your camera for the next 10 minutes! {afford_message}")
+    zoom.category = "redeem"
+    zoom.description = "Make the streamer zoom in their camera for 10 minutes for 500 points!"
+
     @commands.command(name="gift")
     async def gift(self, ctx, *, message: str):
         gifter = ctx.author.name
