@@ -499,6 +499,20 @@ class TwitchBot(commands.Bot):
     "beatmap requests. This command will then show whether they accept those requests or not."
 
     ## Fun commands
+    # remember to drink!
+    @commands.command(name="hydrate")
+    async def hydrate(self, ctx):
+        messages = [
+            "Hydration check! You gotta take a sip!",
+            "H2O.exe initializing...",
+            "Chat demands a sip of your drink!",
+            "Achievement unlocked: Remembered to Hydrate",
+            "Take a sip. Your body will thank you.",
+        ]
+
+        random_message = random.choice(messages)
+        await ctx.send(f"@{self.nick} {random_message}")
+
     # roll a random number between 1 and a specified amount, with 100 as a default
     @commands.command(name="roll")
     async def roll(self, ctx, amount=100):
