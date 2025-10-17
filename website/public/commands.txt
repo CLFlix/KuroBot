@@ -13,6 +13,7 @@ rank - Make the bot display the streamer's osu! rank in chat! - osu
 playcount - This will show the playcount of the streamer. - osu
 playtime - Show how much time the streamer wasted playing osu!. - osu
 osustats - This command is some other commands combined. It will show the rank, country rank, total pp, playtime and playcount of the streamer. - osu
+hydrate - Remind the streamer to drink water! - fun
 owo - This command will return your message after replacing all the l's and r's with w's. This way, 'Hello world' becomes 'Hewwo wowwd'. - fun
 mock - Hanging in the same style as 'owo', this command will return your message in SpOnGeBoB cApItAlIzAtIoN. - fun
 rps - Play rock, paper, scissors with the bot! If you win, you get 3 points. If you tie with the bot, you gain 1 point. - fun

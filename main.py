@@ -512,6 +512,8 @@ class TwitchBot(commands.Bot):
 
         random_message = random.choice(messages)
         await ctx.send(f"@{self.nick} {random_message}")
+    hydrate.category = "fun"
+    hydrate.description = "Remind the streamer to drink water!"
 
     # roll a random number between 1 and a specified amount, with 100 as a default
     @commands.command(name="roll")
