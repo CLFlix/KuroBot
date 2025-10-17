@@ -65,7 +65,10 @@ Then look for `"id":"123456789"`. This should become your "BROADCASTER_ID" in yo
 
 _Notice: The last thing you need can be done in 2 ways. I'm using the long-term setup, otherwise you'll have to manually get your bot token after a certain period, as that token expires within a couple hours._
 
-The last thing you need is a **token with VIP scope**. For safety reasons, your Twitch Application also needs a valid token to contact the Twitch API. This setup will include a couple steps to automatically refresh the token using a code and a refresh token. The first step is retrieving the code by pasting this url in your **browser**:
+### This **MAY** change in the next couple of commits, I'm trying to fuse all the tokens, would need some testing
+
+For safety reasons, Twitch API (and many others) use access tokens to check whether you're allowed to make an API call. Some technical stuff, but it basically means you need a "key" to be allowed to access certain "rooms".
+The first token you need is a **token with VIP scope**. This setup will include a couple steps to automatically refresh the token using a code and a refresh token. The first step is retrieving the code by pasting this url in your **browser**:
 
 ```
 https://id.twitch.tv/oauth2/authorize
@@ -92,7 +95,7 @@ https://id.twitch.tv/oauth2/authorize
 <sup>Replace \<YOUR_CLIENT_ID> with your actual client ID.</sup>
 The code that you get from this output should be saved under "CODE_REDEMPTIONS".
 
-Same thing goes for polls.
+To be able to create polls with the bot:
 
 ```
 https://id.twitch.tv/oauth2/authorize
@@ -105,7 +108,7 @@ https://id.twitch.tv/oauth2/authorize
 <sup>Replace \<YOUR_CLIENT_ID> with your actual client ID.</sup>\
 The code that you get from this output should be saved under "CODE_POLLS".
 
-And for reading mods list.
+For the bot to be able to get yours mods list (recommended if you already have the polls key):
 
 ```
 https://id.twitch.tv/oauth2/authorize
