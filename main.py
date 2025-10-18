@@ -529,7 +529,19 @@ class TwitchBot(commands.Bot):
         random_message = random.choice(messages)
         await ctx.send(f"@{self.nick} {random_message}")
 
-    # TODO: stretch
+    @commands.command(name="stretch")
+    async def stretch(self, ctx):
+        messages = [
+            "Streeeeeeeetch!",
+            "Time to stretch for a sec!",
+            "Help your blood flow, stretch!",
+            "Get off that chair for a little!",
+            "Stand up and stretch a bit!",
+            "How long ago did you stretch?"
+        ]
+
+        random_message = random.choice(messages)
+        await ctx.send(f"@{self.nick} {random_message}")
 
     # roll a random number between 1 and a specified amount, with 100 as a default
     @commands.command(name="roll")
