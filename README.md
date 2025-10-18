@@ -234,7 +234,7 @@ Do you accept map requests this stream? (y/n)
 When the command `?rq` get activated in the Twitch chat and you chose "y" in the question, the responding message will be: "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
 If you chose no, this will be: "I will not be accepting map requests this stream :/. Maybe next stream ;)"
 
-## ?poll
+### ?poll
 
 With this command, you can start a poll that will run for 2 minutes. The command will have to be built like this:
 
@@ -245,6 +245,18 @@ With this command, you can start a poll that will run for 2 minutes. The command
 The command will take everything until the '?' and take that as a question. Then it will look for all the spaces and make each word a choice of the poll. This means that you won't be able to use spaces in one choice. I'll be working on that soon. The choices of this poll would be: 1. Yes, 2. No. You can have a maximum number of 5 options in a poll.
 
 ## Fun commands
+
+### ?stretch
+
+If you think the streamer has been sitting still for a little while, enter `?stretch` in the chat to make them stretch or stand up for a bit. Helping that blood flow only has benefits ;)!
+
+### ?posture
+
+We all need to check our posture every now and then. To make the streamer do so, simply enter this command in the chat!
+
+### ?hydrate
+
+Talking with a dried up throat isn't gonna be very pleasant. Get the streamer to take a sip of their drink to rehydrate with this command!
 
 ### ?roll `number`
 
@@ -288,6 +300,14 @@ Redeeming 2500 points, you can make the streamer shut up for 5 minutes! They don
 ### ?memecam
 
 This allows a chatter to redeem 500 points to make the streamer turn on a silly filter or modify their camera in any other meme-ish way for 10 minutes!
+
+### ?invert
+
+You can make the streamer turn their camera upside-down for 10 minutes by redeeming 250 points!
+
+### ?zoom
+
+Make the streamer absurdly zoom in their camera for the next 10 minutes with 500 points!
 
 ### ?endwith `map_link`
 
