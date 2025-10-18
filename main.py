@@ -160,7 +160,7 @@ class TwitchBot(commands.Bot):
             headers["Authorization"] = f"Bearer {new_token}"
             response = requests.get(url, headers=headers)
 
-            if response.status_code not in (200, 203):
+            if not response.ok:
                 print(f"Failed to check user: {response.text}")
                 return False
 
@@ -220,7 +220,7 @@ class TwitchBot(commands.Bot):
             headers["Authorization"] = f"Bearer {new_token}"
             response = requests.post(uri, headers=headers, json=body)
 
-            if response.status_code not in (200, 202):
+            if not response.ok:
                 log_error(LOG_FILE, response.text)
                 raise ConnectionError("Error creating poll. Error details in log.txt")
             
