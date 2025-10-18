@@ -20,7 +20,7 @@ def refresh_access_token():
     response = requests.post(uri, params=params)
 
     if response.status_code != 200:
-        raise RuntimeError(f"Failed to refresh token: {response.text}")
+        raise ConnectionError(f"Failed to refresh token: {response.text}")
 
     tokens = response.json()
     NEW_ACCESS_TOKEN, NEW_REFRESH_TOKEN = tokens["access_token"], tokens["refresh_token"]
