@@ -705,7 +705,7 @@ class TwitchBot(commands.Bot):
 
         await ctx.send(f"@{self.nick} Turn your camera upside-down for the next 10 minutes! {afford_message}")
     invert.category = "redeem"
-    invert.description = "For 250 points, you can make the streamer turn their camera upside-down."
+    invert.description = "For 250 points, you can make the streamer turn their camera upside-down for 10 minutes."
 
     @commands.command(name="gift")
     async def gift(self, ctx, *, message: str):
