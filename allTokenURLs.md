@@ -20,80 +20,29 @@ curl -X GET https://api.twitch.tv/helix/users ^
 
 Result: BROADCASTER_ID
 
-### VIP Code
+### Access Token
 
 ```
-https://id.twitch.tv/oauth2/authorize
-  ?client_id=<YOUR_CLIENT_ID>
-  &redirect_uri=http://localhost
-  &response_type=code
-  &scope=chat:read+chat:edit+channel:manage:vips
+https://id.twitch.tv/oauth2/authorize?client_id=<YOUR_CLIENT_ID>&redirect_uri=http://localhost&response_type=code&scope=chat:read+chat:edit+channel:manage:vips+channel:read:redemptions+channel:manage:polls+moderation:read
 ```
 
-Result: CODE_VIP
+Result in ".env": CODE
 
-### Redemptions Code
-
-```
-https://id.twitch.tv/oauth2/authorize
-  ?client_id=<YOUR_CLIENT_ID>
-  &redirect_uri=http://localhost
-  &response_type=code
-  &scope=channel:read:redemptions
-```
-
-Result: CODE_REDEMPTIONS
-
-### Polls Code
+### Result after execution of intial token script
 
 ```
-https://id.twitch.tv/oauth2/authorize
-  ?client_id=<YOUR_CLIENT_ID>
-  &redirect_uri=http://localhost
-  &response_type=code
-  &scope=channel:manage:polls
-```
+TOKEN="Your-Twitch-OAuth-Token"
+CHANNEL="Your-Channel-Name"
+osuUsername:"Your-osu!-Username"
+osuAuth:"Your-osu!-API-key"
 
-Result: CODE_POLLS
-
-### Moderation Code
-
-```
-https://id.twitch.tv/oauth2/authorize
-  ?client_id=<YOUR_CLIENT_ID>
-  &redirect_uri=http://localhost
-  &response_type=code
-  &scope=moderation:read
-```
-
-Result: CODE_MODS
-
-### Result after execution of intial token scripts
-
-```
-TOKEN="YOUROAUTHTOKEN"
-CHANNEL="KurookamiTV"
-osuUsername:"_Kurookami_"
-osuAuth:"YOUROSUAPIKEY"
-
-# Optional:
 # General info
-BROADCASTER_ID=broadcaster_id
+BROADCASTER_ID="broadcaster_id"
 CLIENT_ID="YOUR-CLIENT-ID"
 CLIENT_SECRET="YOUR-CLIENT-SECRET"
 
-# VIP Tokens
-CODE_VIP="AUTHORIZATION_CODE"
-ACCESS_TOKEN_VIP="ACCESS_TOKEN_WITH_SCOPE_VIP"
-REFRESH_TOKEN_VIP="REFRESH_TOKEN_WITH_SCOPE_VIP"
-
-# Redemptions Tokens
-CODE_REDEMPTIONS="AUTHORIZATION_CODE_WITH_SCOPE_REDEMPTIONS"
-ACCESS_TOKEN_REDEMPTIONS="ACCESS_TOKEN_WITH_SCOPE_REDEMPTIONS"
-REFRESH_TOKEN_REDEMPTIONS="REFRESH_TOKEN_WITH_SCOPE_REDEMPTIONS"
-
-# Polls Tokens
-CODE_POLLS="AUTHORIZATION_CODE_WITH_SCOPE_POLLS"
-ACCESS_TOKEN_POLLS="ACCESS_TOKEN_WITH_SCOPE_POLLS"
-REFRESH_TOKEN_POLLS="REFRESH_TOKEN_WITH_SCOPE_POLLS"
+# Access Tokens
+CODE="YOUR-AUTHORIZATION-CODE-FROM-MANUAL-URL"
+ACCESS_TOKEN="YOUR-ACCESS-TOKEN"
+REFRESH_TOKEN="YOUR-REFRESH-TOKEN"
 ```

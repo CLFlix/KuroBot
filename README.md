@@ -15,7 +15,7 @@ pip install -r requirements.txt
 ### All users:
 
 You will need <a href="https://github.com/Piotrekol/StreamCompanion">StreamCompanion</a> in order for `?np` and `?nppp` to work. These features work by taking the data StreamCompanion processes and shows you on the locally hosted json.\
-Also create a file in the same folder as the executable called `points.json`. This is were all the points of all the users will be stored. Simply open the file once and place `{}` inside it.
+Also create a file called `points.json` in the same folder as the executable. This is were all the points of all the users will be stored. Simply open the file once and place `{}` inside it.
 
 ## Account and Authorization
 
@@ -25,7 +25,7 @@ The `CHANNEL` field has to be filled with the channel you want the bot to chat i
 `TOKEN` will be your account token to essentially log your bot into your account to chat. You can easily find this token by going to Twitch on your browser and opening the `Network` tab in F12. Then you look for any `gql` entry. If you don't see any pop up, simply refresh the page and you should see them coming in. Click on the entry and look for `Authorization` in the `Headers` section. The value will be `OAuth YOUROAUTHTOKEN`.\
 `osuUsername` is self-explanatory.\
 `osuAuth` is the authorization key you need for any request to the osu! API. You can find the details on how to get this on the bottom of your osu! account settings page.\
-**The following are optional if you want to be able to assign VIP status through the bot. This won't work without these values.**\
+**The following are optional if you want to be able to assign VIP status, create polls and listen to redemptions through the bot. This won't work without these values.**\
 First of all you'll need a **client ID** and a **client secret** of a Twitch Application, so you can contact the twitch API.
 
 ---
@@ -63,65 +63,29 @@ Then look for `"id":"123456789"`. This should become your "BROADCASTER_ID" in yo
 
 ---
 
-_Notice: The last thing you need can be done in 2 ways. I'm using the long-term setup, otherwise you'll have to manually get your bot token after a certain period, as that token expires within a couple hours._
+_Notice: The next and last thing you need can be done in 2 ways. I'm using the long-term setup, otherwise you'll have to manually get your bot token after a certain period, as that token expires within a couple hours._
 
-### This **MAY** change in the next couple of commits, I'm trying to fuse all the tokens, would need some testing
+For safety reasons, Twitch API (and many others) uses access tokens to check whether you're allowed to make an API call. Some technical stuff, but it basically means you need a "key" to be allowed to access certain "rooms". I compacted all the different URL's (which you can see in previous commits) into 1 big scope. This scope includes:
 
-For safety reasons, Twitch API (and many others) use access tokens to check whether you're allowed to make an API call. Some technical stuff, but it basically means you need a "key" to be allowed to access certain "rooms".
-The first token you need is a **token with VIP scope**. This setup will include a couple steps to automatically refresh the token using a code and a refresh token. The first step is retrieving the code by pasting this url in your **browser**:
+- Read chat
+- Send messages in chat
+- Read your mods list
+- Manage your VIP list
+- Create polls
+- Listen for channel points redemptions
+
+These last 2 will always be in the bot, but if you're not an Affiliate / Partner and tell the bot this when it starts up, it won't even do anything with these scopes.
+
+You'll have to paste this URL in your **browser** and replace `<YOUR_CLIENT_ID>` with your actual application's Client ID.
 
 ```
-https://id.twitch.tv/oauth2/authorize
-  ?client_id=<YOUR_CLIENT_ID>
-  &redirect_uri=http://localhost
-  &response_type=code
-  &scope=chat:read+chat:edit+channel:manage:vips
+https://id.twitch.tv/oauth2/authorize?client_id=<YOUR_CLIENT_ID>&redirect_uri=http://localhost&response_type=code&scope=chat:read+chat:edit+channel:manage:vips+channel:read:redemptions+channel:manage:polls+moderation:read
 ```
 
-<sup>The only thing to replace here is \<YOUR_CLIENT_ID></sup>\
 If you need to log in, do this. You will end up on your redirect link of your twitch application, but you only need the URL of this page. In the URL, you can find `code=<AUTHORIZATION_CODE>`. Copy this authorization code and place it in the `.env` file with the variable name "CODE".
 
-_If you know you're not able or going to use Twitch's built-in channel points system, you can skip this url and the "GetRedemptionsAccessToken.exe" executable in the next step._\
-To get the bot to listen to channel points redemptions, you'll basically do the same thing as the above, only the last line changes.
-
-```
-https://id.twitch.tv/oauth2/authorize
-  ?client_id=<YOUR_CLIENT_ID>
-  &redirect_uri=http://localhost
-  &response_type=code
-  &scope=channel:read:redemptions
-```
-
-<sup>Replace \<YOUR_CLIENT_ID> with your actual client ID.</sup>
-The code that you get from this output should be saved under "CODE_REDEMPTIONS".
-
-To be able to create polls with the bot:
-
-```
-https://id.twitch.tv/oauth2/authorize
-  ?client_id=<YOUR_CLIENT_ID>
-  &redirect_uri=http://localhost
-  &response_type=code
-  &scope=channel:manage:polls
-```
-
-<sup>Replace \<YOUR_CLIENT_ID> with your actual client ID.</sup>\
-The code that you get from this output should be saved under "CODE_POLLS".
-
-For the bot to be able to get yours mods list (recommended if you already have the polls key):
-
-```
-https://id.twitch.tv/oauth2/authorize
-  ?client_id=<YOUR_CLIENT_ID>
-  &redirect_uri=http://localhost
-  &response_type=code
-  &scope=channel:manage:polls
-```
-
-<sup>Replace \<YOUR_CLIENT_ID> with your actual client ID.</sup>\
-The code that you get from this output should be saved under "CODE_MODS".
-
-With these codes, you can get the access and refresh tokens. Don't worry, this was all for your manual insertions. I handled getting access and refresh tokens for you. Run "GetVIPAccessToken.exe", "GetRedemptionsAccessToken.exe", "GetPollAccessToken.exe" and "GetModsAccessToken.exe". After execution, you should see 8 new fields appear in the `.env` file with their tokens as values: 3 access token fields and 3 refresh token fields. **Never share ANY of these with anyone.**
+With this code, you can get the access and refresh token that the bot will need. Run the script "GetAccessToken.exe" and you should see 2 new fields appearing in the `.env` file. Your command prompt may also flash and I know this is a sign of bad intentions, but I just haven't learned what to do with that part yet in college :/\
+**IMPORTANT: DO NOT SHARE ANY OF THESE CODES WITH ANYONE**
 
 When these tokens expire, the code should automatically trigger a token refresh and it should try to connect once more. If this is not the case, create an issue with the details of the error on the github page and I'll look into it. Manually restarting the bot should make it connect either way, though.
 
@@ -131,36 +95,19 @@ If you've completed the setup process, your `.env` file should look something li
 
 ```
 TOKEN="YOUROAUTHTOKEN"
-CHANNEL="KurookamiTV"
-osuUsername="_Kurookami_"
+CHANNEL="Your-Twitch-Channel-Name"
+osuUsername="Your-osu!-Username"
 osuAuth="YOUROSUAPIKEY"
 
-# Optional:
 # General info
-BROADCASTER_ID=broadcaster_id
+BROADCASTER_ID="broadcaster_id"
 CLIENT_ID="YOUR-CLIENT-ID"
 CLIENT_SECRET="YOUR-CLIENT-SECRET"
 
-# VIP Tokens
-CODE_VIP="AUTHORIZATION_CODE"
-ACCESS_TOKEN_VIP="ACCESS_TOKEN_WITH_SCOPE_VIP"
-REFRESH_TOKEN_VIP="REFRESH_TOKEN_WITH_SCOPE_VIP"
-
-# Redemptions Tokens
-CODE_REDEMPTIONS="AUTHORIZATION_CODE_WITH_SCOPE_REDEMPTIONS"
-ACCESS_TOKEN_REDEMPTIONS="ACCESS_TOKEN_WITH_SCOPE_REDEMPTIONS"
-REFRESH_TOKEN_REDEMPTIONS="REFRESH_TOKEN_WITH_SCOPE_REDEMPTIONS"
-
-# Polls Tokens
-CODE_POLLS="AUTHORIZATION_CODE_WITH_SCOPE_POLLS"
-ACCESS_TOKEN_POLLS="ACCESS_TOKEN_WITH_SCOPE_POLLS"
-REFRESH_TOKEN_POLLS="REFRESH_TOKEN_WITH_SCOPE_POLLS"
-
-# Mods Tokens
-CODE_MODS="AUTHORIZATION_CODE_WITH_SCOPE_MODS"
-ACCESS_TOKEN_MODS="ACCESS_TOKEN_WITH_SCOPE_MODS"
-REFRESH_TOKEN_MODS="REFRESH_TOKEN_WITH_SCOPE_MODS"
-
+# Access Tokens
+CODE="YOUR-AUTHORIZATION-CODE-FROM-MANUAL-URL"
+ACCESS_TOKEN="YOUR-ACCESS-TOKEN"
+REFRESH_TOKEN="YOUR-REFRESH-TOKEN"
 ```
 
 ## Redemptions

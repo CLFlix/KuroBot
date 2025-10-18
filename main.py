@@ -15,9 +15,7 @@ BROADCASTER_ID = os.getenv("BROADCASTER_ID")
 CHANNEL = os.getenv("CHANNEL")
 CLIENT_ID = os.getenv("CLIENT_ID")
 
-ACCESS_TOKEN_VIP = os.getenv("ACCESS_TOKEN_VIP")
-ACCESS_TOKEN_POLLS = os.getenv("ACCESS_TOKEN_POLLS")
-ACCESS_TOKEN_MODS = os.getenv("ACCESS_TOKEN_MODS")
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 
 osuUsername = os.getenv("osuUsername")
 
@@ -106,7 +104,7 @@ class TwitchBot(commands.Bot):
     async def get_mods_list(self):
         uri = "https://api.twitch.tv/helix/moderation/moderators"
         headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN_MODS}",
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
             "Client-Id": CLIENT_ID
         }
         params = {"broadcaster_id": BROADCASTER_ID}
@@ -116,7 +114,7 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401:
             try:
-                new_token = refresh_access_token("MODS")
+                new_token = refresh_access_token()
                 headers["Authorization"] = f"Bearer {new_token}"
             except Exception as e:
                 log_error(LOG_FILE, e)
@@ -143,11 +141,9 @@ class TwitchBot(commands.Bot):
 
     # check if a user exists
     async def user_exists(self, username) -> bool:
-        global ACCESS_TOKEN_VIP
-
         url = f"https://api.twitch.tv/helix/users?login={username}"
         headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN_VIP}",
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
             "Client-Id": CLIENT_ID
         }
 
@@ -155,13 +151,13 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401:
             try:
-                ACCESS_TOKEN_VIP = refresh_access_token("VIP")
+                new_token = refresh_access_token()
             except Exception as e:
                 log_error(LOG_FILE, e)
                 print("Something went wrong refreshing VIP access token.")
                 return False
             
-            headers["Authorization"] = f"Bearer {ACCESS_TOKEN_VIP}"
+            headers["Authorization"] = f"Bearer {new_token}"
             response = requests.get(url, headers=headers)
 
             if response.status_code not in (200, 203):
@@ -175,7 +171,7 @@ class TwitchBot(commands.Bot):
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"
         headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN_VIP}",
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
             "Client-Id": CLIENT_ID
         }
         params = {
@@ -199,7 +195,7 @@ class TwitchBot(commands.Bot):
     def create_poll(self, title, choices, duration):
         uri = "https://api.twitch.tv/helix/polls"
         headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN_POLLS}",
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
             "Client-Id": CLIENT_ID,
             "Content-Type": "application/json"
         }
@@ -216,12 +212,12 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401:
             try:
-                new_polls_token = refresh_access_token("POLLS")
+                new_token = refresh_access_token()
             except Exception as e:
                 print(f"Refresh failed: {e}")
                 return
             
-            headers["Authorization"] = f"Bearer {new_polls_token}"
+            headers["Authorization"] = f"Bearer {new_token}"
             response = requests.post(uri, headers=headers, json=body)
 
             if response.status_code not in (200, 202):
@@ -773,8 +769,6 @@ class TwitchBot(commands.Bot):
     # temporary VIP status
     @commands.command(name="vip")
     async def vip(self, ctx):
-        global ACCESS_TOKEN_VIP
-
         vip_cost = 10000
         user = ctx.author.name
 
@@ -785,7 +779,7 @@ class TwitchBot(commands.Bot):
             return
 
         headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN_VIP}",
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
             "Client-Id": CLIENT_ID
         }
 
@@ -798,14 +792,14 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401: # Unauthorized: token expired
             try:
-                ACCESS_TOKEN_VIP = refresh_access_token("VIP")
+                new_token = refresh_access_token()
             except Exception as e:
                 await ctx.send(f"@{self.nick}, @{user} Token refresh failed. Try again later.")
                 log_error(LOG_FILE, e)
                 return
             
             # retry getting user id once
-            headers['Authorization'] = f"Bearer {ACCESS_TOKEN_VIP}"
+            headers['Authorization'] = f"Bearer {new_token}"
             response = requests.get(
                 "https://api.twitch.tv/helix/users",
                 headers=headers,
