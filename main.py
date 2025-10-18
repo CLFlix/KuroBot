@@ -44,9 +44,22 @@ class TwitchBot(commands.Bot):
 
     ## export commands
     def export_commands(self):
+        order = ["commands", "points", "claim", "leaderboard", "lb", "poll", "test", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
+                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "bonk", "endwith", "invert", "zoom", "memecam", "gift", "vip"]
+
+        written = set()
         with open(r'website/public/commands.txt', 'w', encoding='utf-8') as commands_file:
-            for name, cmd in self.commands.items():
-                commands_file.write(f"{name} - {getattr(cmd, "description", "/")} - {getattr(cmd, "category", "/")}\n")
+            for cmd_name in order:
+                if cmd_name in self.commands:
+                    cmd = self.commands[cmd_name]
+                    description = getattr(cmd, "description", "/")
+                    category = getattr(cmd, "category", "/")
+                    commands_file.write(f"{cmd_name} - {description} - {category}\n")
+                    written.add(cmd_name)
+
+            for cmd_name in self.commands:
+                if cmd_name not in written:
+                    commands_file.write(cmd_name + "\n")
         print("Commands succesfully exported to 'website/public/commands.txt'")
 
     ## helper methods
