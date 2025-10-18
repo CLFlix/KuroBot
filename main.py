@@ -515,6 +515,22 @@ class TwitchBot(commands.Bot):
     hydrate.category = "fun"
     hydrate.description = "Remind the streamer to drink water!"
 
+    @commands.command(name="posture")
+    async def posture(self, ctx):
+        messages = [
+            "Posture check!",
+            "Check your posture!",
+            "Still sitting straight?",
+            "You're not breaking your back, are you?",
+            "Gamer posture detected... Correct it!",
+            "Attention! Entering pro posture mode...",
+        ]
+
+        random_message = random.choice(messages)
+        await ctx.send(f"@{self.nick} {random_message}")
+
+    # TODO: stretch
+
     # roll a random number between 1 and a specified amount, with 100 as a default
     @commands.command(name="roll")
     async def roll(self, ctx, amount=100):
