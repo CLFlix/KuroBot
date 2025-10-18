@@ -11,7 +11,7 @@ load_dotenv()
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 BROADCASTER_ID = os.getenv("BROADCASTER_ID")
-ACCESS_TOKEN_REDEMPTIONS = os.getenv("ACCESS_TOKEN_REDEMPTIONS")
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 
 # channel points redemption listener
 async def eventsub_listener(redemption_handler):
@@ -26,7 +26,7 @@ async def eventsub_listener(redemption_handler):
             session_id = data["payload"]["session"]["id"]
 
             headers = {
-                    "Authorization": f"Bearer {ACCESS_TOKEN_REDEMPTIONS}",
+                    "Authorization": f"Bearer {ACCESS_TOKEN}",
                     "Client-Id": CLIENT_ID,
                     "Content-Type": "application/json"
                 }
@@ -53,7 +53,7 @@ async def eventsub_listener(redemption_handler):
 
                 try:
                     # refresh access token for redemption listener, then retry subscription
-                    new_token = refresh_access_token("REDEMPTIONS")
+                    new_token = refresh_access_token()
                     print("Refreshed redemption listener token")
                 except Exception as e:
                     print(f"Refresh failed: {e}")

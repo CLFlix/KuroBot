@@ -83,42 +83,42 @@ function About() {
           <section className="text-center max-lg:hidden">
             <h1 className="text-3xl font-bold mt-4">Links</h1>
             <div className="flex flex-col gap-1 text-blue-400 text-xl">
-              <span className="hover:scale-110 duration-300">
+              <span>
                 <a
                   href="https://www.twitch.tv/kurookamitv"
-                  className="hover:underline"
+                  className="hover:scale-110 hover:underline transition-transform duration-300 inline-block"
                 >
                   Twitch
                 </a>
               </span>
-              <span className="hover:scale-110 duration-300">
+              <span>
                 <a
                   href="https://www.youtube.com/@Doku_Kurookami"
-                  className="hover:underline"
+                  className="hover:scale-110 hover:underline transition-transform duration-300 inline-block"
                 >
                   YouTube
                 </a>
               </span>
-              <span className="hover:scale-110 duration-300">
+              <span>
                 <a
                   href="https://www.tiktok.com/@_kurookami_osu"
-                  className="hover:underline"
+                  className="hover:scale-110 hover:underline transition-transform duration-300 inline-block"
                 >
                   TikTok
                 </a>
               </span>
-              <span className="hover:scale-110 duration-300">
+              <span>
                 <a
                   href="https://discord.gg/4HAbQm2tdp"
-                  className="hover:underline"
+                  className="hover:scale-110 hover:underline transition-transform duration-300 inline-block"
                 >
                   Discord
                 </a>
               </span>
-              <span className="hover:scale-110 duration-300">
+              <span>
                 <a
                   href="https://github.com/CLFlix/KuroBot"
-                  className="hover:underline"
+                  className="hover:scale-110 hover:underline transition-transform duration-300 inline-block"
                 >
                   GitHub Repo
                 </a>

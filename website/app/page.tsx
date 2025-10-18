@@ -28,7 +28,7 @@ function Home() {
           </span>
         </section>
         <section className="flex max-2xl:grid max-2xl:grid-cols-2 gap-10 justify-center mt-5">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-500 rounded-lg p-1 text-center hover:scale-110 duration-300">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-500 rounded-lg p-1 text-center ">
             <h1 className="text-2xl font-bold">Points System</h1>
             <p className="text-xl max-w-[270px] max-2xl:max-w-[500px]">
               Viewers can earn points by sending messages in chat! Points are
@@ -36,7 +36,7 @@ function Home() {
               protection!
             </p>
           </div>
-          <div className="bg-gradient-to-br from-gray-800 to-gray-500 rounded-lg p-1 text-center hover:scale-110 duration-300">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-500 rounded-lg p-1 text-center ">
             <h1 className="text-2xl font-bold">osu! Commands</h1>
             <p className="text-xl max-w-[270px] max-2xl:max-w-[500px]">
               Your typical osu! commands are also included! Well-known ones like{" "}
@@ -44,7 +44,7 @@ function Home() {
               <code>?rank</code>, <code>osustats</code> and some more (to come)!
             </p>
           </div>
-          <div className="bg-gradient-to-br from-gray-800 to-gray-500 rounded-lg p-1 text-center hover:scale-110 duration-300">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-500 rounded-lg p-1 text-center ">
             <h1 className="text-2xl font-bold">Rewards</h1>
             <p className="text-xl max-w-[270px] max-2xl:max-w-[500px]">
               Viewers can claim rewards by spending their points to make the
@@ -52,7 +52,7 @@ function Home() {
               silly effect over their camera!
             </p>
           </div>
-          <div className="bg-gradient-to-br from-gray-800 to-gray-500 rounded-lg p-1 text-center hover:scale-110 duration-300">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-500 rounded-lg p-1 text-center ">
             <h1 className="text-2xl font-bold">Affiliates / Partners</h1>
             <p className="text-xl max-w-[270px] max-2xl:max-w-[500px]">
               If you're a Twitch Affiliate or Partner, you can use this bot to
@@ -86,7 +86,14 @@ function Home() {
           <h1 className="text-3xl font-bold">Quick Setup</h1>
           <p className="text-lg">
             Download the bot, create a points.json with "<code>{"{}"}</code>" in
-            it, get the codes, run the token scripts and run the bot!
+            it,{" "}
+            <a
+              href="https://github.com/CLFlix/KuroBot/blob/main/allTokenURLs.md"
+              className="text-blue-400 hover:underline"
+            >
+              get the codes
+            </a>
+            , run the token scripts and run the bot!
           </p>
         </section>
       </main>

@@ -15,9 +15,7 @@ BROADCASTER_ID = os.getenv("BROADCASTER_ID")
 CHANNEL = os.getenv("CHANNEL")
 CLIENT_ID = os.getenv("CLIENT_ID")
 
-ACCESS_TOKEN_VIP = os.getenv("ACCESS_TOKEN_VIP")
-ACCESS_TOKEN_POLLS = os.getenv("ACCESS_TOKEN_POLLS")
-ACCESS_TOKEN_MODS = os.getenv("ACCESS_TOKEN_MODS")
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 
 osuUsername = os.getenv("osuUsername")
 
@@ -44,9 +42,22 @@ class TwitchBot(commands.Bot):
 
     ## export commands
     def export_commands(self):
+        order = ["commands", "points", "claim", "leaderboard", "lb", "poll", "test", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
+                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "bonk", "endwith", "invert", "zoom", "memecam", "gift", "vip"]
+
+        written = set()
         with open(r'website/public/commands.txt', 'w', encoding='utf-8') as commands_file:
-            for name, cmd in self.commands.items():
-                commands_file.write(f"{name} - {getattr(cmd, "description", "/")} - {getattr(cmd, "category", "/")}\n")
+            for cmd_name in order:
+                if cmd_name in self.commands:
+                    cmd = self.commands[cmd_name]
+                    description = getattr(cmd, "description", "/")
+                    category = getattr(cmd, "category", "/")
+                    commands_file.write(f"{cmd_name} - {description} - {category}\n")
+                    written.add(cmd_name)
+
+            for cmd_name in self.commands:
+                if cmd_name not in written:
+                    commands_file.write(cmd_name + "\n")
         print("Commands succesfully exported to 'website/public/commands.txt'")
 
     ## helper methods
@@ -93,7 +104,7 @@ class TwitchBot(commands.Bot):
     async def get_mods_list(self):
         uri = "https://api.twitch.tv/helix/moderation/moderators"
         headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN_MODS}",
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
             "Client-Id": CLIENT_ID
         }
         params = {"broadcaster_id": BROADCASTER_ID}
@@ -103,7 +114,7 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401:
             try:
-                new_token = refresh_access_token("MODS")
+                new_token = refresh_access_token()
                 headers["Authorization"] = f"Bearer {new_token}"
             except Exception as e:
                 log_error(LOG_FILE, e)
@@ -122,6 +133,7 @@ class TwitchBot(commands.Bot):
             with open("mods_list.txt", 'w', encoding='utf-8') as mods_file:
                 for mod in mods_list:
                     mods_file.write(f"{mod}\n")
+                mods_file.write(self.nick)
 
         except requests.exceptions.JSONDecodeError:
             raise RuntimeError("Couldn't get moderators list.")
@@ -129,11 +141,9 @@ class TwitchBot(commands.Bot):
 
     # check if a user exists
     async def user_exists(self, username) -> bool:
-        global ACCESS_TOKEN_VIP
-
         url = f"https://api.twitch.tv/helix/users?login={username}"
         headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN_VIP}",
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
             "Client-Id": CLIENT_ID
         }
 
@@ -141,13 +151,13 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401:
             try:
-                ACCESS_TOKEN_VIP = refresh_access_token("VIP")
+                new_token = refresh_access_token()
             except Exception as e:
                 log_error(LOG_FILE, e)
                 print("Something went wrong refreshing VIP access token.")
                 return False
             
-            headers["Authorization"] = f"Bearer {ACCESS_TOKEN_VIP}"
+            headers["Authorization"] = f"Bearer {new_token}"
             response = requests.get(url, headers=headers)
 
             if response.status_code not in (200, 203):
@@ -161,7 +171,7 @@ class TwitchBot(commands.Bot):
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"
         headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN_VIP}",
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
             "Client-Id": CLIENT_ID
         }
         params = {
@@ -185,7 +195,7 @@ class TwitchBot(commands.Bot):
     def create_poll(self, title, choices, duration):
         uri = "https://api.twitch.tv/helix/polls"
         headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN_POLLS}",
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
             "Client-Id": CLIENT_ID,
             "Content-Type": "application/json"
         }
@@ -202,12 +212,12 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401:
             try:
-                new_polls_token = refresh_access_token("POLLS")
+                new_token = refresh_access_token()
             except Exception as e:
                 print(f"Refresh failed: {e}")
                 return
             
-            headers["Authorization"] = f"Bearer {new_polls_token}"
+            headers["Authorization"] = f"Bearer {new_token}"
             response = requests.post(uri, headers=headers, json=body)
 
             if response.status_code not in (200, 202):
@@ -228,7 +238,7 @@ class TwitchBot(commands.Bot):
     async def event_ready(self):
         print(f"Logged in as {self.nick}")
         await self.get_mods_list()
-        # self.export_commands()
+        # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
 
@@ -499,6 +509,54 @@ class TwitchBot(commands.Bot):
     "beatmap requests. This command will then show whether they accept those requests or not."
 
     ## Fun commands
+    # remember to drink!
+    @commands.command(name="hydrate")
+    async def hydrate(self, ctx):
+        messages = [
+            "Hydration check! You gotta take a sip!",
+            "H2O.exe initializing...",
+            "Chat demands a sip of your drink!",
+            "Achievement unlocked: Remembered to Hydrate",
+            "Take a sip. Your body will thank you.",
+        ]
+
+        random_message = random.choice(messages)
+        await ctx.send(f"@{self.nick} {random_message}")
+    hydrate.category = "fun"
+    hydrate.description = "Remind the streamer to drink water!"
+
+    @commands.command(name="posture")
+    async def posture(self, ctx):
+        messages = [
+            "Posture check!",
+            "Check your posture!",
+            "Still sitting straight?",
+            "You're not breaking your back, are you?",
+            "Gamer posture detected... Correct it!",
+            "Attention! Entering pro posture mode...",
+        ]
+
+        random_message = random.choice(messages)
+        await ctx.send(f"@{self.nick} {random_message}")
+    posture.category = "fun"
+    posture.description = "Make the streamer check their posture."
+
+    @commands.command(name="stretch")
+    async def stretch(self, ctx):
+        messages = [
+            "Streeeeeeeetch!",
+            "Time to stretch for a sec!",
+            "Help your blood flow, stretch!",
+            "Get off that chair for a little!",
+            "Stand up and stretch a bit!",
+            "How long ago did you stretch?"
+        ]
+
+        random_message = random.choice(messages)
+        await ctx.send(f"@{self.nick} {random_message}")
+    stretch.category = "fun"
+    stretch.description = "Get the streamer to stretch for a second."
+
     # roll a random number between 1 and a specified amount, with 100 as a default
     @commands.command(name="roll")
     async def roll(self, ctx, amount=100):
@@ -633,6 +691,36 @@ class TwitchBot(commands.Bot):
     "the streamer has to end the stream or current osu! session " \
     "with the specified map."
 
+    @commands.command(name="zoom")
+    async def zoom(self, ctx):
+        user = ctx.author.name
+        zoom_cost = 500
+
+        can_afford, afford_message = self.remove_points(user, zoom_cost)
+
+        if not can_afford:
+            await ctx.send(afford_message)
+            return
+        
+        await ctx.send(f"@{self.nick} You now have to zoom in your camera for the next 10 minutes! {afford_message}")
+    zoom.category = "redeem"
+    zoom.description = "Make the streamer zoom in their camera for 10 minutes for 500 points!"
+
+    @commands.command(name="invert")
+    async def invert(self, ctx):
+        user = ctx.author.name
+        invert_cost = 250
+
+        can_afford, afford_message = self.remove_points(user, invert_cost)
+
+        if not can_afford:
+            await ctx.send(afford_message)
+            return
+
+        await ctx.send(f"@{self.nick} Turn your camera upside-down for the next 10 minutes! {afford_message}")
+    invert.category = "redeem"
+    invert.description = "For 250 points, you can make the streamer turn their camera upside-down for 10 minutes."
+
     @commands.command(name="gift")
     async def gift(self, ctx, *, message: str):
         gifter = ctx.author.name
@@ -681,8 +769,6 @@ class TwitchBot(commands.Bot):
     # temporary VIP status
     @commands.command(name="vip")
     async def vip(self, ctx):
-        global ACCESS_TOKEN_VIP
-
         vip_cost = 10000
         user = ctx.author.name
 
@@ -693,7 +779,7 @@ class TwitchBot(commands.Bot):
             return
 
         headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN_VIP}",
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
             "Client-Id": CLIENT_ID
         }
 
@@ -706,14 +792,14 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401: # Unauthorized: token expired
             try:
-                ACCESS_TOKEN_VIP = refresh_access_token("VIP")
+                new_token = refresh_access_token()
             except Exception as e:
                 await ctx.send(f"@{self.nick}, @{user} Token refresh failed. Try again later.")
                 log_error(LOG_FILE, e)
                 return
             
             # retry getting user id once
-            headers['Authorization'] = f"Bearer {ACCESS_TOKEN_VIP}"
+            headers['Authorization'] = f"Bearer {new_token}"
             response = requests.get(
                 "https://api.twitch.tv/helix/users",
                 headers=headers,

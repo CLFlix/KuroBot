@@ -13,12 +13,17 @@ rank - Make the bot display the streamer's osu! rank in chat! - osu
 playcount - This will show the playcount of the streamer. - osu
 playtime - Show how much time the streamer wasted playing osu!. - osu
 osustats - This command is some other commands combined. It will show the rank, country rank, total pp, playtime and playcount of the streamer. - osu
+hydrate - Remind the streamer to drink water! - fun
+posture - Make the streamer check their posture. - fun
+stretch - Get the streamer to stretch for a second. - fun
 owo - This command will return your message after replacing all the l's and r's with w's. This way, 'Hello world' becomes 'Hewwo wowwd'. - fun
 mock - Hanging in the same style as 'owo', this command will return your message in SpOnGeBoB cApItAlIzAtIoN. - fun
 rps - Play rock, paper, scissors with the bot! If you win, you get 3 points. If you tie with the bot, you gain 1 point. - fun
 roll - If you don't specify the maximum, this command will roll a random number between 1 and 100. By specifying the maximum like 'roll 1000', this will roll any number between 1 and the specified number, in this case 1000. - fun
 bonk - Redeeming 2500 points, the streamer cannot speak for the next 5 minutes! - redeem
 endwith - Redeeming 300 of the user's points, the streamer has to end the stream or current osu! session with the specified map. - redeem
+invert - For 250 points, you can make the streamer turn their camera upside-down for 10 minutes. - redeem
+zoom - Make the streamer zoom in their camera for 10 minutes for 500 points! - redeem
 memecam - Redeeming 500 of the user's points, the streamer has to turn on an effect / filter over their camera for the next 10 minutes. - redeem
 gift - You can gift points to another user, if you have enough points to do so. '?gift @KurookamiTV 500' will subtract 500 points from the invoker, and add 500 points to KurookamiTV's total. - redeem
 vip - Redeeming 10.000 points, you can claim VIP status on the streamer's Twitch channel! The bot will reply with a message saying this is temporary, but the streamer can, of course, decide theirselves whether this is permanent or not. - redeem
