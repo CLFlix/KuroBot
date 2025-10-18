@@ -232,7 +232,7 @@ class TwitchBot(commands.Bot):
             log_error(LOG_FILE, response.text)
             return False
 
-    # update rank in title
+    # get current twitch stream title
     async def get_stream_title(self):
         url = "https://api.twitch.tv/helix/channels"
         headers = {
