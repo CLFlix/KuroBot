@@ -135,6 +135,7 @@ class TwitchBot(commands.Bot):
             with open("mods_list.txt", 'w', encoding='utf-8') as mods_file:
                 for mod in mods_list:
                     mods_file.write(f"{mod}\n")
+                mods_file.write(self.nick)
 
         except requests.exceptions.JSONDecodeError:
             raise RuntimeError("Couldn't get moderators list.")
