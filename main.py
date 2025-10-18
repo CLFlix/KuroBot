@@ -232,6 +232,43 @@ class TwitchBot(commands.Bot):
             log_error(LOG_FILE, response.text)
             return False
 
+    # update rank in title
+    async def get_stream_title(self):
+        url = "https://api.twitch.tv/helix/channels"
+        headers = {
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
+            "Client-Id": CLIENT_ID,
+            "Content-Type": "application/json"
+        }
+        params = {
+            "broadcaster_id": BROADCASTER_ID
+        }
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 401:
+            try:
+                new_token = refresh_access_token()
+                headers["Authorization"] = f"Bearer {new_token}"
+            except ConnectionError as e:
+                log_error(LOG_FILE, e)
+                print("Error fetching stream details, details in log.txt")
+                return
+            
+            response = requests.get(url, headers=headers, params=params)
+            
+            if not response.ok:
+                log_error(LOG_FILE, response.text)
+                print("Something went wrong getting stream information. Please create an issue on GitHub with the log")
+
+        try:
+            data = response.json()["data"]
+            stream_title = data[0]["title"]
+            return stream_title
+        except requests.exceptions.JSONDecodeError:
+            log_error(LOG_FILE, response.text)
+
+
 
     ## events
     # print in console when bot is logged in and ready to be used
