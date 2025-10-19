@@ -25,7 +25,7 @@ FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
 LOG_FILE = r'log.txt'
 
 class TwitchBot(commands.Bot):
-    def __init__(self, rq_message, affiliate):
+    def __init__(self, rq_message, affiliate, update):
         super().__init__(
             token=TOKEN,
             prefix="?",
@@ -34,6 +34,7 @@ class TwitchBot(commands.Bot):
 
         self.rq_message = rq_message
         self.affiliate = affiliate
+        self.update = update
 
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
@@ -326,6 +327,8 @@ class TwitchBot(commands.Bot):
         # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
+        if self.update:
+            self.loop.create_task(self.title_updater_loop())
 
     # give people points for chatting
     async def event_message(self, message):
@@ -920,6 +923,8 @@ class TwitchBot(commands.Bot):
 
 def main():
     ask_for_requests = True
+    ask_for_affiliate = True
+    ask_for_title_updating = True
     while ask_for_requests:
         requests_or_not = input("Do you accept map requests this stream? (y/n)\n")
 
@@ -932,7 +937,6 @@ def main():
         else:
             print("Not a valid answer. Please enter 'y' or 'n'.")
 
-    ask_for_affiliate = True
     while ask_for_affiliate:
         affiliate_or_not = input("Are you a Twitch Affiliate or Partner? (y/n)\n")
 
@@ -945,7 +949,19 @@ def main():
         else:
             print("Not a valid answer. Please enter 'y' or 'n'.")
 
-    bot = TwitchBot(message, affiliate)
+    while ask_for_title_updating:
+        update_or_not = input("Would you like the bot to update your osu! rank in the stream title? (y/n)\n")
+
+        if update_or_not.lower() == "y":
+            update = True
+            ask_for_title_updating = False
+        elif update_or_not.lower() == "n":
+            update = False
+            ask_for_title_updating = False
+        else:
+            print("Not a valid answer. Please enter 'y' or 'n'.")
+
+    bot = TwitchBot(message, affiliate, update)
     clean_logs(LOG_FILE)
     try:
         bot.run()
