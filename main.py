@@ -6,6 +6,7 @@ from twitchio.ext import commands
 from dotenv import load_dotenv
 
 import os
+import time
 import random
 
 load_dotenv()
@@ -302,6 +303,20 @@ class TwitchBot(commands.Bot):
                 return
 
         print("Updated stream title with current osu! rank")
+
+    # this loop will restart every 10 minutes, updating the stream title
+    # with the current osu! rank, keeping the title up-to-date
+    def title_updater_loop(self):
+        while True:
+            current_title = self.get_stream_title()
+            profile = get_profile()
+            current_rank = profile['pp_rank']
+
+            new_stream_title = edit_stream_title(current_title, current_rank)
+            self.update_stream_title(new_stream_title)
+            # wait 10 minutes before restarting the loop
+            time.sleep(600)
+
 
     ## events
     # print in console when bot is logged in and ready to be used
