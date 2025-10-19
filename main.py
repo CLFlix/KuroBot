@@ -233,7 +233,7 @@ class TwitchBot(commands.Bot):
             return False
 
     # get current twitch stream title
-    async def get_stream_title(self):
+    def get_stream_title(self):
         url = "https://api.twitch.tv/helix/channels"
         headers = {
             "Authorization": f"Bearer {ACCESS_TOKEN}",
@@ -267,7 +267,6 @@ class TwitchBot(commands.Bot):
             return stream_title
         except requests.exceptions.JSONDecodeError:
             log_error(LOG_FILE, response.text)
-
 
 
     ## events
