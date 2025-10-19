@@ -313,8 +313,11 @@ class TwitchBot(commands.Bot):
             profile = get_profile()
             current_rank = profile['pp_rank']
 
-            new_stream_title = edit_stream_title(current_title, current_rank)
-            self.update_stream_title(new_stream_title)
+            try:
+                new_stream_title = edit_stream_title(current_title, current_rank)
+                self.update_stream_title(new_stream_title)
+            except ValueError as e:
+                print(e)
             # wait 10 minutes before restarting the loop
             time.sleep(600)
 
