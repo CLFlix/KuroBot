@@ -268,6 +268,40 @@ class TwitchBot(commands.Bot):
         except requests.exceptions.JSONDecodeError:
             log_error(LOG_FILE, response.text)
 
+    # send patch request to update stream title
+    def update_stream_title(self, new_stream_title):
+        url = "https://api.twitch.tv/helix/channels"
+        headers = {
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
+            "Client-Id": CLIENT_ID,
+            "Content-Type": "application/json"
+        }
+        params = {
+            "broadcaster_id": BROADCASTER_ID
+        }
+        body = {
+            "title": new_stream_title
+        }
+
+        response = requests.patch(url, headers=headers, params=params, json=body)
+
+        if response.status_code == 401:
+            try:
+                new_token = refresh_access_token()
+                headers["Authorization"] = f"Bearer {new_token}"
+            except ConnectionError as e:
+                log_error(LOG_FILE, e)
+                print(f"Error updating stream title, aborting...\n{e}")
+                return
+            
+            response = requests.patch(url, headers=headers, params=params)
+
+            if not response.ok:
+                log_error(LOG_FILE, response.text)
+                print(f"Error updating stream title, details in log.txt")
+                return
+
+        print("Updated stream title with current osu! rank")
 
     ## events
     # print in console when bot is logged in and ready to be used
