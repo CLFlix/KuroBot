@@ -928,38 +928,41 @@ def main():
     while ask_for_requests:
         requests_or_not = input("Do you accept map requests this stream? (y/n)\n")
 
-        if requests_or_not.lower() == "y":
-            message = "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
-            ask_for_requests = False
-        elif requests_or_not.lower() == "n":
-            message = "I will not be accepting map requests this stream :/. Maybe next stream ;)"
-            ask_for_requests = False
-        else:
-            print("Not a valid answer. Please enter 'y' or 'n'.")
+        match requests_or_not.lower():
+            case "y":
+                message = "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
+                ask_for_requests = False
+            case "n":
+                message = "I will not be accepting map requests this stream :/. Maybe next stream ;)"
+                ask_for_requests = False
+            case _:
+                print("Not a valid answer. Please enter 'y' or 'n'.")
 
     while ask_for_affiliate:
         affiliate_or_not = input("Are you a Twitch Affiliate or Partner? (y/n)\n")
 
-        if affiliate_or_not.lower() == "y":
-            affiliate = True
-            ask_for_affiliate = False
-        elif affiliate_or_not.lower() == "n":
-            affiliate = False
-            ask_for_affiliate = False
-        else:
-            print("Not a valid answer. Please enter 'y' or 'n'.")
+        match affiliate_or_not.lower():
+            case "y":
+                affiliate = True
+                ask_for_affiliate = False
+            case "n":
+                affiliate = False
+                ask_for_affiliate = False
+            case _:
+                print("Not a valid answer. Please enter 'y' or 'n'.")
 
     while ask_for_title_updating:
         update_or_not = input("Would you like the bot to update your osu! rank in the stream title? (y/n)\n")
 
-        if update_or_not.lower() == "y":
-            update = True
-            ask_for_title_updating = False
-        elif update_or_not.lower() == "n":
-            update = False
-            ask_for_title_updating = False
-        else:
-            print("Not a valid answer. Please enter 'y' or 'n'.")
+        match update_or_not.lower():
+            case "y":
+                update = True
+                ask_for_title_updating = False
+            case "n":
+                update = False
+                ask_for_title_updating = False
+            case _:
+                print("Not a valid answer. Please enter 'y' or 'n'.")
 
     bot = TwitchBot(message, affiliate, update)
     clean_logs(LOG_FILE)
