@@ -666,7 +666,7 @@ class TwitchBot(commands.Bot):
     rq.description = "The streamer can decide whether they want to receive " \
     "beatmap requests. This command will then show whether they accept those requests or not."
 
-
+    ## Fun commands
     # remember to drink!
     @commands.command(name="hydrate")
     async def hydrate(self, ctx):
