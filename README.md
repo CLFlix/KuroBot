@@ -52,7 +52,7 @@ curl -X POST "https://id.twitch.tv/oauth2/token" ^
 The access token you get out of this will be used to get your broadcaster ID in the next query:
 
 ```
-curl -X GET https://api.twitch.tv/helix/users ^
+curl -X GET https://api.twitch.tv/helix/users?login=<YOUR_TWITCH_LOGIN_NAME> ^
      -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>" ^
      -H "Client-Id: <YOUR_CLIENT_ID>"
 ```

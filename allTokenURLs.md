@@ -13,7 +13,7 @@ Just copy this access token, you won't need this one further on.
 ### Actual BROADCASTER_ID request
 
 ```
-curl -X GET https://api.twitch.tv/helix/users ^
+curl -X GET https://api.twitch.tv/helix/users?login=<YOUR_TWITCH_LOGIN_NAME> ^
      -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>" ^
      -H "Client-Id: <YOUR_CLIENT_ID>"
 ```
