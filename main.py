@@ -667,6 +667,28 @@ class TwitchBot(commands.Bot):
     "beatmap requests. This command will then show whether they accept those requests or not."
 
     ## Fun commands
+    # Get user's followage
+    @commands.command(name="followage")
+    async def followage(self, ctx, username=None):
+        if username:
+            if "@" in username:
+                user = username[1:]
+            else:
+                user = username
+        else:
+            user = ctx.author.name
+
+        user_id = self.get_user_id(user)
+
+        try:
+            followed_at = self.get_follower_data(user_id)
+        except ValueError as e:
+            print(f"Couldn't parse time, details in log.txt")
+            log_error(LOG_FILE, e)
+            return
+        
+        await ctx.send(f"@{user} You've been following {self.nick} for {followed_at} days!")
+
     # remember to drink!
     @commands.command(name="hydrate")
     async def hydrate(self, ctx):
