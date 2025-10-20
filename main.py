@@ -344,7 +344,6 @@ class TwitchBot(commands.Bot):
             await self.handle_commands(message)
             return
         
-        import time
         now = time.time()
         cooldown = 5
 
