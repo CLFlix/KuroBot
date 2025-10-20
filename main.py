@@ -201,8 +201,8 @@ class TwitchBot(commands.Bot):
             log_error(LOG_FILE, e)
             print(f"Error getting user_id: {e}")
 
-    def get_follower_data(user_id):
-        url = "https://api.twitch.tv/helix/channels/followed"
+    def get_follower_data(self, user_id):
+        url = "https://api.twitch.tv/helix/channels/followers"
         headers = {
             "Authorization": f"Bearer {ACCESS_TOKEN}",
             "Client-Id": CLIENT_ID,
@@ -233,7 +233,9 @@ class TwitchBot(commands.Bot):
             
         try:
             data = response.json()["data"]
-            return data["followed_at"]
+            if not data:
+                return
+            return data[0]["followed_at"]
         except requests.exceptions.JSONDecodeError as e:
             log_error(LOG_FILE, "Invalid or no response getting followage.")
 
@@ -677,6 +679,9 @@ class TwitchBot(commands.Bot):
                 user = username
         else:
             user = ctx.author.name
+            if user == self.nick:
+                await ctx.send(f"@{self.nick} You can't follow yourself, dummy")
+                return
 
         user_id = self.get_user_id(user)
 
@@ -687,7 +692,9 @@ class TwitchBot(commands.Bot):
             log_error(LOG_FILE, e)
             return
         
-        await ctx.send(f"@{user} You've been following {self.nick} for {followed_at} days!")
+        followage = calculate_followage_days(followed_at)
+        
+        await ctx.send(f"@{user} You've been following {self.nick} for {followage} days!")
 
     # remember to drink!
     @commands.command(name="hydrate")

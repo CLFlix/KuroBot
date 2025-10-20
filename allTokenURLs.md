@@ -23,7 +23,7 @@ Result: BROADCASTER_ID
 ### Access Token
 
 ```
-https://id.twitch.tv/oauth2/authorize?client_id=<YOUR_CLIENT_ID>&redirect_uri=http://localhost&response_type=code&scope=chat:read+chat:edit+channel:manage:vips+channel:read:redemptions+channel:manage:polls+moderation:read+channel:manage:broadcast+user:read:follows
+https://id.twitch.tv/oauth2/authorize?client_id=<YOUR_CLIENT_ID>&redirect_uri=http://localhost&response_type=code&scope=chat:read+chat:edit+channel:manage:vips+channel:read:redemptions+channel:manage:polls+moderation:read+channel:manage:broadcast+moderator:read:followers
 ```
 
 Result in ".env": CODE
