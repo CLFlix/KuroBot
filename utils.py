@@ -91,3 +91,15 @@ def write_bonus_claimed(bonus_claimed_list, first_time_bonus_file):
         for user in bonus_claimed_list:
             file.write(f"{user}\n")
     print("First time bonus data saved!")
+
+def edit_stream_title(current_title: str, current_rank):
+    open_bracket_index = current_title.find("[")
+    close_bracket_index = current_title.find("]")
+
+    if current_rank in current_title[open_bracket_index + 1 : close_bracket_index]:
+        raise ValueError("Didn't update title with the same rank, avoided crash.")
+
+    new_title_rank = f"#{current_rank}"
+    new_title = current_title.replace(current_title[open_bracket_index + 1 : close_bracket_index], new_title_rank)
+    
+    return new_title

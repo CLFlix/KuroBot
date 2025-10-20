@@ -6,6 +6,7 @@ from twitchio.ext import commands
 from dotenv import load_dotenv
 
 import os
+import time
 import random
 
 load_dotenv()
@@ -24,7 +25,7 @@ FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
 LOG_FILE = r'log.txt'
 
 class TwitchBot(commands.Bot):
-    def __init__(self, rq_message, affiliate):
+    def __init__(self, rq_message, affiliate, update):
         super().__init__(
             token=TOKEN,
             prefix="?",
@@ -33,6 +34,7 @@ class TwitchBot(commands.Bot):
 
         self.rq_message = rq_message
         self.affiliate = affiliate
+        self.update = update
 
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
@@ -160,7 +162,7 @@ class TwitchBot(commands.Bot):
             headers["Authorization"] = f"Bearer {new_token}"
             response = requests.get(url, headers=headers)
 
-            if response.status_code not in (200, 203):
+            if not response.ok:
                 print(f"Failed to check user: {response.text}")
                 return False
 
@@ -220,7 +222,7 @@ class TwitchBot(commands.Bot):
             headers["Authorization"] = f"Bearer {new_token}"
             response = requests.post(uri, headers=headers, json=body)
 
-            if response.status_code not in (200, 202):
+            if not response.ok:
                 log_error(LOG_FILE, response.text)
                 raise ConnectionError("Error creating poll. Error details in log.txt")
             
@@ -232,6 +234,93 @@ class TwitchBot(commands.Bot):
             log_error(LOG_FILE, response.text)
             return False
 
+    # get current twitch stream title
+    def get_stream_title(self):
+        url = "https://api.twitch.tv/helix/channels"
+        headers = {
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
+            "Client-Id": CLIENT_ID,
+            "Content-Type": "application/json"
+        }
+        params = {
+            "broadcaster_id": BROADCASTER_ID
+        }
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 401:
+            try:
+                new_token = refresh_access_token()
+                headers["Authorization"] = f"Bearer {new_token}"
+            except ConnectionError as e:
+                log_error(LOG_FILE, e)
+                print("Error fetching stream details, details in log.txt")
+                return
+            
+            response = requests.get(url, headers=headers, params=params)
+            
+            if not response.ok:
+                log_error(LOG_FILE, response.text)
+                print("Something went wrong getting stream information. Please create an issue on GitHub with the log")
+
+        try:
+            data = response.json()["data"]
+            stream_title = data[0]["title"]
+            return stream_title
+        except requests.exceptions.JSONDecodeError:
+            log_error(LOG_FILE, response.text)
+
+    # send patch request to update stream title
+    def update_stream_title(self, new_stream_title):
+        url = "https://api.twitch.tv/helix/channels"
+        headers = {
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
+            "Client-Id": CLIENT_ID,
+            "Content-Type": "application/json"
+        }
+        params = {
+            "broadcaster_id": BROADCASTER_ID
+        }
+        body = {
+            "title": new_stream_title
+        }
+
+        response = requests.patch(url, headers=headers, params=params, json=body)
+
+        if response.status_code == 401:
+            try:
+                new_token = refresh_access_token()
+                headers["Authorization"] = f"Bearer {new_token}"
+            except ConnectionError as e:
+                log_error(LOG_FILE, e)
+                print(f"Error updating stream title, aborting...\n{e}")
+                return
+            
+            response = requests.patch(url, headers=headers, params=params)
+
+            if not response.ok:
+                log_error(LOG_FILE, response.text)
+                print(f"Error updating stream title, details in log.txt")
+                return
+
+        print("Updated stream title with current osu! rank")
+
+    # this loop will restart every 10 minutes, updating the stream title
+    # with the current osu! rank, keeping the title up-to-date
+    def title_updater_loop(self):
+        while True:
+            current_title = self.get_stream_title()
+            profile = get_profile()
+            current_rank = profile['pp_rank']
+
+            try:
+                new_stream_title = edit_stream_title(current_title, current_rank)
+                self.update_stream_title(new_stream_title)
+            except ValueError as e:
+                print(e)
+            # wait 10 minutes before restarting the loop
+            time.sleep(600)
+
 
     ## events
     # print in console when bot is logged in and ready to be used
@@ -241,6 +330,8 @@ class TwitchBot(commands.Bot):
         # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
+        if self.update:
+            self.loop.create_task(self.title_updater_loop())
 
     # give people points for chatting
     async def event_message(self, message):
@@ -835,32 +926,48 @@ class TwitchBot(commands.Bot):
 
 def main():
     ask_for_requests = True
+    ask_for_affiliate = True
+    ask_for_title_updating = True
     while ask_for_requests:
         requests_or_not = input("Do you accept map requests this stream? (y/n)\n")
 
-        if requests_or_not.lower() == "y":
-            message = "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
-            ask_for_requests = False
-        elif requests_or_not.lower() == "n":
-            message = "I will not be accepting map requests this stream :/. Maybe next stream ;)"
-            ask_for_requests = False
-        else:
-            print("Not a valid answer. Please enter 'y' or 'n'.")
+        match requests_or_not.lower():
+            case "y":
+                message = "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
+                ask_for_requests = False
+            case "n":
+                message = "I will not be accepting map requests this stream :/. Maybe next stream ;)"
+                ask_for_requests = False
+            case _:
+                print("Not a valid answer. Please enter 'y' or 'n'.")
 
-    ask_for_affiliate = True
     while ask_for_affiliate:
         affiliate_or_not = input("Are you a Twitch Affiliate or Partner? (y/n)\n")
 
-        if affiliate_or_not.lower() == "y":
-            affiliate = True
-            ask_for_affiliate = False
-        elif affiliate_or_not.lower() == "n":
-            affiliate = False
-            ask_for_affiliate = False
-        else:
-            print("Not a valid answer. Please enter 'y' or 'n'.")
+        match affiliate_or_not.lower():
+            case "y":
+                affiliate = True
+                ask_for_affiliate = False
+            case "n":
+                affiliate = False
+                ask_for_affiliate = False
+            case _:
+                print("Not a valid answer. Please enter 'y' or 'n'.")
 
-    bot = TwitchBot(message, affiliate)
+    while ask_for_title_updating:
+        update_or_not = input("Would you like the bot to update your osu! rank in the stream title? (y/n)\n")
+
+        match update_or_not.lower():
+            case "y":
+                update = True
+                ask_for_title_updating = False
+            case "n":
+                update = False
+                ask_for_title_updating = False
+            case _:
+                print("Not a valid answer. Please enter 'y' or 'n'.")
+
+    bot = TwitchBot(message, affiliate, update)
     clean_logs(LOG_FILE)
     try:
         bot.run()
