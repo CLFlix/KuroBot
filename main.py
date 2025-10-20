@@ -169,6 +169,38 @@ class TwitchBot(commands.Bot):
         data = response.json()
         return len(data["data"]) > 0
 
+    def get_user_id(self, user):
+        url = "https://api.twitch.tv/helix/users"
+        headers = {
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
+            "Client-Id": CLIENT_ID
+        }
+        params = {
+            "login": user
+        }
+
+        # initial try to get user id
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 401: # Unauthorized: token expired
+            try:
+                new_token = refresh_access_token()
+                headers['Authorization'] = f"Bearer {new_token}"
+            except ConnectionError as e:
+                print(f"Error getting user_id: {e}")
+                log_error(LOG_FILE, e)
+                return
+            
+            # retry getting user id once
+            response = requests.get(url, headers=headers, params=params)
+
+        try:
+            user_data = response.json()
+            return user_data["data"][0]["id"]
+        except requests.exceptions.JSONDecodeError as e:
+            log_error(LOG_FILE, e)
+            print(f"Error getting user_id: {e}")
+
     # add VIP status to user
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"
@@ -868,42 +900,7 @@ class TwitchBot(commands.Bot):
             await ctx.send(afford_message)
             return
 
-        headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN}",
-            "Client-Id": CLIENT_ID
-        }
-
-        # initial try to get user id
-        response = requests.get(
-            "https://api.twitch.tv/helix/users",
-            headers=headers,
-            params={"login": user}
-        )
-
-        if response.status_code == 401: # Unauthorized: token expired
-            try:
-                new_token = refresh_access_token()
-            except Exception as e:
-                await ctx.send(f"@{self.nick}, @{user} Token refresh failed. Try again later.")
-                log_error(LOG_FILE, e)
-                return
-            
-            # retry getting user id once
-            headers['Authorization'] = f"Bearer {new_token}"
-            response = requests.get(
-                "https://api.twitch.tv/helix/users",
-                headers=headers,
-                params={"login": user}
-            )
-
-        user_data = response.json()
-
-        if not user_data.get("data"):
-            await ctx.send(f"Couldn't fetch user ID for @{user}.")
-            return
-
-        user_id = user_data["data"][0]["id"]
-                        
+        user_id = self.get_user_id(user)
         succes, status_code = self.add_vip(user_id) # try adding VIP
 
         if succes:
