@@ -201,6 +201,42 @@ class TwitchBot(commands.Bot):
             log_error(LOG_FILE, e)
             print(f"Error getting user_id: {e}")
 
+    def get_follower_data(user_id):
+        url = "https://api.twitch.tv/helix/channels/followed"
+        headers = {
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
+            "Client-Id": CLIENT_ID,
+            "Content-Type": "application/json"
+        }
+        params = {
+            "user_id": user_id,
+            "broadcaster_id": BROADCASTER_ID
+        }
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 401:
+            try:
+                new_token = refresh_access_token()
+                headers["Authorization"] = f"Bearer {new_token}"
+            except ConnectionError as e:
+                print(e)
+                log_error(LOG_FILE, e)
+                return
+            
+            response = requests.get(url, headers=headers, params=params)
+
+            if not response.ok:
+                print(f"Error getting followage, more details in log.txt")
+                log_error(LOG_FILE, response.text)
+                return
+            
+        try:
+            data = response.json()["data"]
+            return data["followed_at"]
+        except requests.exceptions.JSONDecodeError as e:
+            log_error(LOG_FILE, "Invalid or no response getting followage.")
+
     # add VIP status to user
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"
@@ -630,7 +666,7 @@ class TwitchBot(commands.Bot):
     rq.description = "The streamer can decide whether they want to receive " \
     "beatmap requests. This command will then show whether they accept those requests or not."
 
-    ## Fun commands
+
     # remember to drink!
     @commands.command(name="hydrate")
     async def hydrate(self, ctx):
