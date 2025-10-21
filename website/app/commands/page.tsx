@@ -10,7 +10,7 @@ async function Commands() {
         </section>
         <h1 className="text-4xl text-center">Additional Features</h1>
         <section className="flex max-2xl:grid max-2xl:grid-cols-2 gap-10 justify-center mt-5">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-500 rounded-lg p-1 text-center">
+          <div className="bg-gradient-to-tr from-purple-700 to-purple-900 rounded-lg p-1 text-center">
             <h1 className="text-2xl font-bold">Redemptions Listener</h1>
             <p className="text-xl max-w-[410px] max-2xl:max-w-[400px]">
               If you enable this, the bot will listen to all the redemptions
@@ -23,7 +23,7 @@ async function Commands() {
               system.
             </p>
           </div>
-          <div className="bg-gradient-to-br from-gray-800 to-gray-500 rounded-lg p-1 text-center">
+          <div className="bg-gradient-to-tl from-purple-700 to-purple-900 rounded-lg p-1 text-center">
             <h1 className="text-2xl font-bold">Automatic Title Updater</h1>
             <p className="text-xl max-w-[410px] max-2xl:max-w-[400px]">
               By enabling this, you can let the bot check whether your osu! rank
