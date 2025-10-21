@@ -44,7 +44,7 @@ class TwitchBot(commands.Bot):
 
     ## export commands
     def export_commands(self):
-        order = ["commands", "points", "claim", "leaderboard", "lb", "poll", "test", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
+        order = ["commands", "followage", "points", "claim", "leaderboard", "lb", "poll", "test", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
                  "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "bonk", "endwith", "invert", "zoom", "memecam", "gift", "vip"]
 
         written = set()
@@ -695,6 +695,10 @@ class TwitchBot(commands.Bot):
         followage = calculate_followage_days(followed_at)
         
         await ctx.send(f"@{user} You've been following {self.nick} for {followage} days!")
+    followage.category = "useful"
+    followage.description = "By using this command, you can see how long you've been " \
+    "following the streamer for! You can also tag someone like '?followage @user' " \
+    "which will then show how long this user has been following the streamer for."
 
     # remember to drink!
     @commands.command(name="hydrate")
