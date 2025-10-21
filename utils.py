@@ -110,5 +110,30 @@ def calculate_followage_days(followed_at):
     
     time_between = now - dt_followed_at
     days_from_follow_time = time_between.days
+
+    followage_years = days_from_follow_time // 365
+    followage_days = days_from_follow_time % 365
+
+    match followage_years:
+        case 0:
+            message_years = ""
+        case 1:
+            message_years = "1 year"
+        case _:
+            message_years = f"{followage_years} years"
+
+    match followage_days:
+        case 0:
+            message_days = ""
+        case 1:
+            message_days = "1 day"
+        case _:
+            message_days = f"{followage_days} days"
+
+    if not message_years:
+        return message_days
     
-    return days_from_follow_time
+    if not message_days:
+        return message_years
+
+    return message_years + " " + message_days

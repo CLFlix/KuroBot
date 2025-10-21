@@ -126,6 +126,10 @@ This just gives you a quick verification that the bot is ready to be used in you
 
 This will show all the commands the viewers can use with your bot! `?commands` itself since you already know this command if you just triggered it. `test` will also be left out of this since viewers don't need to test the bot once you verified it's running in your chat.
 
+### ?followage <@username>
+
+By using `?followage`, you can see how long you've been following the streamer. If you want to see how long someone else has been following the streamer, you can use `?followage <@username>`.
+
 ### ?profile
 
 Get the streamer's osu! profile link in the chat by using this command!

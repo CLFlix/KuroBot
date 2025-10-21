@@ -1,4 +1,5 @@
 commands - Display all the available commands in the Twitch chat! - useful
+followage - By using this command, you can see how long you've been following the streamer for! You can also tag someone like '?followage @user' which will then show how long this user has been following the streamer for. - useful
 points - This command will show you how many bot points you have in this Twitch channel! - useful
 claim - After using this command, you will have claimed your first 500 bot points. You can obtain more points by chatting in the Twitch chat. - useful
 leaderboard - '?leaderboard' will show you the top 3 bot point earners of this channel. - useful
