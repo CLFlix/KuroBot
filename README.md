@@ -38,28 +38,7 @@ First of all you'll need a **client ID** and a **client secret** of a Twitch App
 
 ---
 
-Your **broadcaster ID** is the ID you, the streamer, have on Twitch. You can access it by throwing this is your terminal:
-
-```
-curl -X POST "https://id.twitch.tv/oauth2/token" ^
-     -H "Content-Type: application/x-www-form-urlencoded" ^
-     -d "client_id=<YOUR_CLIENT_ID>" ^
-     -d "client_secret=<YOUR_CLIENT_SECRET>" ^
-     -d "grant_type=client_credentials"
-```
-
-<sup>Replace \<YOUR_CLIENT_ID> and \<YOUR_CLIENT_SECRET> with the values you just saved into the `.env` file.</sup>\
-The access token you get out of this will be used to get your broadcaster ID in the next query:
-
-```
-curl -X GET https://api.twitch.tv/helix/users?login=<YOUR_TWITCH_LOGIN_NAME> ^
-     -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>" ^
-     -H "Client-Id: <YOUR_CLIENT_ID>"
-```
-
-<sup>Replace \<YOUR_ACCESS_TOKEN> and \<YOUR_CLIENT_ID> with your actual data</sup>\
-Then look for `"id":"123456789"`. This should become your "BROADCASTER_ID" in your `.env`.\
-**If you run into the revocation function error, type `curl -k -X` instead of `curl -X`. This tells Windows to skip SSL certificate verification.**
+The bot will also need your broadcaster ID to be able to do some things on your channel, otherwise it doesn't know what channel to read your mods list (?polls), read your followers list (?followage),... You can run the "GetBroadcasterId.exe" for that, since it's fully automated now!
 
 ---
 

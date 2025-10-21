@@ -1,25 +1,3 @@
-### BROADCASTER_ID Token
-
-```
-curl -X POST "https://id.twitch.tv/oauth2/token" ^
-     -H "Content-Type: application/x-www-form-urlencoded" ^
-     -d "client_id=<YOUR_CLIENT_ID>" ^
-     -d "client_secret=<YOUR_CLIENT_SECRET>" ^
-     -d "grant_type=client_credentials"
-```
-
-Just copy this access token, you won't need this one further on.
-
-### Actual BROADCASTER_ID request
-
-```
-curl -X GET https://api.twitch.tv/helix/users?login=<YOUR_TWITCH_LOGIN_NAME> ^
-     -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>" ^
-     -H "Client-Id: <YOUR_CLIENT_ID>"
-```
-
-Result: BROADCASTER_ID
-
 ### Access Token
 
 ```

@@ -12,7 +12,7 @@ import random
 load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
-BROADCASTER_ID = os.getenv("BROADCASTER_ID")
+BROADCASTER_ID = int(os.getenv("BROADCASTER_ID"))
 CHANNEL = os.getenv("CHANNEL")
 CLIENT_ID = os.getenv("CLIENT_ID")
 
