@@ -52,7 +52,7 @@ curl -X POST "https://id.twitch.tv/oauth2/token" ^
 The access token you get out of this will be used to get your broadcaster ID in the next query:
 
 ```
-curl -X GET https://api.twitch.tv/helix/users ^
+curl -X GET https://api.twitch.tv/helix/users?login=<YOUR_TWITCH_LOGIN_NAME> ^
      -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>" ^
      -H "Client-Id: <YOUR_CLIENT_ID>"
 ```
@@ -79,7 +79,7 @@ These last 2 will always be in the bot, but if you're not an Affiliate / Partner
 You'll have to paste this URL in your **browser** and replace `<YOUR_CLIENT_ID>` with your actual application's Client ID.
 
 ```
-https://id.twitch.tv/oauth2/authorize?client_id=<YOUR_CLIENT_ID>&redirect_uri=http://localhost&response_type=code&scope=chat:read+chat:edit+channel:manage:vips+channel:read:redemptions+channel:manage:polls+moderation:read+channel:manage:broadcast
+https://id.twitch.tv/oauth2/authorize?client_id=<YOUR_CLIENT_ID>&redirect_uri=http://localhost&response_type=code&scope=chat:read+chat:edit+channel:manage:vips+channel:read:redemptions+channel:manage:polls+moderation:read+channel:manage:broadcast+moderator:read:followers
 ```
 
 If you need to log in, do this. You will end up on your redirect link of your twitch application, but you only need the URL of this page. In the URL, you can find `code=<AUTHORIZATION_CODE>`. Copy this authorization code and place it in the `.env` file with the variable name "CODE".

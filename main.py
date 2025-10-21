@@ -169,6 +169,76 @@ class TwitchBot(commands.Bot):
         data = response.json()
         return len(data["data"]) > 0
 
+    def get_user_id(self, user):
+        url = "https://api.twitch.tv/helix/users"
+        headers = {
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
+            "Client-Id": CLIENT_ID
+        }
+        params = {
+            "login": user
+        }
+
+        # initial try to get user id
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 401: # Unauthorized: token expired
+            try:
+                new_token = refresh_access_token()
+                headers['Authorization'] = f"Bearer {new_token}"
+            except ConnectionError as e:
+                print(f"Error getting user_id: {e}")
+                log_error(LOG_FILE, e)
+                return
+            
+            # retry getting user id once
+            response = requests.get(url, headers=headers, params=params)
+
+        try:
+            user_data = response.json()
+            return user_data["data"][0]["id"]
+        except requests.exceptions.JSONDecodeError as e:
+            log_error(LOG_FILE, e)
+            print(f"Error getting user_id: {e}")
+
+    def get_follower_data(self, user_id):
+        url = "https://api.twitch.tv/helix/channels/followers"
+        headers = {
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
+            "Client-Id": CLIENT_ID,
+            "Content-Type": "application/json"
+        }
+        params = {
+            "user_id": user_id,
+            "broadcaster_id": BROADCASTER_ID
+        }
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 401:
+            try:
+                new_token = refresh_access_token()
+                headers["Authorization"] = f"Bearer {new_token}"
+            except ConnectionError as e:
+                print(e)
+                log_error(LOG_FILE, e)
+                return
+            
+            response = requests.get(url, headers=headers, params=params)
+
+            if not response.ok:
+                print(f"Error getting followage, more details in log.txt")
+                log_error(LOG_FILE, response.text)
+                return
+            
+        try:
+            data = response.json()["data"]
+            if not data:
+                return
+            return data[0]["followed_at"]
+        except requests.exceptions.JSONDecodeError as e:
+            log_error(LOG_FILE, "Invalid or no response getting followage.")
+
     # add VIP status to user
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"
@@ -344,7 +414,6 @@ class TwitchBot(commands.Bot):
             await self.handle_commands(message)
             return
         
-        import time
         now = time.time()
         cooldown = 5
 
@@ -600,6 +669,33 @@ class TwitchBot(commands.Bot):
     "beatmap requests. This command will then show whether they accept those requests or not."
 
     ## Fun commands
+    # Get user's followage
+    @commands.command(name="followage")
+    async def followage(self, ctx, username=None):
+        if username:
+            if "@" in username:
+                user = username[1:]
+            else:
+                user = username
+        else:
+            user = ctx.author.name
+            if user == self.nick:
+                await ctx.send(f"@{self.nick} You can't follow yourself, dummy")
+                return
+
+        user_id = self.get_user_id(user)
+
+        try:
+            followed_at = self.get_follower_data(user_id)
+        except ValueError as e:
+            print(f"Couldn't parse time, details in log.txt")
+            log_error(LOG_FILE, e)
+            return
+        
+        followage = calculate_followage_days(followed_at)
+        
+        await ctx.send(f"@{user} You've been following {self.nick} for {followage} days!")
+
     # remember to drink!
     @commands.command(name="hydrate")
     async def hydrate(self, ctx):
@@ -869,42 +965,7 @@ class TwitchBot(commands.Bot):
             await ctx.send(afford_message)
             return
 
-        headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN}",
-            "Client-Id": CLIENT_ID
-        }
-
-        # initial try to get user id
-        response = requests.get(
-            "https://api.twitch.tv/helix/users",
-            headers=headers,
-            params={"login": user}
-        )
-
-        if response.status_code == 401: # Unauthorized: token expired
-            try:
-                new_token = refresh_access_token()
-            except Exception as e:
-                await ctx.send(f"@{self.nick}, @{user} Token refresh failed. Try again later.")
-                log_error(LOG_FILE, e)
-                return
-            
-            # retry getting user id once
-            headers['Authorization'] = f"Bearer {new_token}"
-            response = requests.get(
-                "https://api.twitch.tv/helix/users",
-                headers=headers,
-                params={"login": user}
-            )
-
-        user_data = response.json()
-
-        if not user_data.get("data"):
-            await ctx.send(f"Couldn't fetch user ID for @{user}.")
-            return
-
-        user_id = user_data["data"][0]["id"]
-                        
+        user_id = self.get_user_id(user)
         succes, status_code = self.add_vip(user_id) # try adding VIP
 
         if succes:

@@ -103,3 +103,12 @@ def edit_stream_title(current_title: str, current_rank):
     new_title = current_title.replace(current_title[open_bracket_index + 1 : close_bracket_index], new_title_rank)
     
     return new_title
+
+def calculate_followage_days(followed_at):
+    now = dt.now()
+    dt_followed_at = dt.strptime(followed_at, "%Y-%m-%dT%H:%M:%SZ")
+    
+    time_between = now - dt_followed_at
+    days_from_follow_time = time_between.days
+    
+    return days_from_follow_time
