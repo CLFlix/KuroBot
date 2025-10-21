@@ -8,7 +8,7 @@ const Header = () => {
 
   const links = [
     { href: "/", label: "KuroBot" },
-    { href: "/commands", label: "Commands" },
+    { href: "/commands", label: "Features" },
     { href: "/about", label: "About" },
   ];
 
