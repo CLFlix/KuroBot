@@ -488,10 +488,12 @@ class TwitchBot(commands.Bot):
 
     # shoutout the user specified
     @commands.command(name="shoutout")
-    async def shoutout(self, ctx):
-        user = ctx.author.name
-        if user != self.nick:
+    async def shoutout(self, ctx, user):
+        invoker = ctx.author.name
+        if invoker != self.nick:
             return
+        
+        user = user.lower() if "@" not in user else user[1:].lower()
         link = f"https://www.twitch.tv/{user}"
 
         await ctx.send(f"Shoutout to {user}! {link}")
