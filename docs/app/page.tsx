@@ -88,7 +88,7 @@ function Home() {
             Download the bot, create a points.json with "<code>{"{}"}</code>" in
             it,{" "}
             <a
-              href="https://github.com/CLFlix/KuroBot/blob/main/allTokenURLs.md"
+              href="https://github.com/CLFlix/KuroBot/blob/main/README.md#account-and-authorization"
               className="text-blue-400 hover:underline"
             >
               get the codes
