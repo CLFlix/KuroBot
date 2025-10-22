@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 import os
 import time
+import asyncio
 import random
 
 load_dotenv()
@@ -377,7 +378,7 @@ class TwitchBot(commands.Bot):
 
     # this loop will restart every 10 minutes, updating the stream title
     # with the current osu! rank, keeping the title up-to-date
-    def title_updater_loop(self):
+    async def title_updater_loop(self):
         while True:
             current_title = self.get_stream_title()
             profile = get_profile()
@@ -389,7 +390,7 @@ class TwitchBot(commands.Bot):
             except ValueError as e:
                 print(e)
             # wait 10 minutes before restarting the loop
-            time.sleep(600)
+            await asyncio.sleep(600)
 
 
     ## events
