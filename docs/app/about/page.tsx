@@ -15,9 +15,11 @@ function About() {
             <h1 className="text-3xl font-bold mt-4">Why?</h1>
             <p>
               After searching for a chatbot that does everything I personally
-              want it to do, I couldn't find one. Since I'm learning how to code
-              in college, I got the idea to just make a bot of my own. I started
-              out with a simple bot with commands like "?np" and "?rank",
+              want it to do, I couldn't find one. I wanted it to have commands
+              like "!np" and "?profile", but I didn't want to have 4 different
+              bots running on my channel. Since I'm learning how to code in
+              college, I got the idea to just make a bot of my own. I started
+              out with a simple bot with commands like "!np" and "!rank",
               totaling about 70 lines of code. After adding more commands and a
               points system, I now have a bot with over 1,000 lines of code. I'm
               enjoying every step of the way, making my bot just a little better
@@ -39,7 +41,7 @@ function About() {
           <p>
             This bot was completely coded in Python. It uses the Twitch API for
             things like checking if a Twitch user exists{" "}
-            <sub>("?gift" - bot points system)</sub> and adding VIP status to a
+            <sub>("!gift" - bot points system)</sub> and adding VIP status to a
             user <sub>("vip")</sub>. The osu! API is also used to get the
             streamer's information to display the streamer's current rank,
             playtime and more. The website was made with React and Next.js +
