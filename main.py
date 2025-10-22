@@ -28,7 +28,7 @@ class TwitchBot(commands.Bot):
     def __init__(self, rq_message, affiliate, update):
         super().__init__(
             token=TOKEN,
-            prefix="?",
+            prefix="!",
             initial_channels=[CHANNEL]
         )
 

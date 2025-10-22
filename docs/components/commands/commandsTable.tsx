@@ -26,7 +26,7 @@ const CommandsTable: React.FC<Props> = ({ commandsList }: Props) => {
                   key={index}
                   className="border border-gray-900 hover:scale-105 duration-300 bg-gradient-to-br from-gray-900 to-gray-700"
                 >
-                  <td className="p-2 font-mono text-center">{command.name}</td>
+                  <td className="p-2 font-mono text-center">!{command.name}</td>
                   <td className="p-2 font-sans max-w-[700px] whitespace-normal break-words">
                     {command.description}
                   </td>
