@@ -14,10 +14,10 @@ async function Commands() {
             <h1 className="text-2xl font-bold">Redemptions Listener</h1>
             <p className="text-xl max-w-[410px] max-2xl:max-w-[400px]">
               If you enable this, the bot will listen to all the redemptions
-              made on your Twitch channel! With how things are rigth now, the
+              made on your Twitch channel! With how things are right now, the
               bot will only recognize redemptions whose name starts with
               "Exchange". The bot will then add the cost of the Twitch
-              redemption to its own points system. I'll give a quick example:If
+              redemption to its own points system. I'll give a quick example: If
               the Twitch redemption costed 500 points, the bot will then add 500
               points to the amount of points this user has in the bot's points
               system.

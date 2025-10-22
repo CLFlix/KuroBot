@@ -44,11 +44,11 @@ class TwitchBot(commands.Bot):
 
     ## export commands
     def export_commands(self):
-        order = ["commands", "followage", "points", "claim", "leaderboard", "lb", "poll", "test", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
+        order = ["commands", "followage", "lurk", "shoutout", "so", "points", "claim", "leaderboard", "lb", "poll", "test", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
                  "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "bonk", "endwith", "invert", "zoom", "memecam", "gift", "vip"]
 
         written = set()
-        with open(r'website/public/commands.txt', 'w', encoding='utf-8') as commands_file:
+        with open(r'docs/public/commands.txt', 'w', encoding='utf-8') as commands_file:
             for cmd_name in order:
                 if cmd_name in self.commands:
                     cmd = self.commands[cmd_name]
@@ -60,7 +60,7 @@ class TwitchBot(commands.Bot):
             for cmd_name in self.commands:
                 if cmd_name not in written:
                     commands_file.write(cmd_name + "\n")
-        print("Commands succesfully exported to 'website/public/commands.txt'")
+        print("Commands succesfully exported to 'docs/public/commands.txt'")
 
     ## helper methods
     def add_points(self, user, amount):
@@ -483,6 +483,26 @@ class TwitchBot(commands.Bot):
     async def lurk(self, ctx):
         await ctx.send(
             f"@{ctx.author.name} Thanks for the lurk! If you want to mute the audio, please mute the tab instead of the stream, otherwise you won't count as a viewer ;)")
+    lurk.category = "useful"
+    lurk.description = "Let the streamer know you're there, but in the background 🧐"
+
+    # shoutout the user specified
+    @commands.command(name="shoutout")
+    async def shoutout(self, ctx):
+        user = ctx.author.name
+        if user != self.nick:
+            return
+        link = f"https://www.twitch.tv/{user}"
+
+        await ctx.send(f"Shoutout to {user}! {link}")
+    shoutout.category = "useful"
+    shoutout.description = "Use this command and tag someone right behind it like '!shoutout @user' to shout out this user's Twitch channel! (streamer only)"
+
+    @commands.command(name="so")
+    async def so(self, ctx):
+        await self.shoutout(ctx)
+    so.category = "useful"
+    so.description = "Alias for !shoutout"
 
     @commands.command(name="claim")
     async def claim(self, ctx):
@@ -494,7 +514,7 @@ class TwitchBot(commands.Bot):
 
         self.bonus_claimed.append(user)
         self.add_points(user, 500)
-        await ctx.send(f"@{user} You just claimed 500 points! Use ?commands to find out what you can do ;)")
+        await ctx.send(f"@{user} You just claimed 500 points! Use !commands to find out what you can do ;)")
     claim.category = "useful"
     claim.description = "After using this command, you will have claimed your " \
     "first 500 bot points. You can obtain more points by chatting in the Twitch chat."
@@ -525,7 +545,7 @@ class TwitchBot(commands.Bot):
         top_users = [f"{user}: {points}" for user, points in ranking[:top_n]]
         await ctx.send(f"@{ctx.author.name} " + ", ".join(top_users))
     leaderboard.category = "useful"
-    leaderboard.description = "'?leaderboard' will show you the top 3 " \
+    leaderboard.description = "'!leaderboard' will show you the top 3 " \
     "bot point earners of this channel."
 
     # leaderboard alias
@@ -533,7 +553,7 @@ class TwitchBot(commands.Bot):
     async def lb(self, ctx):
         await self.leaderboard(ctx)
     lb.category = "useful"
-    lb.description = "Alias for '?leaderboard'."
+    lb.description = "Alias for '!leaderboard'."
 
     ## osu related
     # show now playing
@@ -704,7 +724,7 @@ class TwitchBot(commands.Bot):
         await ctx.send(f"@{user} You've been following {self.nick} for {followage}!")
     followage.category = "useful"
     followage.description = "By using this command, you can see how long you've been " \
-    "following the streamer for! You can also tag someone like '?followage @user' " \
+    "following the streamer for! You can also tag someone like '!followage @user' " \
     "which will then show how long this user has been following the streamer for."
 
     # remember to drink!
@@ -768,7 +788,7 @@ class TwitchBot(commands.Bot):
     
     # replaces all r/l to w and sends it back in chat
     @commands.command(name="owo")
-    async def owo(self, ctx, *, message: str = "Type in a message after '?owo' and I will owo-fy it."):
+    async def owo(self, ctx, *, message: str = "Type in a message after '!owo' and I will owo-fy it."):
         owofied_message = message.replace("l", "w").replace("r", "w")
         await ctx.send(f"@{ctx.author.name} {owofied_message}")
     owo.category = "fun"
@@ -925,7 +945,7 @@ class TwitchBot(commands.Bot):
 
         message = message.split()
         if len(message) != 2:
-            await ctx.send(f"@{gifter} Make sure you send the command in this format: '?gift @<user> <amount>'")
+            await ctx.send(f"@{gifter} Make sure you send the command in this format: '!gift @<user> <amount>'")
             return
 
         # remove "@" from receiver + case consistency for points
@@ -934,7 +954,7 @@ class TwitchBot(commands.Bot):
         try:
             amount = int(message[1])
         except ValueError:
-            await ctx.send(f"@{gifter} Make sure you send the command in this format: '?gift @<user> <amount>'")
+            await ctx.send(f"@{gifter} Make sure you send the command in this format: '!gift @<user> <amount>'")
             return
 
         if amount <= 0:
@@ -961,7 +981,7 @@ class TwitchBot(commands.Bot):
         await ctx.send(afford_message)
     gift.category = "redeem"
     gift.description = "You can gift points to another user, if you " \
-    "have enough points to do so. '?gift @KurookamiTV 500' will subtract " \
+    "have enough points to do so. '!gift @KurookamiTV 500' will subtract " \
     "500 points from the invoker, and add 500 points to KurookamiTV's total."
 
     # temporary VIP status

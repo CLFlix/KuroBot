@@ -40,8 +40,9 @@ function Home() {
             <h1 className="text-2xl font-bold">osu! Commands</h1>
             <p className="text-xl max-w-[270px] max-2xl:max-w-[500px]">
               Your typical osu! commands are also included! Well-known ones like{" "}
-              <code>?np</code> and <code>?nppp</code>, but there's also{" "}
-              <code>?rank</code>, <code>osustats</code> and some more (to come)!
+              <code>!np</code> and <code>!nppp</code>, but there's also{" "}
+              <code>!rank</code>, <code>!osustats</code> and some more (to
+              come)!
             </p>
           </div>
           <div className="bg-gradient-to-br from-gray-800 to-gray-500 rounded-lg p-1 text-center ">
@@ -88,7 +89,7 @@ function Home() {
             Download the bot, create a points.json with "<code>{"{}"}</code>" in
             it,{" "}
             <a
-              href="https://github.com/CLFlix/KuroBot/blob/main/allTokenURLs.md"
+              href="https://github.com/CLFlix/KuroBot/blob/main/README.md#account-and-authorization"
               className="text-blue-400 hover:underline"
             >
               get the codes
