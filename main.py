@@ -469,6 +469,7 @@ class TwitchBot(commands.Bot):
     "create a poll of 2 minutes. (moderator only)"
 
     # show all commands, don't show commands in hidden
+    ## SUBJECT TO CHANGE WHEN WEBSITE LAUNCHES
     @commands.command(name="commands")
     async def cmds(self, ctx):
         hidden = ["commands", "test", "lb", "claim", "poll"]
@@ -476,6 +477,12 @@ class TwitchBot(commands.Bot):
         await ctx.send(f"@{ctx.author.name} Available commands: {command_list}")
     cmds.category = "useful"
     cmds.description = "Display all the available commands in the Twitch chat!"
+
+    # classic lurk command with additional info about muting
+    @commands.command(name="lurk")
+    async def lurk(self, ctx):
+        await ctx.send(
+            f"@{ctx.author.name} Thanks for the lurk! If you want to mute the audio, please mute the tab instead of the stream, otherwise you won't count as a viewer ;)")
 
     @commands.command(name="claim")
     async def claim(self, ctx):
