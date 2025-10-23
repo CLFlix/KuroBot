@@ -1,8 +1,9 @@
 import { Command } from "@/types";
 
 const getAllCommands = async (): Promise<Command[]> => {
-  const basePath = process.env.NODE_ENV === "production" ? "/KuroBot" : "";
-  const response = await fetch(`${basePath}/commands.txt`);
+  const response = await fetch(
+    `https://raw.githubusercontent.com/CLFlix/KuroBot/dev/website/public/commands.txt`
+  );
   const text = await response.text();
 
   const commands = text
