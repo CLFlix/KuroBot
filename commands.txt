@@ -1,33 +1,18 @@
-commands - Display all the available commands in the Twitch chat! - useful
-followage - By using this command, you can see how long you've been following the streamer for! You can also tag someone like '!followage @user' which will then show how long this user has been following the streamer for. - useful
-lurk - Let the streamer know you're there, but in the background 🧐 - useful
-shoutout - Use this command and tag someone right behind it like '!shoutout @user' to shout out this user's Twitch channel! (streamer only) - useful
-so - Alias for !shoutout - useful
-points - This command will show you how many bot points you have in this Twitch channel! - useful
-claim - After using this command, you will have claimed your first 500 bot points. You can obtain more points by chatting in the Twitch chat. - useful
-leaderboard - '!leaderboard' will show you the top 3 bot point earners of this channel. - useful
-lb - Alias for '!leaderboard'. - useful
-poll - Using this command with the necessary parameters will create a poll of 2 minutes. (moderator only) - useful
-test - This command can be used right before streaming to check if the bot is working and responding. - useful
-rq - The streamer can decide whether they want to receive beatmap requests. This command will then show whether they accept those requests or not. - osu
-np - This will display the map that the streamer is currently playing. - osu
-nppp - This will make the bot reply with the map the streamer is currently playing, along with the pp values for SS, 99% and 95%. - osu
-profile - Show the link to the osu! profile of the streamer! - osu
-rank - Make the bot display the streamer's osu! rank in chat! - osu
-playcount - This will show the playcount of the streamer. - osu
-playtime - Show how much time the streamer wasted playing osu!. - osu
-osustats - This command is some other commands combined. It will show the rank, country rank, total pp, playtime and playcount of the streamer. - osu
-hydrate - Remind the streamer to drink water! - fun
-posture - Make the streamer check their posture. - fun
-stretch - Get the streamer to stretch for a second. - fun
-owo - This command will return your message after replacing all the l's and r's with w's. This way, 'Hello world' becomes 'Hewwo wowwd'. - fun
-mock - Hanging in the same style as 'owo', this command will return your message in SpOnGeBoB cApItAlIzAtIoN. - fun
-rps - Play rock, paper, scissors with the bot! If you win, you get 3 points. If you tie with the bot, you gain 1 point. - fun
-roll - If you don't specify the maximum, this command will roll a random number between 1 and 100. By specifying the maximum like 'roll 1000', this will roll any number between 1 and the specified number, in this case 1000. - fun
-bonk - Redeeming 2500 points, the streamer cannot speak for the next 5 minutes! - redeem
-endwith - Redeeming 300 of the user's points, the streamer has to end the stream or current osu! session with the specified map. - redeem
-invert - For 250 points, you can make the streamer turn their camera upside-down for 10 minutes. - redeem
-zoom - Make the streamer zoom in their camera for 10 minutes for 500 points! - redeem
-memecam - Redeeming 500 of the user's points, the streamer has to turn on an effect / filter over their camera for the next 10 minutes. - redeem
-gift - You can gift points to another user, if you have enough points to do so. '!gift @KurookamiTV 500' will subtract 500 points from the invoker, and add 500 points to KurookamiTV's total. - redeem
-vip - Redeeming 10.000 points, you can claim VIP status on the streamer's Twitch channel! The bot will reply with a message saying this is temporary, but the streamer can, of course, decide theirselves whether this is permanent or not. - redeem
+1:"$Sreact.fragment"
+2:I[1971,["619","static/chunks/619-ba102abea3e3d0e4.js","177","static/chunks/app/layout-fcdca607be278e4f.js"],"default"]
+3:I[9766,[],""]
+4:I[8924,[],""]
+6:I[4431,[],"OutletBoundary"]
+8:I[5278,[],"AsyncMetadataOutlet"]
+a:I[4431,[],"ViewportBoundary"]
+c:I[4431,[],"MetadataBoundary"]
+d:"$Sreact.suspense"
+f:I[7150,[],""]
+:HL["/KuroBot/_next/static/css/14c74c288b81d41a.css","style"]
+0:{"P":null,"b":"V1JkLoIGhnqyAvMlITGva","p":"/KuroBot","c":["","commands"],"i":false,"f":[[["",{"children":["commands",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/KuroBot/_next/static/css/14c74c288b81d41a.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"className":"min-h-screen flex flex-col bg-gray-900 text-white","children":[["$","$L2",null,{}],["$","main",null,{"className":"flex-grow","children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","footer",null,{"className":"min-w-full fixed bottom-0 max-lg:relative font-sans footer items-center","children":["$","nav",null,{"className":"bg-gray-900 flex gap-7 max-lg:gap-3 py-2 justify-center","children":[["$","a",null,{"href":"https://www.twitch.tv/kurookamitv","children":"Twitch"}],["$","a",null,{"href":"https://www.youtube.com/@Doku_Kurookami","children":"YouTube"}],["$","a",null,{"href":"https://www.tiktok.com/@_kurookami_osu","children":"TikTok"}],["$","a",null,{"href":"https://discord.gg/4HAbQm2tdp","children":"Discord"}],["$","a",null,{"href":"https://github.com/CLFlix/KuroBot","children":"GitHub Repo"}]]}]}]]}]}]]}],{"children":["commands",["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":["$L5",null,["$","$L6",null,{"children":["$L7",["$","$L8",null,{"promise":"$@9"}]]}]]}],{},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,[["$","$La",null,{"children":"$Lb"}],null],["$","$Lc",null,{"children":["$","div",null,{"hidden":true,"children":["$","$d",null,{"fallback":null,"children":"$Le"}]}]}]]}],false]],"m":"$undefined","G":["$f",[]],"s":false,"S":true}
+10:I[6005,["625","static/chunks/app/commands/page-cbcbbc83ca5ef0fa.js"],"default"]
+5:["$","main",null,{"className":"m-10 mt-3 mb-15","children":[["$","h1",null,{"className":"text-4xl text-center","children":"Commands"}],["$","section",null,{"className":"grid grid-cols-2 max-lg:grid-cols-1","children":["$","$L10",null,{}]}],["$","h1",null,{"className":"text-4xl text-center","children":"Additional Features"}],["$","section",null,{"className":"flex max-2xl:grid max-2xl:grid-cols-2 gap-10 justify-center mt-5","children":[["$","div",null,{"className":"bg-gradient-to-tr from-purple-700 to-purple-900 rounded-lg p-1 text-center","children":[["$","h1",null,{"className":"text-2xl font-bold","children":"Redemptions Listener"}],["$","p",null,{"className":"text-xl max-w-[410px] max-2xl:max-w-[400px]","children":"If you enable this, the bot will listen to all the redemptions made on your Twitch channel! With how things are right now, the bot will only recognize redemptions whose name starts with \"Exchange\". The bot will then add the cost of the Twitch redemption to its own points system. I'll give a quick example: If the Twitch redemption costed 500 points, the bot will then add 500 points to the amount of points this user has in the bot's points system."}]]}],["$","div",null,{"className":"bg-gradient-to-tl from-purple-700 to-purple-900 rounded-lg p-1 text-center","children":[["$","h1",null,{"className":"text-2xl font-bold","children":"Automatic Title Updater"}],["$","p",null,{"className":"text-xl max-w-[410px] max-2xl:max-w-[400px]","children":"By enabling this, you can let the bot check whether your osu! rank has changed in comparison to what's stated in the title. If your rank did change, the bot will update your Twitch stream's title with your current osu! rank, keeping your audience up-to-date! This will only work if you have your rank in between brackets: \"[]\". If you have multiple things between brackets in your title, keep your rank in the first pair of brackets."}]]}]]}]]}]
+b:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+7:null
+9:{"metadata":[["$","title","0",{"children":"KuroBot"}],["$","meta","1",{"name":"description","content":"A lightweight Twitch bot for osu! streamers!"}]],"error":null,"digest":"$undefined"}
+e:"$9:metadata"
