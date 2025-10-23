@@ -30,7 +30,7 @@ function About() {
             <Image
               width={256}
               height={256}
-              src={"/kurookami_logo.jpg"}
+              src={"static/kurookami_logo.jpg"}
               alt="Kurookami logo"
               className="max-xl:hidden"
             ></Image>
@@ -130,7 +130,7 @@ function About() {
         </section>
         <section className="text-center mt-4">
           <h1 className="text-3xl font-bold">Download</h1>
-          <p className="font-bold">[REPLACE WITH LINK TO RELEASE]</p>
+          <p className="font-bold">[COMING SOON]</p>
         </section>
       </main>
     </>

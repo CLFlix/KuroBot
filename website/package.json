@@ -1,13 +1,14 @@
 {
+  "homepage": "https://clflix.github.io/KuroBot/",
   "name": "kurobot",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://clflix.github.io/kurobot",
   "scripts": {
     "dev": "next dev",
     "start": "next start",
-    "build": "next build",
-    "deploy": "next build && gh-pages -d out"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d out",
+    "build": "next build"
   },
   "dependencies": {
     "next": "15.5.2",
