@@ -1,7 +1,7 @@
 import { Command } from "@/types";
 
 const getAllCommands = async (): Promise<Command[]> => {
-  const response = await fetch("/commands.txt");
+  const response = await fetch("static/commands.txt");
   const text = await response.text();
 
   const commands = text

@@ -30,7 +30,7 @@ function About() {
             <Image
               width={256}
               height={256}
-              src={"/kurookami_logo.jpg"}
+              src={"static/kurookami_logo.jpg"}
               alt="Kurookami logo"
               className="max-xl:hidden"
             ></Image>
