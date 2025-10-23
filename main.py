@@ -49,7 +49,7 @@ class TwitchBot(commands.Bot):
                  "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "bonk", "endwith", "invert", "zoom", "memecam", "gift", "vip"]
 
         written = set()
-        with open(r'docs/public/commands.txt', 'w', encoding='utf-8') as commands_file:
+        with open(r'website/public/static/commands.txt', 'w', encoding='utf-8') as commands_file:
             for cmd_name in order:
                 if cmd_name in self.commands:
                     cmd = self.commands[cmd_name]
@@ -61,7 +61,7 @@ class TwitchBot(commands.Bot):
             for cmd_name in self.commands:
                 if cmd_name not in written:
                     commands_file.write(cmd_name + "\n")
-        print("Commands succesfully exported to 'docs/public/commands.txt'")
+        print("Commands succesfully exported to 'website/public/static/commands.txt'")
 
     ## helper methods
     def add_points(self, user, amount):
@@ -372,9 +372,6 @@ class TwitchBot(commands.Bot):
             if not response.ok:
                 log_error(LOG_FILE, response.text)
                 print(f"Error updating stream title, details in log.txt")
-                return
-
-        print("Updated stream title with current osu! rank")
 
     # this loop will restart every 10 minutes, updating the stream title
     # with the current osu! rank, keeping the title up-to-date
@@ -387,8 +384,11 @@ class TwitchBot(commands.Bot):
             try:
                 new_stream_title = edit_stream_title(current_title, current_rank)
                 self.update_stream_title(new_stream_title)
+            except SyntaxError as e:
+                log_error(LOG_FILE, f"{time.time()}: {e}")
+                print(f"Couldn't update stream title, details in log.txt")
             except ValueError as e:
-                print(e)
+                log_error(LOG_FILE, f"{time.time()}: {e}")
             # wait 10 minutes before restarting the loop
             await asyncio.sleep(600)
 
@@ -470,14 +470,11 @@ class TwitchBot(commands.Bot):
     "create a poll of 2 minutes. (moderator only)"
 
     # show all commands, don't show commands in hidden
-    ## SUBJECT TO CHANGE WHEN WEBSITE LAUNCHES
     @commands.command(name="commands")
     async def cmds(self, ctx):
-        hidden = ["commands", "test", "lb", "claim", "poll"]
-        command_list = ", ".join(command for command in self.commands.keys() if command not in hidden)
-        await ctx.send(f"@{ctx.author.name} Available commands: {command_list}")
+        await ctx.send(f"@{ctx.author.name} https://clflix.github.io/KuroBot/commands")
     cmds.category = "useful"
-    cmds.description = "Display all the available commands in the Twitch chat!"
+    cmds.description = "Show the link to this website in chat!"
 
     # classic lurk command with additional info about muting
     @commands.command(name="lurk")
