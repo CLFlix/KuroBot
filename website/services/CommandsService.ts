@@ -1,10 +1,7 @@
 import { Command } from "@/types";
 
 const getAllCommands = async (): Promise<Command[]> => {
-  const response = await fetch(
-    `https://raw.githubusercontent.com/CLFlix/KuroBot/dev/website/public/commands.txt` +
-      Date.now()
-  );
+  const response = await fetch("/commands.txt");
   const text = await response.text();
 
   const commands = text
