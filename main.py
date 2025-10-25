@@ -388,7 +388,9 @@ class TwitchBot(commands.Bot):
                 log_error(LOG_FILE, f"{time.time()}: {e}")
                 print(f"Couldn't update stream title, details in log.txt")
             except ValueError as e:
-                log_error(LOG_FILE, f"{time.time()}: {e}")
+                # manual write: stop printing every valueError
+                with open(LOG_FILE, 'a', encoding='utf-8') as log:
+                    log.write(f"{time.time()}: {e}")
             # wait 10 minutes before restarting the loop
             await asyncio.sleep(600)
 
