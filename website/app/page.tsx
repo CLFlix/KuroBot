@@ -86,15 +86,14 @@ function Home() {
         <section className="text-center mt-4">
           <h1 className="text-3xl font-bold">Quick Setup</h1>
           <p className="text-lg">
-            Download the bot, create a points.json with "<code>{"{}"}</code>" in
-            it,{" "}
+            Download the bot,{" "}
             <a
               href="https://github.com/CLFlix/KuroBot/blob/main/README.md#account-and-authorization"
               className="text-blue-400 hover:underline"
             >
               get the codes
             </a>
-            , run the token scripts and run the bot!
+            , run the token scripts and use KuroBot in your Twitch chat!
           </p>
         </section>
       </main>
