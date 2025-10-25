@@ -121,7 +121,7 @@ class TwitchBot(commands.Bot):
                 headers["Authorization"] = f"Bearer {new_token}"
             except Exception as e:
                 log_error(LOG_FILE, e)
-                print("Something went wrong refreshing mods access token.")
+                print("Something went wrong refreshing mods access token. Details in log.txt")
 
             response = requests.get(uri, headers=headers, params=params)
 
@@ -157,14 +157,15 @@ class TwitchBot(commands.Bot):
                 new_token = refresh_access_token()
             except Exception as e:
                 log_error(LOG_FILE, e)
-                print("Something went wrong refreshing VIP access token.")
+                print("Something went wrong refreshing VIP access token. Details in log.txt")
                 return False
             
             headers["Authorization"] = f"Bearer {new_token}"
             response = requests.get(url, headers=headers)
 
             if not response.ok:
-                print(f"Failed to check user: {response.text}")
+                print(f"Failed to find user. Details in log.txt")
+                log_error(LOG_FILE, response.text)
                 return False
 
         data = response.json()
@@ -188,8 +189,8 @@ class TwitchBot(commands.Bot):
                 new_token = refresh_access_token()
                 headers['Authorization'] = f"Bearer {new_token}"
             except ConnectionError as e:
-                print(f"Error getting user_id: {e}")
                 log_error(LOG_FILE, e)
+                print(f"Error getting user_id. Details in log.txt")
                 return
             
             # retry getting user id once
@@ -200,7 +201,7 @@ class TwitchBot(commands.Bot):
             return user_data["data"][0]["id"]
         except requests.exceptions.JSONDecodeError as e:
             log_error(LOG_FILE, e)
-            print(f"Error getting user_id: {e}")
+            print(f"Error getting user_id. Details in log.txt")
 
     def get_follower_data(self, user_id):
         url = "https://api.twitch.tv/helix/channels/followers"
@@ -221,8 +222,8 @@ class TwitchBot(commands.Bot):
                 new_token = refresh_access_token()
                 headers["Authorization"] = f"Bearer {new_token}"
             except ConnectionError as e:
-                print(e)
                 log_error(LOG_FILE, e)
+                print(f"Something went wrong refreshing token. Details in log.txt")
                 return
             
             response = requests.get(url, headers=headers, params=params)
@@ -287,7 +288,8 @@ class TwitchBot(commands.Bot):
             try:
                 new_token = refresh_access_token()
             except Exception as e:
-                print(f"Refresh failed: {e}")
+                log_error(LOG_FILE, e)
+                print(f"Something went wrong refreshing token. Details in log.txt")
                 return
             
             headers["Authorization"] = f"Bearer {new_token}"
@@ -332,7 +334,7 @@ class TwitchBot(commands.Bot):
             
             if not response.ok:
                 log_error(LOG_FILE, response.text)
-                print("Something went wrong getting stream information. Please create an issue on GitHub with the log")
+                print("Something went wrong getting stream information. Details in log.txt")
 
         try:
             data = response.json()["data"]
@@ -364,7 +366,7 @@ class TwitchBot(commands.Bot):
                 headers["Authorization"] = f"Bearer {new_token}"
             except ConnectionError as e:
                 log_error(LOG_FILE, e)
-                print(f"Error updating stream title, aborting...\n{e}")
+                print(f"Error updating stream title. Details in log.txt")
                 return
             
             response = requests.patch(url, headers=headers, params=params)
@@ -1066,7 +1068,8 @@ def main():
     try:
         bot.run()
     except Exception as e:
-        print(f"Bot crashed: {e}")
+        log_error(LOG_FILE, e)
+        print(f"Bot crashed. Details in log.txt")
     finally:
         write_points_data(bot.points, POINTS_FILE)
         write_bonus_claimed(bot.bonus_claimed, FIRST_TIME_BONUS_FILE)
