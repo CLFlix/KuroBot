@@ -1028,38 +1028,16 @@ class TwitchBot(commands.Bot):
 
 
 def main():
-    while True:
-        requests_or_not = input("Do you accept map requests this stream? (y/n)\n").lower()
-        if requests_or_not in ("y", "n"):
-            map_requests = (
-                True
-                if requests_or_not == "y"
-                else False
-            )
-            break
-        print("Not a valid answer. Please enter 'y' or 'n'.")
+    def ask_yes_no(prompt: str):
+        while True:
+            answer = input(prompt).strip().lower()
+            if answer in ("y", "n"):
+                return answer == "y"
+            print("Not a valid answer. Please enter 'y' or 'n'.")
 
-    while True:
-        affiliate_or_not = input("Are you a Twitch Affiliate or Partner? (y/n)\n").lower()
-        if affiliate_or_not in ("y", "n"):
-            affiliate = (
-                True 
-                if affiliate_or_not == "y" 
-                else False
-            )
-            break
-        print("Not a valid answer. Please enter 'y' or 'n'.")
-
-    while True:
-        update_or_not = input("Would you like the bot to update your osu! rank in the stream title? (y/n)\n").lower()
-        if update_or_not in ("y", "n"):
-            update = (
-                True
-                if update_or_not == "y"
-                else False
-            )
-            break
-        print("Not a valid answer. Please enter 'y' or 'n'.")
+    map_requests = ask_yes_no("Do you accept map requests this stream? (y/n)\n")
+    affiliate = ask_yes_no("Are you a Twitch Affiliate or Partner? (y/n)\n")
+    update = ask_yes_no("Would you like the bot to update your osu! rank in the stream title? (y/n)\n")
 
     bot = TwitchBot(map_requests, affiliate, update)
     clean_logs(LOG_FILE)
