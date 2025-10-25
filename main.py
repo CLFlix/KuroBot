@@ -26,16 +26,23 @@ FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
 LOG_FILE = r'log.txt'
 
 class TwitchBot(commands.Bot):
-    def __init__(self, rq_message, affiliate, update):
+    def __init__(self, map_requests: bool, affiliate: bool, update: bool):
         super().__init__(
             token=TOKEN,
             prefix="!",
             initial_channels=[CHANNEL]
         )
 
-        self.rq_message = rq_message
+        self.map_requests = map_requests
         self.affiliate = affiliate
         self.update = update
+
+        self.rq_message = (
+            "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
+            if self.map_requests is True
+            else "I will not be accepting map requests this stream :/. Maybe next stream ;)"
+            )
+
 
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
@@ -1021,49 +1028,40 @@ class TwitchBot(commands.Bot):
 
 
 def main():
-    ask_for_requests = True
-    ask_for_affiliate = True
-    ask_for_title_updating = True
-    while ask_for_requests:
-        requests_or_not = input("Do you accept map requests this stream? (y/n)\n")
+    while True:
+        requests_or_not = input("Do you accept map requests this stream? (y/n)\n").lower()
+        if requests_or_not in ("y", "n"):
+            map_requests = (
+                True
+                if requests_or_not == "y"
+                else False
+            )
+            break
+        print("Not a valid answer. Please enter 'y' or 'n'.")
 
-        match requests_or_not.lower():
-            case "y":
-                message = "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
-                ask_for_requests = False
-            case "n":
-                message = "I will not be accepting map requests this stream :/. Maybe next stream ;)"
-                ask_for_requests = False
-            case _:
-                print("Not a valid answer. Please enter 'y' or 'n'.")
+    while True:
+        affiliate_or_not = input("Are you a Twitch Affiliate or Partner? (y/n)\n").lower()
+        if affiliate_or_not in ("y", "n"):
+            affiliate = (
+                True 
+                if affiliate_or_not == "y" 
+                else False
+            )
+            break
+        print("Not a valid answer. Please enter 'y' or 'n'.")
 
-    while ask_for_affiliate:
-        affiliate_or_not = input("Are you a Twitch Affiliate or Partner? (y/n)\n")
+    while True:
+        update_or_not = input("Would you like the bot to update your osu! rank in the stream title? (y/n)\n").lower()
+        if update_or_not in ("y", "n"):
+            update = (
+                True
+                if update_or_not == "y"
+                else False
+            )
+            break
+        print("Not a valid answer. Please enter 'y' or 'n'.")
 
-        match affiliate_or_not.lower():
-            case "y":
-                affiliate = True
-                ask_for_affiliate = False
-            case "n":
-                affiliate = False
-                ask_for_affiliate = False
-            case _:
-                print("Not a valid answer. Please enter 'y' or 'n'.")
-
-    while ask_for_title_updating:
-        update_or_not = input("Would you like the bot to update your osu! rank in the stream title? (y/n)\n")
-
-        match update_or_not.lower():
-            case "y":
-                update = True
-                ask_for_title_updating = False
-            case "n":
-                update = False
-                ask_for_title_updating = False
-            case _:
-                print("Not a valid answer. Please enter 'y' or 'n'.")
-
-    bot = TwitchBot(message, affiliate, update)
+    bot = TwitchBot(map_requests, affiliate, update)
     clean_logs(LOG_FILE)
     try:
         bot.run()
