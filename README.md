@@ -15,7 +15,6 @@ pip install -r requirements.txt
 ### All users:
 
 You will need <a href="https://github.com/Piotrekol/StreamCompanion">StreamCompanion</a> in order for `!np` and `!nppp` to work. These features work by taking the data StreamCompanion processes and shows you on the locally hosted json.\
-Also create a file called `points.json` in the same folder as the executable. This is were all the points of all the users will be stored. Simply open the file once and place `{}` inside it.
 
 ## Account and Authorization
 
