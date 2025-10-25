@@ -113,35 +113,14 @@ def edit_stream_title(current_title: str, current_rank):
     return new_title
 
 def calculate_followage_days(followed_at):
-    now = dt.now()
     dt_followed_at = dt.strptime(followed_at, "%Y-%m-%dT%H:%M:%SZ")
-    
-    time_between = now - dt_followed_at
-    days_from_follow_time = time_between.days
+    days_total = (dt.now() - dt_followed_at).days
+    years, days = divmod(days_total, 365)
 
-    followage_years = days_from_follow_time // 365
-    followage_days = days_from_follow_time % 365
+    parts = []
+    if years:
+        parts.append(f"{years} year{'s' if years != 1 else ''}")
+    if days:
+        parts.append(f"{days} day{'s' if days != 1 else ''}")
 
-    match followage_years:
-        case 0:
-            message_years = ""
-        case 1:
-            message_years = "1 year"
-        case _:
-            message_years = f"{followage_years} years"
-
-    match followage_days:
-        case 0:
-            message_days = ""
-        case 1:
-            message_days = "1 day"
-        case _:
-            message_days = f"{followage_days} days"
-
-    if not message_years:
-        return message_days
-    
-    if not message_days:
-        return message_years
-
-    return message_years + " " + message_days
+    return " ".join(parts) or ""
