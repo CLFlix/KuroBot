@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 ### All users:
 
-You will need <a href="https://github.com/Piotrekol/StreamCompanion">StreamCompanion</a> in order for `!np` and `!nppp` to work. These features work by taking the data StreamCompanion processes and shows you on the locally hosted json.\
+You will need <a href="https://github.com/Piotrekol/StreamCompanion">StreamCompanion</a> in order for `!np` and `!nppp` to work. This bot uses localhost:20727 to get the map's information.
 
 ## Account and Authorization
 
