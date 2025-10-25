@@ -1038,6 +1038,10 @@ def main():
     map_requests = ask_yes_no("Do you accept map requests this stream? (y/n)\n")
     affiliate = ask_yes_no("Are you a Twitch Affiliate or Partner? (y/n)\n")
     update = ask_yes_no("Would you like the bot to update your osu! rank in the stream title? (y/n)\n")
+    
+    # # clear CLI to declutter
+    time.sleep(0.5)
+    os.system("cls" if os.name == "nt" else "clear")
 
     bot = TwitchBot(map_requests, affiliate, update)
     clean_logs(LOG_FILE)
