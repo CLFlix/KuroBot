@@ -26,16 +26,23 @@ FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
 LOG_FILE = r'log.txt'
 
 class TwitchBot(commands.Bot):
-    def __init__(self, rq_message, affiliate, update):
+    def __init__(self, map_requests: bool, affiliate: bool, update: bool):
         super().__init__(
             token=TOKEN,
             prefix="!",
             initial_channels=[CHANNEL]
         )
 
-        self.rq_message = rq_message
+        self.map_requests = map_requests
         self.affiliate = affiliate
         self.update = update
+
+        self.rq_message = (
+            "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
+            if self.map_requests is True
+            else "I will not be accepting map requests this stream :/. Maybe next stream ;)"
+            )
+
 
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
@@ -121,7 +128,7 @@ class TwitchBot(commands.Bot):
                 headers["Authorization"] = f"Bearer {new_token}"
             except Exception as e:
                 log_error(LOG_FILE, e)
-                print("Something went wrong refreshing mods access token.")
+                print("Something went wrong refreshing mods access token. Details in log.txt")
 
             response = requests.get(uri, headers=headers, params=params)
 
@@ -157,14 +164,15 @@ class TwitchBot(commands.Bot):
                 new_token = refresh_access_token()
             except Exception as e:
                 log_error(LOG_FILE, e)
-                print("Something went wrong refreshing VIP access token.")
+                print("Something went wrong refreshing VIP access token. Details in log.txt")
                 return False
             
             headers["Authorization"] = f"Bearer {new_token}"
             response = requests.get(url, headers=headers)
 
             if not response.ok:
-                print(f"Failed to check user: {response.text}")
+                print(f"Failed to find user. Details in log.txt")
+                log_error(LOG_FILE, response.text)
                 return False
 
         data = response.json()
@@ -188,8 +196,8 @@ class TwitchBot(commands.Bot):
                 new_token = refresh_access_token()
                 headers['Authorization'] = f"Bearer {new_token}"
             except ConnectionError as e:
-                print(f"Error getting user_id: {e}")
                 log_error(LOG_FILE, e)
+                print(f"Error getting user_id. Details in log.txt")
                 return
             
             # retry getting user id once
@@ -200,7 +208,7 @@ class TwitchBot(commands.Bot):
             return user_data["data"][0]["id"]
         except requests.exceptions.JSONDecodeError as e:
             log_error(LOG_FILE, e)
-            print(f"Error getting user_id: {e}")
+            print(f"Error getting user_id. Details in log.txt")
 
     def get_follower_data(self, user_id):
         url = "https://api.twitch.tv/helix/channels/followers"
@@ -221,8 +229,8 @@ class TwitchBot(commands.Bot):
                 new_token = refresh_access_token()
                 headers["Authorization"] = f"Bearer {new_token}"
             except ConnectionError as e:
-                print(e)
                 log_error(LOG_FILE, e)
+                print(f"Something went wrong refreshing token. Details in log.txt")
                 return
             
             response = requests.get(url, headers=headers, params=params)
@@ -287,7 +295,8 @@ class TwitchBot(commands.Bot):
             try:
                 new_token = refresh_access_token()
             except Exception as e:
-                print(f"Refresh failed: {e}")
+                log_error(LOG_FILE, e)
+                print(f"Something went wrong refreshing token. Details in log.txt")
                 return
             
             headers["Authorization"] = f"Bearer {new_token}"
@@ -332,7 +341,7 @@ class TwitchBot(commands.Bot):
             
             if not response.ok:
                 log_error(LOG_FILE, response.text)
-                print("Something went wrong getting stream information. Please create an issue on GitHub with the log")
+                print("Something went wrong getting stream information. Details in log.txt")
 
         try:
             data = response.json()["data"]
@@ -364,7 +373,7 @@ class TwitchBot(commands.Bot):
                 headers["Authorization"] = f"Bearer {new_token}"
             except ConnectionError as e:
                 log_error(LOG_FILE, e)
-                print(f"Error updating stream title, aborting...\n{e}")
+                print(f"Error updating stream title. Details in log.txt")
                 return
             
             response = requests.patch(url, headers=headers, params=params)
@@ -388,7 +397,9 @@ class TwitchBot(commands.Bot):
                 log_error(LOG_FILE, f"{time.time()}: {e}")
                 print(f"Couldn't update stream title, details in log.txt")
             except ValueError as e:
-                log_error(LOG_FILE, f"{time.time()}: {e}")
+                # manual write: stop printing every valueError
+                with open(LOG_FILE, 'a', encoding='utf-8') as log:
+                    log.write(f"{time.time()}: {e}")
             # wait 10 minutes before restarting the loop
             await asyncio.sleep(600)
 
@@ -1017,54 +1028,24 @@ class TwitchBot(commands.Bot):
 
 
 def main():
-    ask_for_requests = True
-    ask_for_affiliate = True
-    ask_for_title_updating = True
-    while ask_for_requests:
-        requests_or_not = input("Do you accept map requests this stream? (y/n)\n")
+    def ask_yes_no(prompt: str):
+        while True:
+            answer = input(prompt).strip().lower()
+            if answer in ("y", "n"):
+                return answer == "y"
+            print("Not a valid answer. Please enter 'y' or 'n'.")
 
-        match requests_or_not.lower():
-            case "y":
-                message = "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
-                ask_for_requests = False
-            case "n":
-                message = "I will not be accepting map requests this stream :/. Maybe next stream ;)"
-                ask_for_requests = False
-            case _:
-                print("Not a valid answer. Please enter 'y' or 'n'.")
+    map_requests = ask_yes_no("Do you accept map requests this stream? (y/n)\n")
+    affiliate = ask_yes_no("Are you a Twitch Affiliate or Partner? (y/n)\n")
+    update = ask_yes_no("Would you like the bot to update your osu! rank in the stream title? (y/n)\n")
 
-    while ask_for_affiliate:
-        affiliate_or_not = input("Are you a Twitch Affiliate or Partner? (y/n)\n")
-
-        match affiliate_or_not.lower():
-            case "y":
-                affiliate = True
-                ask_for_affiliate = False
-            case "n":
-                affiliate = False
-                ask_for_affiliate = False
-            case _:
-                print("Not a valid answer. Please enter 'y' or 'n'.")
-
-    while ask_for_title_updating:
-        update_or_not = input("Would you like the bot to update your osu! rank in the stream title? (y/n)\n")
-
-        match update_or_not.lower():
-            case "y":
-                update = True
-                ask_for_title_updating = False
-            case "n":
-                update = False
-                ask_for_title_updating = False
-            case _:
-                print("Not a valid answer. Please enter 'y' or 'n'.")
-
-    bot = TwitchBot(message, affiliate, update)
+    bot = TwitchBot(map_requests, affiliate, update)
     clean_logs(LOG_FILE)
     try:
         bot.run()
     except Exception as e:
-        print(f"Bot crashed: {e}")
+        log_error(LOG_FILE, e)
+        print(f"Bot crashed. Details in log.txt")
     finally:
         write_points_data(bot.points, POINTS_FILE)
         write_bonus_claimed(bot.bonus_claimed, FIRST_TIME_BONUS_FILE)

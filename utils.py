@@ -62,8 +62,13 @@ def format_mods(mods):
 
 # Get the points of every viewer
 def get_points_data(points_file):
-    with open(points_file, 'r', encoding='utf-8') as points:
-        viewer_points = json.load(points)
+    try:
+        with open(points_file, 'r', encoding='utf-8') as points:
+            viewer_points = json.load(points)
+    except FileNotFoundError: # first time startup
+        viewer_points = {}
+        with open(points_file, 'w', encoding='utf-8') as points:
+            points.write("{}")
     return viewer_points
 
 # Save the points of all viewers

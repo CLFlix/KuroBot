@@ -5,6 +5,7 @@ import requests
 
 from dotenv import load_dotenv
 from refresh_access_token import refresh_access_token
+from utils import log_error
 
 load_dotenv()
 
@@ -22,7 +23,6 @@ async def eventsub_listener(redemption_handler):
         data = json.loads(msg)
 
         if data["metadata"]["message_type"] == "session_welcome":
-            print("Received session_welcome from Twitch")
             session_id = data["payload"]["session"]["id"]
 
             headers = {
@@ -49,14 +49,13 @@ async def eventsub_listener(redemption_handler):
             )
 
             if response.status_code == 401:
-                print("EventSub Listener couldn't connect. Retrying once...")
 
                 try:
                     # refresh access token for redemption listener, then retry subscription
                     new_token = refresh_access_token()
-                    print("Refreshed redemption listener token")
                 except Exception as e:
-                    print(f"Refresh failed: {e}")
+                    print(f"Token refresh failed, details in log.txt")
+                    log_error(r'log.txt', e)
                     return
 
                 headers["Authorization"] = f"Bearer {new_token}"
@@ -67,7 +66,8 @@ async def eventsub_listener(redemption_handler):
                 )
 
                 if response.status_code not in (200, 202): # if second try fails, stop trying to create subscription
-                    print(f"Second try to create EventSub Listener failed. This part of the bot won't work this session. Response: {response.text}")
+                    print(f"Second try to create EventSub Listener failed. Details in log.txt")
+                    log_error(r'log.txt', response.text)
                     return
                 
         print("Listening for redemptions...")
@@ -83,7 +83,9 @@ async def eventsub_listener(redemption_handler):
                     await redemption_handler(event)
                 elif msg_type == "revocation":
                     revocation_reason = data["payload"]["status"]
-                    print(f"The redemption subscription has been revoked. Reason: {revocation_reason}")
+                    print(f"The redemption subscription has been revoked. Details in log.txt")
+                    log_error(r'log.txt', revocation_reason)
                     await redemption_handler(msg_type)
         except Exception as e:
-            print(f"EventSub Listener crashed: {e}")
+            print(f"EventSub Listener crashed: details in log.txt")
+            log_error(r'log.txt', e)
