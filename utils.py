@@ -18,8 +18,7 @@ def clean_logs(log_file):
 # log errors to a file
 def log_error(log_file, error):
     with open(log_file, 'a', encoding='utf-8') as logs:
-        logs.write(f"{dt.now()} - {error}")
-    print(f"{dt.now()} Error logged in {log_file}\n")
+        logs.write(f"{dt.now()} - {error}\n")
 
 # When osuAuth and osuUsername are filled in in the .env file, this method can look up your osu! profile
 def get_profile():
