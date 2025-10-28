@@ -392,7 +392,10 @@ class TwitchBot(commands.Bot):
 
             try:
                 new_stream_title = edit_stream_title(current_title, current_rank)
-                self.update_stream_title(new_stream_title)
+                if new_stream_title != current_title:
+                    self.update_stream_title(new_stream_title)
+                else:
+                    break
             except SyntaxError as e:
                 log_error(LOG_FILE, f"{time.time()}: {e}")
                 print(f"Couldn't update stream title, details in log.txt")
