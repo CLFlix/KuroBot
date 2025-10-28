@@ -16,6 +16,8 @@ ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 
 # channel points redemption listener
 async def eventsub_listener(redemption_handler):
+    global ACCESS_TOKEN
+    
     url = "wss://eventsub.wss.twitch.tv/ws"
 
     async with websockets.connect(url) as ws:
@@ -52,13 +54,13 @@ async def eventsub_listener(redemption_handler):
 
                 try:
                     # refresh access token for redemption listener, then retry subscription
-                    new_token = refresh_access_token()
+                    ACCESS_TOKEN = refresh_access_token()
                 except Exception as e:
                     print(f"Token refresh failed, details in log.txt")
                     log_error(r'log.txt', e)
                     return
 
-                headers["Authorization"] = f"Bearer {new_token}"
+                headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
                 response = requests.post(
                     "https://api.twitch.tv/helix/eventsub/subscriptions",
                     headers=headers,
