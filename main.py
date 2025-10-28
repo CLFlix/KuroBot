@@ -112,6 +112,8 @@ class TwitchBot(commands.Bot):
             await channel.send(f"@{user} Your redemption has been acknowlged.")
 
     async def get_mods_list(self):
+        global ACCESS_TOKEN
+
         uri = "https://api.twitch.tv/helix/moderation/moderators"
         headers = {
             "Authorization": f"Bearer {ACCESS_TOKEN}",
@@ -124,8 +126,8 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401:
             try:
-                new_token = refresh_access_token()
-                headers["Authorization"] = f"Bearer {new_token}"
+                ACCESS_TOKEN = refresh_access_token()
+                headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except Exception as e:
                 log_error(LOG_FILE, e)
                 print("Something went wrong refreshing mods access token. Details in log.txt")
@@ -151,6 +153,8 @@ class TwitchBot(commands.Bot):
 
     # check if a user exists
     async def user_exists(self, username) -> bool:
+        global ACCESS_TOKEN
+
         url = f"https://api.twitch.tv/helix/users?login={username}"
         headers = {
             "Authorization": f"Bearer {ACCESS_TOKEN}",
@@ -161,13 +165,13 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401:
             try:
-                new_token = refresh_access_token()
+                ACCESS_TOKEN = refresh_access_token()
             except Exception as e:
                 log_error(LOG_FILE, e)
                 print("Something went wrong refreshing VIP access token. Details in log.txt")
                 return False
             
-            headers["Authorization"] = f"Bearer {new_token}"
+            headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             response = requests.get(url, headers=headers)
 
             if not response.ok:
@@ -179,6 +183,8 @@ class TwitchBot(commands.Bot):
         return len(data["data"]) > 0
 
     def get_user_id(self, user):
+        global ACCESS_TOKEN
+
         url = "https://api.twitch.tv/helix/users"
         headers = {
             "Authorization": f"Bearer {ACCESS_TOKEN}",
@@ -193,8 +199,8 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401: # Unauthorized: token expired
             try:
-                new_token = refresh_access_token()
-                headers['Authorization'] = f"Bearer {new_token}"
+                ACCESS_TOKEN = refresh_access_token()
+                headers['Authorization'] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 log_error(LOG_FILE, e)
                 print(f"Error getting user_id. Details in log.txt")
@@ -211,6 +217,8 @@ class TwitchBot(commands.Bot):
             print(f"Error getting user_id. Details in log.txt")
 
     def get_follower_data(self, user_id):
+        global ACCESS_TOKEN
+
         url = "https://api.twitch.tv/helix/channels/followers"
         headers = {
             "Authorization": f"Bearer {ACCESS_TOKEN}",
@@ -226,8 +234,8 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401:
             try:
-                new_token = refresh_access_token()
-                headers["Authorization"] = f"Bearer {new_token}"
+                ACCESS_TOKEN = refresh_access_token()
+                headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 log_error(LOG_FILE, e)
                 print(f"Something went wrong refreshing token. Details in log.txt")
@@ -274,6 +282,8 @@ class TwitchBot(commands.Bot):
             return False, response.status_code
     
     def create_poll(self, title, choices, duration):
+        global ACCESS_TOKEN
+
         uri = "https://api.twitch.tv/helix/polls"
         headers = {
             "Authorization": f"Bearer {ACCESS_TOKEN}",
@@ -293,13 +303,13 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401:
             try:
-                new_token = refresh_access_token()
+                ACCESS_TOKEN = refresh_access_token()
             except Exception as e:
                 log_error(LOG_FILE, e)
                 print(f"Something went wrong refreshing token. Details in log.txt")
                 return
             
-            headers["Authorization"] = f"Bearer {new_token}"
+            headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             response = requests.post(uri, headers=headers, json=body)
 
             if not response.ok:
@@ -316,6 +326,8 @@ class TwitchBot(commands.Bot):
 
     # get current twitch stream title
     def get_stream_title(self):
+        global ACCESS_TOKEN
+
         url = "https://api.twitch.tv/helix/channels"
         headers = {
             "Authorization": f"Bearer {ACCESS_TOKEN}",
@@ -330,8 +342,8 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401:
             try:
-                new_token = refresh_access_token()
-                headers["Authorization"] = f"Bearer {new_token}"
+                ACCESS_TOKEN = refresh_access_token()
+                headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 log_error(LOG_FILE, e)
                 print("Error fetching stream details, details in log.txt")
@@ -352,6 +364,8 @@ class TwitchBot(commands.Bot):
 
     # send patch request to update stream title
     def update_stream_title(self, new_stream_title):
+        global ACCESS_TOKEN
+
         url = "https://api.twitch.tv/helix/channels"
         headers = {
             "Authorization": f"Bearer {ACCESS_TOKEN}",
@@ -369,8 +383,8 @@ class TwitchBot(commands.Bot):
 
         if response.status_code == 401:
             try:
-                new_token = refresh_access_token()
-                headers["Authorization"] = f"Bearer {new_token}"
+                ACCESS_TOKEN = refresh_access_token()
+                headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 log_error(LOG_FILE, e)
                 print(f"Error updating stream title. Details in log.txt")
