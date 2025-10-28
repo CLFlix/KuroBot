@@ -378,9 +378,12 @@ class TwitchBot(commands.Bot):
             
             response = requests.patch(url, headers=headers, params=params)
 
-            if not response.ok:
-                log_error(LOG_FILE, response.text)
-                print(f"Error updating stream title, details in log.txt")
+        if "The request must update at least one channel property field." in response.text:
+            log_error(LOG_FILE, f"NOTICE: {response.text}")
+
+        if not response.ok:
+            log_error(LOG_FILE, response.text)
+            print(f"Error updating stream title, details in log.txt")
 
     # this loop will restart every 10 minutes, updating the stream title
     # with the current osu! rank, keeping the title up-to-date
