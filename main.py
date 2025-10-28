@@ -402,7 +402,7 @@ class TwitchBot(commands.Bot):
             except ValueError as e:
                 # manual write: stop printing every valueError
                 with open(LOG_FILE, 'a', encoding='utf-8') as log:
-                    log.write(f"{time.time()}: {e}")
+                    log.write(f"NOTICE: {time.time()}: {e}\n")
             # wait 10 minutes before restarting the loop
             await asyncio.sleep(600)
 
