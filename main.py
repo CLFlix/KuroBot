@@ -1065,6 +1065,7 @@ def main():
 
     bot = TwitchBot(map_requests, affiliate, update)
     clean_logs(LOG_FILE)
+    first_time_startup()
     try:
         bot.run()
     except Exception as e:

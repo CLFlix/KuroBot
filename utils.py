@@ -20,6 +20,24 @@ def log_error(log_file, error):
     with open(log_file, 'a', encoding='utf-8') as logs:
         logs.write(f"{dt.now()} - {error}\n")
 
+def first_time_startup():
+    if r'socials.json' in os.listdir(r'.'):
+        return
+
+    socials = {
+        "YouTube": "",
+        "Discord": "",
+        "TikTok": "",
+        "Instagram": "",
+        "Twitter / X": "",
+        "Linktree": ""
+    }
+
+    with open(r'socials.json', 'w', encoding='utf-8') as socials_file:
+        json.dump(socials, socials_file, indent=4)
+    
+    print(f"You can now add your social links in socials.json")
+
 # When osuAuth and osuUsername are filled in in the .env file, this method can look up your osu! profile
 def get_profile():
     profile_url = "https://osu.ppy.sh/api/get_user"
