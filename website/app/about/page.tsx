@@ -28,10 +28,10 @@ function About() {
           </div>
           <div className="flex justify-center">
             <Image
-              width={256}
-              height={256}
-              src={"static/kurookami_logo.jpg"}
-              alt="Kurookami logo"
+              width={400}
+              height={500}
+              src={"static/logo.PNG"}
+              alt="KuroBot Logo"
               className="max-xl:hidden"
             ></Image>
           </div>
