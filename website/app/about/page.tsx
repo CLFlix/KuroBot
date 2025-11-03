@@ -3,8 +3,8 @@ import Image from "next/image";
 function About() {
   return (
     <>
-      <main className="m-5 mb-10 mt-3 max-lg:mb-3 font-sans">
-        <section className="grid grid-cols-2 max-lg:grid-cols-1">
+      <main className="m-5 mb-10 mt-3 max-xl:mb-3 font-sans">
+        <section className="grid grid-cols-2 max-xl:grid-cols-1">
           <div>
             <h1 className="text-3xl font-bold">Me!</h1>
             <p>
@@ -25,34 +25,19 @@ function About() {
               enjoying every step of the way, making my bot just a little better
               and more advanced each time.
             </p>
-          </div>
-          <div className="flex justify-center">
-            <Image
-              width={400}
-              height={500}
-              src={"static/logo.PNG"}
-              alt="KuroBot Logo"
-              className="max-xl:hidden"
-            ></Image>
-          </div>
-        </section>
-        <section>
-          <h1 className="text-3xl font-bold">Tech Stack</h1>
-          <p>
-            This bot was completely coded in Python. It uses the Twitch API for
-            things like checking if a Twitch user exists{" "}
-            <sub>("!gift" - bot points system)</sub> and adding VIP status to a
-            user <sub>("vip")</sub>. The osu! API is also used to get the
-            streamer's information to display the streamer's current rank,
-            playtime and more. The website was made with React and Next.js +
-            Tailwind CSS. It may look a little scuffed, since I had just started
-            learning how to work with these frameworks in college when I built
-            it. Tailwind CSS is responsible for the decent look of this website,
-            since I SUCK at normal CSS.
-          </p>
-        </section>
-        <section className="grid grid-cols-2 max-lg:grid-cols-1">
-          <section>
+            <h1 className="text-3xl font-bold">Tech Stack</h1>
+            <p>
+              This bot was completely coded in Python. It uses the Twitch API
+              for things like checking if a Twitch user exists{" "}
+              <sub>("!gift" - bot points system)</sub> and adding VIP status to
+              a user <sub>("vip")</sub>. The osu! API is also used to get the
+              streamer's information to display the streamer's current rank,
+              playtime and more. The website was made with React and Next.js +
+              Tailwind CSS. It may look a little scuffed, since I had just
+              started learning how to work with these frameworks in college when
+              I built it. Tailwind CSS is responsible for the decent look of
+              this website, since I SUCK at normal CSS.
+            </p>
             <h1 className="text-3xl font-bold mt-4">Contribute</h1>
             <h1 className="text-xl font-bold">Developers:</h1>
             <p>
@@ -81,7 +66,18 @@ function About() {
               keep in mind that this is a side project and I have to put my main
               focus on college.
             </p>
-          </section>
+          </div>
+          <div className="flex justify-center">
+            <Image
+              width={4800 / 10}
+              height={6000 / 10}
+              src={"static/logo.PNG"}
+              alt="KuroBot Logo"
+              className="max-xl:hidden rounded-2xl"
+            ></Image>
+          </div>
+        </section>
+        <section className="grid grid-cols-2 max-lg:grid-cols-1">
           <section className="text-center max-lg:hidden">
             <h1 className="text-3xl font-bold mt-4">Links</h1>
             <div className="flex flex-col gap-1 text-blue-400 text-xl">
@@ -127,10 +123,10 @@ function About() {
               </span>
             </div>
           </section>
-        </section>
-        <section className="text-center mt-4">
-          <h1 className="text-3xl font-bold">Download</h1>
-          <p className="font-bold">[COMING SOON]</p>
+          <section className="text-center mt-4 pb-2">
+            <h1 className="text-3xl font-bold">Download</h1>
+            <p className="font-bold">[COMING SOON]</p>
+          </section>
         </section>
       </main>
     </>

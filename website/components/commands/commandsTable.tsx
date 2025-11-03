@@ -12,7 +12,7 @@ const CommandsTable: React.FC<Props> = ({ commandsList }: Props) => {
       <div className="flex justify-center mb-5">
         {commandsList && (
           <table className="text-left">
-            <thead className="bg-gradient-to-br from-purple-700 to-purple-500 text-white">
+            <thead className="bg-gradient-to-tl from-indigo-800 to-purple-700 text-white">
               <tr>
                 <th className="p-2 w-1/6 text-center">Command</th>
                 <th className="p-2 max-w-[200px] truncate text-center">
