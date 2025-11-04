@@ -53,7 +53,7 @@ class TwitchBot(commands.Bot):
 
     ## export commands
     def export_commands(self):
-        order = ["commands", "followage", "lurk", "shoutout", "so", "points", "claim", "leaderboard", "lb", "poll", "test", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
+        order = ["commands", "followage", "lurk", "socials", "shoutout", "so", "points", "claim", "leaderboard", "lb", "poll", "test", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
                  "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "bonk", "endwith", "invert", "zoom", "memecam", "gift", "vip"]
 
         written = set()
@@ -520,6 +520,8 @@ class TwitchBot(commands.Bot):
     @commands.command(name="socials")
     async def socials(self, ctx):
         await ctx.send(f"@{ctx.author.name} {self.links}")
+    socials.category = "useful"
+    socials.description = "Display links to other social channels in the chat! These can be: YouTube, TikTok, Discord, Instagram, Twitter / X, or when the streamer prefers this, the link to their Linktree."
 
     # shoutout the user specified
     @commands.command(name="shoutout")
