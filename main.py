@@ -24,6 +24,7 @@ osuUsername = os.getenv("osuUsername")
 POINTS_FILE = r'points.json'
 FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
 LOG_FILE = r'log.txt'
+SOCIALS_FILE = r'socials.json'
 
 class TwitchBot(commands.Bot):
     def __init__(self, map_requests: bool, affiliate: bool, update: bool):
@@ -46,6 +47,7 @@ class TwitchBot(commands.Bot):
 
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
+        self.links = read_socials_links(SOCIALS_FILE)
 
         # manage chat message points cooldowns
         self.last_point_time = {}
@@ -514,6 +516,11 @@ class TwitchBot(commands.Bot):
             f"@{ctx.author.name} Thanks for the lurk! If you want to mute the audio, please mute the tab instead of the stream, otherwise you won't count as a viewer ;)")
     lurk.category = "useful"
     lurk.description = "Let the streamer know you're there, but in the background 🧐"
+
+    # display socials in chat
+    @commands.command(name="socials")
+    async def socials(self, ctx):
+        await ctx.send(f"@{ctx.author.name} {self.links}")
 
     # shoutout the user specified
     @commands.command(name="shoutout")
@@ -1059,12 +1066,13 @@ def main():
     affiliate = ask_yes_no("Are you a Twitch Affiliate or Partner? (y/n)\n")
     update = ask_yes_no("Would you like the bot to update your osu! rank in the stream title? (y/n)\n")
     
-    # # clear CLI to declutter
+    # clear CLI to declutter console
     time.sleep(0.5)
     os.system("cls" if os.name == "nt" else "clear")
 
     bot = TwitchBot(map_requests, affiliate, update)
     clean_logs(LOG_FILE)
+    first_time_startup()
     try:
         bot.run()
     except Exception as e:
