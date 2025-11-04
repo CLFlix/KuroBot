@@ -38,6 +38,21 @@ def first_time_startup():
     
     print(f"You can now add your social links in socials.json")
 
+# load the socials links
+def read_socials_links(socials_file):
+    try:
+        with open(socials_file, 'r', encoding='utf-8') as socials_json:
+            socials = json.load(socials_json)
+    except FileNotFoundError:
+        return "No socials added"
+    
+    message_links = []
+    for media, link in socials.items():
+        if link:
+            message_links.append(f"{media}: {link}") 
+
+    return ", ".join(message_links) if message_links else "No socials added"
+
 # When osuAuth and osuUsername are filled in in the .env file, this method can look up your osu! profile
 def get_profile():
     profile_url = "https://osu.ppy.sh/api/get_user"
