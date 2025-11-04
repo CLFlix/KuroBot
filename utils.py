@@ -21,6 +21,13 @@ def log_error(log_file, error):
         logs.write(f"{dt.now()} - {error}\n")
 
 def first_time_startup():
+    if r'points.json' in os.listdir(r'.'):
+        return
+
+    with open(r'points.json', 'w', encoding='utf-8') as points_file:
+        json.dump({}, points_file)
+    print("points.json successfully created")
+
     if r'socials.json' in os.listdir(r'.'):
         return
 
@@ -94,13 +101,8 @@ def format_mods(mods):
 
 # Get the points of every viewer
 def get_points_data(points_file):
-    try:
-        with open(points_file, 'r', encoding='utf-8') as points:
-            viewer_points = json.load(points)
-    except FileNotFoundError: # first time startup
-        viewer_points = {}
-        with open(points_file, 'w', encoding='utf-8') as points:
-            points.write("{}")
+    with open(points_file, 'r', encoding='utf-8') as points:
+        viewer_points = json.load(points)
     return viewer_points
 
 # Save the points of all viewers

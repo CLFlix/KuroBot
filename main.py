@@ -44,7 +44,6 @@ class TwitchBot(commands.Bot):
             else "I will not be accepting map requests this stream :/. Maybe next stream ;)"
             )
 
-
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
         self.links = read_socials_links(SOCIALS_FILE)
@@ -1070,9 +1069,9 @@ def main():
     time.sleep(0.5)
     os.system("cls" if os.name == "nt" else "clear")
 
+    first_time_startup()
     bot = TwitchBot(map_requests, affiliate, update)
     clean_logs(LOG_FILE)
-    first_time_startup()
     try:
         bot.run()
     except Exception as e:
