@@ -10,10 +10,11 @@ load_dotenv()
 osuUsername = os.getenv("osuUsername")
 API_KEY = os.getenv("osuAuth")
 
-# wipe log file
-def clean_logs(log_file):
-    with open(log_file, 'w', encoding='utf-8') as logs:
-        logs.write("")
+# create dedicated folder for log files
+def create_logs_folder():
+    if r'logs' in os.listdir(r'.'):
+        return    
+    os.system("mkdir logs")
 
 # log errors to a file
 def log_error(log_file, error):

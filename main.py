@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 import os
 import time
+from datetime import datetime
 import asyncio
 import random
 
@@ -23,7 +24,7 @@ osuUsername = os.getenv("osuUsername")
 
 POINTS_FILE = r'points.json'
 FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
-LOG_FILE = r'log.txt'
+LOG_FILE = f'logs/{datetime.now()}.txt'
 SOCIALS_FILE = r'socials.json'
 
 class TwitchBot(commands.Bot):
@@ -1073,7 +1074,6 @@ def main():
 
     first_time_startup()
     bot = TwitchBot(map_requests, affiliate, update)
-    clean_logs(LOG_FILE)
     try:
         bot.run()
     except Exception as e:
