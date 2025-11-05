@@ -24,7 +24,7 @@ osuUsername = os.getenv("osuUsername")
 
 POINTS_FILE = r'points.json'
 FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
-LOG_FILE = f'logs/{datetime.now()}.txt'
+LOG_FILE = f'logs/{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.txt'
 SOCIALS_FILE = r'socials.json'
 
 class TwitchBot(commands.Bot):
