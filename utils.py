@@ -10,18 +10,17 @@ load_dotenv()
 osuUsername = os.getenv("osuUsername")
 API_KEY = os.getenv("osuAuth")
 
-# create dedicated folder for log files
-def create_logs_folder():
-    if r'logs' in os.listdir(r'.'):
-        return    
-    os.system("mkdir logs")
-
 # log errors to a file
 def log_error(log_file, error):
     with open(log_file, 'a', encoding='utf-8') as logs:
         logs.write(f"{dt.now()} - {error}\n")
 
 def first_time_startup():
+    # create logs folder
+    if r'logs' in os.listdir(r'.'):
+        return    
+    os.system("mkdir logs")
+
     if r'points.json' in os.listdir(r'.'):
         return
 
