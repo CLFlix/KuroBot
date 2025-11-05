@@ -69,9 +69,9 @@ function About() {
           </div>
           <div className="flex justify-center">
             <Image
-              width={4800 / 10}
-              height={6000 / 10}
-              src={"static/logo.PNG"}
+              width={480}
+              height={600}
+              src={"static/logo.png"}
               alt="KuroBot Logo"
               className="max-xl:hidden rounded-2xl"
             ></Image>
