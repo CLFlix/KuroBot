@@ -13,7 +13,7 @@ API_KEY = os.getenv("osuAuth")
 # log errors to a file
 def log_error(log_file, error):
     with open(log_file, 'a', encoding='utf-8') as logs:
-        logs.write(f"{dt.now()} - {error}\n")
+        logs.write(f"{dt.now().strftime("%Y-%m-%d_%H-%M-%S")} - {error}\n")
 
 def first_time_startup():
     # quick check if all files / log folder exist
@@ -119,7 +119,6 @@ def get_points_data(points_file):
 def write_points_data(viewer_points, points_file):
     with open(points_file, 'w', encoding='utf-8') as points_output:
         json.dump(viewer_points, points_output, indent=4)
-    print("Points data saved!")
 
 def get_bonus_claimed(first_time_bonus_file):
     bonus_claimed = []
@@ -135,7 +134,6 @@ def write_bonus_claimed(bonus_claimed_list, first_time_bonus_file):
     with open(first_time_bonus_file, 'w', encoding='utf-8') as file:
         for user in bonus_claimed_list:
             file.write(f"{user}\n")
-    print("First time bonus data saved!")
 
 def edit_stream_title(current_title: str, current_rank):
     open_bracket_index = current_title.find("[")
