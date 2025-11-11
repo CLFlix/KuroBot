@@ -13,7 +13,7 @@ API_KEY = os.getenv("osuAuth")
 # log errors to a file
 def log_error(log_file, error):
     with open(log_file, 'a', encoding='utf-8') as logs:
-        logs.write(f"{dt.now()} - {error}\n")
+        logs.write(f"{dt.now().strftime("%Y-%m-%d_%H-%M-%S")} - {error}\n")
 
 def first_time_startup():
     # quick check if all files / log folder exist
