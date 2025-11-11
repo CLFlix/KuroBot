@@ -35,6 +35,10 @@ class TwitchBot(commands.Bot):
             initial_channels=[CHANNEL]
         )
 
+        # let first_time_startup run first, otherwise log file will
+        # become undefined, trying to look in a directory that doesn't exist
+        first_time_startup()
+
         self.map_requests = map_requests
         self.affiliate = affiliate
         self.update = update
@@ -1072,7 +1076,6 @@ def main():
     time.sleep(0.5)
     os.system("cls" if os.name == "nt" else "clear")
 
-    first_time_startup()
     bot = TwitchBot(map_requests, affiliate, update)
     try:
         bot.run()
