@@ -63,7 +63,7 @@ class TwitchBot(commands.Bot):
         log_error(LOG_FILE, f"{datetime.now().strftime(date_format)} - First time bonus data saved")
         write_points_data(self.points, POINTS_FILE)
         log_error(LOG_FILE, f"{datetime.now().strftime(date_format)} - Points data saved")
-        
+
         try:
             self.close()
         except AttributeError:
@@ -431,12 +431,12 @@ class TwitchBot(commands.Bot):
                 if new_stream_title != current_title:
                     self.update_stream_title(new_stream_title)
             except SyntaxError as e:
-                log_error(LOG_FILE, f"{time.time()}: {e}")
+                log_error(LOG_FILE, f"{datetime.now().strftime(date_format)} - {e}")
                 print(f"Couldn't update stream title, details in log.txt")
             except ValueError as e:
                 # manual write: stop printing every valueError
                 with open(LOG_FILE, 'a', encoding='utf-8') as log:
-                    log.write(f"NOTICE: {time.time()}: {e}\n")
+                    log.write(f"{datetime.now().strftime(date_format)} - NOTICE: {e}\n")
             # wait 10 minutes before restarting the loop
             await asyncio.sleep(600)
 
