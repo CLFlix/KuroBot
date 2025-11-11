@@ -5,7 +5,7 @@ import requests
 
 from dotenv import load_dotenv
 from refresh_access_token import refresh_access_token
-from utils import log_error
+from utils import write_log
 
 load_dotenv()
 
@@ -57,7 +57,7 @@ async def eventsub_listener(redemption_handler):
                     ACCESS_TOKEN = refresh_access_token()
                 except Exception as e:
                     print(f"Token refresh failed, details in log.txt")
-                    log_error(r'log.txt', e)
+                    write_log(r'log.txt', e)
                     return
 
                 headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
@@ -69,7 +69,7 @@ async def eventsub_listener(redemption_handler):
 
                 if response.status_code not in (200, 202): # if second try fails, stop trying to create subscription
                     print(f"Second try to create EventSub Listener failed. Details in log.txt")
-                    log_error(r'log.txt', response.text)
+                    write_log(r'log.txt', response.text)
                     return
                 
         print("Listening for redemptions...")
@@ -86,8 +86,8 @@ async def eventsub_listener(redemption_handler):
                 elif msg_type == "revocation":
                     revocation_reason = data["payload"]["status"]
                     print(f"The redemption subscription has been revoked. Details in log.txt")
-                    log_error(r'log.txt', revocation_reason)
+                    write_log(r'log.txt', revocation_reason)
                     await redemption_handler(msg_type)
         except Exception as e:
             print(f"EventSub Listener crashed: details in log.txt")
-            log_error(r'log.txt', e)
+            write_log(r'log.txt', e)
