@@ -66,9 +66,9 @@ class TwitchBot(commands.Bot):
 
     def stop(self):
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
-        log_error(LOG_FILE, f"First time bonus data saved")
+        write_log(LOG_FILE, f"First time bonus data saved")
         write_points_data(self.points, POINTS_FILE)
-        log_error(LOG_FILE, f"Points data saved")
+        write_log(LOG_FILE, f"Points data saved")
 
         try:
             self.close()
@@ -151,13 +151,13 @@ class TwitchBot(commands.Bot):
                 ACCESS_TOKEN = refresh_access_token()
                 request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except Exception as e:
-                log_error(LOG_FILE, e)
+                write_log(LOG_FILE, e)
                 print("Something went wrong refreshing mods access token. Details in log.txt")
 
             response = requests.get(uri, headers=request_headers, params=params)
 
             if response.status_code != 200:
-                log_error(LOG_FILE, response.text)
+                write_log(LOG_FILE, response.text)
                 raise ConnectionError("Error getting mods list. More detailed error in log.txt")
 
         try:
@@ -186,7 +186,7 @@ class TwitchBot(commands.Bot):
             try:
                 ACCESS_TOKEN = refresh_access_token()
             except Exception as e:
-                log_error(LOG_FILE, e)
+                write_log(LOG_FILE, e)
                 print("Something went wrong refreshing VIP access token. Details in log.txt")
                 return False
             
@@ -195,7 +195,7 @@ class TwitchBot(commands.Bot):
 
             if not response.ok:
                 print(f"Failed to find user. Details in log.txt")
-                log_error(LOG_FILE, response.text)
+                write_log(LOG_FILE, response.text)
                 return False
 
         data = response.json()
@@ -218,7 +218,7 @@ class TwitchBot(commands.Bot):
                 ACCESS_TOKEN = refresh_access_token()
                 request_headers['Authorization'] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
-                log_error(LOG_FILE, e)
+                write_log(LOG_FILE, e)
                 print(f"Error getting user_id. Details in log.txt")
                 return
             
@@ -229,7 +229,7 @@ class TwitchBot(commands.Bot):
             user_data = response.json()
             return user_data["data"][0]["id"]
         except requests.exceptions.JSONDecodeError as e:
-            log_error(LOG_FILE, e)
+            write_log(LOG_FILE, e)
             print(f"Error getting user_id. Details in log.txt")
 
     def get_follower_data(self, user_id):
@@ -249,7 +249,7 @@ class TwitchBot(commands.Bot):
                 ACCESS_TOKEN = refresh_access_token()
                 request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
-                log_error(LOG_FILE, e)
+                write_log(LOG_FILE, e)
                 print(f"Something went wrong refreshing token. Details in log.txt")
                 return
             
@@ -257,7 +257,7 @@ class TwitchBot(commands.Bot):
 
             if not response.ok:
                 print(f"Error getting followage, more details in log.txt")
-                log_error(LOG_FILE, response.text)
+                write_log(LOG_FILE, response.text)
                 return
             
         try:
@@ -266,7 +266,7 @@ class TwitchBot(commands.Bot):
                 return
             return data[0]["followed_at"]
         except requests.exceptions.JSONDecodeError as e:
-            log_error(LOG_FILE, "Invalid or no response getting followage.")
+            write_log(LOG_FILE, "Invalid or no response getting followage.")
 
     # add VIP status to user
     def add_vip(self, user_id):
@@ -286,7 +286,7 @@ class TwitchBot(commands.Bot):
         elif response.status_code == 422: # user already is VIP
             return False, 422
         else:
-            log_error(LOG_FILE, response.text)
+            write_log(LOG_FILE, response.text)
             return False, response.status_code
     
     def create_poll(self, title, choices, duration):
@@ -308,7 +308,7 @@ class TwitchBot(commands.Bot):
             try:
                 ACCESS_TOKEN = refresh_access_token()
             except Exception as e:
-                log_error(LOG_FILE, e)
+                write_log(LOG_FILE, e)
                 print(f"Something went wrong refreshing token. Details in log.txt")
                 return
             
@@ -316,7 +316,7 @@ class TwitchBot(commands.Bot):
             response = requests.post(uri, headers=request_headers, json=body)
 
             if not response.ok:
-                log_error(LOG_FILE, response.text)
+                write_log(LOG_FILE, response.text)
                 raise ConnectionError("Error creating poll. Error details in log.txt")
             
             return True
@@ -324,7 +324,7 @@ class TwitchBot(commands.Bot):
         elif response.status_code == 200:
             return True
         else:
-            log_error(LOG_FILE, response.text)
+            write_log(LOG_FILE, response.text)
             return False
 
     # get current twitch stream title
@@ -344,14 +344,14 @@ class TwitchBot(commands.Bot):
                 ACCESS_TOKEN = refresh_access_token()
                 request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
-                log_error(LOG_FILE, e)
+                write_log(LOG_FILE, e)
                 print("Error fetching stream details, details in log.txt")
                 return
             
             response = requests.get(url, headers=request_headers, params=params)
             
             if not response.ok:
-                log_error(LOG_FILE, response.text)
+                write_log(LOG_FILE, response.text)
                 print("Something went wrong getting stream information. Details in log.txt")
 
         try:
@@ -359,7 +359,7 @@ class TwitchBot(commands.Bot):
             stream_title = data[0]["title"]
             return stream_title
         except requests.exceptions.JSONDecodeError:
-            log_error(LOG_FILE, response.text)
+            write_log(LOG_FILE, response.text)
 
     # send patch request to update stream title
     def update_stream_title(self, new_stream_title):
@@ -381,17 +381,17 @@ class TwitchBot(commands.Bot):
                 ACCESS_TOKEN = refresh_access_token()
                 request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
-                log_error(LOG_FILE, e)
+                write_log(LOG_FILE, e)
                 print(f"Error updating stream title. Details in log.txt")
                 return
             
             response = requests.patch(url, headers=request_headers, params=params)
 
         if "The request must update at least one channel property field." in response.text:
-            log_error(LOG_FILE, f"NOTICE: {response.text}")
+            write_log(LOG_FILE, f"NOTICE: {response.text}")
 
         if not response.ok:
-            log_error(LOG_FILE, response.text)
+            write_log(LOG_FILE, response.text)
             print(f"Error updating stream title, details in log.txt")
 
     # this loop will restart every 10 minutes, updating the stream title
@@ -407,11 +407,11 @@ class TwitchBot(commands.Bot):
                 if new_stream_title != current_title:
                     self.update_stream_title(new_stream_title)
             except SyntaxError as e:
-                log_error(LOG_FILE, e)
+                write_log(LOG_FILE, e)
                 print(f"Couldn't update stream title, details in log.txt")
             except ValueError as e:
                 # manual write: stop printing every valueError
-                log_error(LOG_FILE, f"NOTICE: {e}")
+                write_log(LOG_FILE, f"NOTICE: {e}")
             # wait 10 minutes before restarting the loop
             await asyncio.sleep(600)
 
@@ -607,7 +607,7 @@ class TwitchBot(commands.Bot):
                 
         except ConnectionError as e:
             await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
-            log_error(LOG_FILE, e)
+            write_log(LOG_FILE, e)
     np.category = "osu"
     np.description = "This will display the map that the streamer " \
     "is currently playing."
@@ -635,7 +635,7 @@ class TwitchBot(commands.Bot):
 
         except ConnectionError as e:
             await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
-            log_error(LOG_FILE, e)
+            write_log(LOG_FILE, e)
     nppp.category = "osu"
     nppp.description = "This will make the bot reply with the map the streamer " \
     "is currently playing, along with the pp values for SS, 99% and 95%."
@@ -650,7 +650,7 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{ctx.author.name} Global Rank: #{global_rank}, Country Rank: #{country_rank}")
         except ConnectionError as e:
             await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
-            log_error(LOG_FILE, e)
+            write_log(LOG_FILE, e)
     rank.category = "osu"
     rank.description = "Make the bot display the streamer's osu! rank in chat!"
 
@@ -664,7 +664,7 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{ctx.author.name} {osuUsername} has played osu! for a total of {total_playtime} hours.")
         except ConnectionError as e:
             await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
-            log_error(LOG_FILE, e)
+            write_log(LOG_FILE, e)
     playtime.category = "osu"
     playtime.description = "Show how much time the streamer wasted playing osu!."
 
@@ -678,7 +678,7 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{ctx.author.name} {osuUsername} has played osu! {playcount} times.")
         except ConnectionError as e:
             await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
-            log_error(LOG_FILE, e)
+            write_log(LOG_FILE, e)
     playcount.category = "osu"
     playcount.description = "This will show the playcount of the streamer."
 
@@ -700,7 +700,7 @@ class TwitchBot(commands.Bot):
             
         except ConnectionError as e:
             await ctx.send(f"@{self.nick} @{ctx.author.name} Something went wrong getting osu! profile.")
-            log_error(LOG_FILE, e)
+            write_log(LOG_FILE, e)
     osustats.category = "osu"
     osustats.description = "This command is some other commands combined. " \
     "It will show the rank, country rank, total pp, playtime and playcount of the streamer."
@@ -713,7 +713,7 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{ctx.author.name} https://osu.ppy.sh/users/{user_id}")
         except ConnectionError as e:
             await ctx.send(f"@{self.nick} @{ctx.author.name} Something went wrong getting osu! profile.")
-            log_error(LOG_FILE, e)
+            write_log(LOG_FILE, e)
     profile.category = "osu"
     profile.description = "Show the link to the osu! profile of the streamer!"
 
@@ -746,7 +746,7 @@ class TwitchBot(commands.Bot):
             followed_at = self.get_follower_data(user_id)
         except ValueError as e:
             print(f"Couldn't parse time, details in log.txt")
-            log_error(LOG_FILE, e)
+            write_log(LOG_FILE, e)
             return
         
         followage = calculate_followage_days(followed_at)
@@ -1066,7 +1066,7 @@ def main():
     try:
         bot.run()
     except Exception as e:
-        log_error(LOG_FILE, e)
+        write_log(LOG_FILE, e)
         print(f"Bot crashed. Details in {LOG_FILE}")
     finally:
         bot.stop()
