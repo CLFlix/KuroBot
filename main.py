@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 import os
 import time
-from datetime import datetime
+from datetime import datetime as dt
 import asyncio
 import random
 
@@ -27,7 +27,7 @@ FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
 SOCIALS_FILE = r'socials.json'
 
 date_format = "%Y-%m-%d_%H-%M-%S"
-LOG_FILE = f'logs/{datetime.now().strftime(date_format)}.txt'
+LOG_FILE = f'logs/{dt.now().strftime(date_format)}.txt'
 
 class TwitchBot(commands.Bot):
     def __init__(self, map_requests: bool, affiliate: bool, update: bool):
@@ -60,9 +60,9 @@ class TwitchBot(commands.Bot):
 
     def stop(self):
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
-        log_error(LOG_FILE, f"{datetime.now().strftime(date_format)} - First time bonus data saved")
+        log_error(LOG_FILE, f"First time bonus data saved")
         write_points_data(self.points, POINTS_FILE)
-        log_error(LOG_FILE, f"{datetime.now().strftime(date_format)} - Points data saved")
+        log_error(LOG_FILE, f"Points data saved")
 
         try:
             self.close()
@@ -431,12 +431,11 @@ class TwitchBot(commands.Bot):
                 if new_stream_title != current_title:
                     self.update_stream_title(new_stream_title)
             except SyntaxError as e:
-                log_error(LOG_FILE, f"{datetime.now().strftime(date_format)} - {e}")
+                log_error(LOG_FILE, e)
                 print(f"Couldn't update stream title, details in log.txt")
             except ValueError as e:
                 # manual write: stop printing every valueError
-                with open(LOG_FILE, 'a', encoding='utf-8') as log:
-                    log.write(f"{datetime.now().strftime(date_format)} - NOTICE: {e}\n")
+                log_error(LOG_FILE, f"NOTICE: {e}")
             # wait 10 minutes before restarting the loop
             await asyncio.sleep(600)
 
