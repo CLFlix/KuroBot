@@ -16,34 +16,44 @@ def log_error(log_file, error):
         logs.write(f"{dt.now()} - {error}\n")
 
 def first_time_startup():
-    # create logs folder
-    if r'logs' in os.listdir(r'.'):
-        return    
-    os.system("mkdir logs")
+    # quick check if all files / log folder exist
+    files = [r'first_time_bonus_claimed.txt', r'logs', r'points.json', r'socials.json']
+    files_exist = [file in os.listdir(r'.') for file in files]
+    if not all(files_exist):
+        # create file to save all usernames that claimed first-time bonus
+        # if it doesn't exist already
+        if r'first_time_bonus_claimed.txt' not in os.listdir(r'.'):    
+            with open("first_time_bonus_claimed.txt", 'w', encoding='utf-8') as bonus_claimed_file:
+                bonus_claimed_file.write("")
+            print("Created first_time_bonus_claimed.txt")
 
-    if r'points.json' in os.listdir(r'.'):
-        return
+        # create logs folder if it doesn't exist already
+        if r'logs' not in os.listdir(r'.'):
+            os.system("mkdir logs")
+            print("Created logs folder")
 
-    with open(r'points.json', 'w', encoding='utf-8') as points_file:
-        json.dump({}, points_file)
-    print("points.json successfully created")
+        # create file to save users' points if it doesn't exist already
+        if r'points.json' not in os.listdir(r'.'):
+            with open(r'points.json', 'w', encoding='utf-8') as points_file:
+                json.dump({}, points_file)
+            print("points.json successfully created")
 
-    if r'socials.json' in os.listdir(r'.'):
-        return
+        # create file for !socials command if it doesn't exist already
+        if r'socials.json' not in os.listdir(r'.'):
+            socials = {
+                "YouTube": "",
+                "Discord": "",
+                "TikTok": "",
+                "Instagram": "",
+                "Twitter / X": "",
+                "Linktree": ""
+            }
 
-    socials = {
-        "YouTube": "",
-        "Discord": "",
-        "TikTok": "",
-        "Instagram": "",
-        "Twitter / X": "",
-        "Linktree": ""
-    }
+            with open(r'socials.json', 'w', encoding='utf-8') as socials_file:
+                json.dump(socials, socials_file, indent=4)
+            print(f"You can now add your social links in socials.json")
 
-    with open(r'socials.json', 'w', encoding='utf-8') as socials_file:
-        json.dump(socials, socials_file, indent=4)
-    
-    print(f"You can now add your social links in socials.json")
+        print("-------------------------------")
 
 # load the socials links
 def read_socials_links(socials_file):
@@ -113,16 +123,12 @@ def write_points_data(viewer_points, points_file):
 
 def get_bonus_claimed(first_time_bonus_file):
     bonus_claimed = []
-    try:
-        with open(first_time_bonus_file, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
+    with open(first_time_bonus_file, 'r', encoding='utf-8') as file:
+        lines = file.readlines()
 
-        for line in lines:
-            bonus_claimed.append(line.strip().lower())
+    for line in lines:
+        bonus_claimed.append(line.strip().lower())
 
-    except FileNotFoundError:
-        with open("first_time_bonus_claimed.txt", 'w', encoding='utf-8') as bonus_claimed_file:
-            bonus_claimed_file.write("")
     return bonus_claimed
 
 def write_bonus_claimed(bonus_claimed_list, first_time_bonus_file):
