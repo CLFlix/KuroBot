@@ -29,6 +29,12 @@ SOCIALS_FILE = r'socials.json'
 date_format = "%Y-%m-%d_%H-%M-%S"
 LOG_FILE = f'logs/{dt.now().strftime(date_format)}.txt'
 
+request_headers = {
+    "Authorization": f"Bearer {ACCESS_TOKEN}",
+    "Client-Id": CLIENT_ID,
+    "Content-Type": "application/json"
+}
+
 class TwitchBot(commands.Bot):
     def __init__(self, map_requests: bool, affiliate: bool, update: bool):
         super().__init__(
@@ -132,26 +138,23 @@ class TwitchBot(commands.Bot):
 
     async def get_mods_list(self):
         global ACCESS_TOKEN
+        global request_headers
 
         uri = "https://api.twitch.tv/helix/moderation/moderators"
-        headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN}",
-            "Client-Id": CLIENT_ID
-        }
         params = {"broadcaster_id": BROADCASTER_ID}
 
 
-        response = requests.get(uri, headers=headers, params=params)
+        response = requests.get(uri, headers=request_headers, params=params)
 
         if response.status_code == 401:
             try:
                 ACCESS_TOKEN = refresh_access_token()
-                headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
+                request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except Exception as e:
                 log_error(LOG_FILE, e)
                 print("Something went wrong refreshing mods access token. Details in log.txt")
 
-            response = requests.get(uri, headers=headers, params=params)
+            response = requests.get(uri, headers=request_headers, params=params)
 
             if response.status_code != 200:
                 log_error(LOG_FILE, response.text)
@@ -173,14 +176,11 @@ class TwitchBot(commands.Bot):
     # check if a user exists
     async def user_exists(self, username) -> bool:
         global ACCESS_TOKEN
+        global request_headers
 
         url = f"https://api.twitch.tv/helix/users?login={username}"
-        headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN}",
-            "Client-Id": CLIENT_ID
-        }
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=request_headers)
 
         if response.status_code == 401:
             try:
@@ -190,8 +190,8 @@ class TwitchBot(commands.Bot):
                 print("Something went wrong refreshing VIP access token. Details in log.txt")
                 return False
             
-            headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
-            response = requests.get(url, headers=headers)
+            request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
+            response = requests.get(url, headers=request_headers)
 
             if not response.ok:
                 print(f"Failed to find user. Details in log.txt")
@@ -203,30 +203,27 @@ class TwitchBot(commands.Bot):
 
     def get_user_id(self, user):
         global ACCESS_TOKEN
+        global request_headers
 
         url = "https://api.twitch.tv/helix/users"
-        headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN}",
-            "Client-Id": CLIENT_ID
-        }
         params = {
             "login": user
         }
 
         # initial try to get user id
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(url, headers=request_headers, params=params)
 
         if response.status_code == 401: # Unauthorized: token expired
             try:
                 ACCESS_TOKEN = refresh_access_token()
-                headers['Authorization'] = f"Bearer {ACCESS_TOKEN}"
+                request_headers['Authorization'] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 log_error(LOG_FILE, e)
                 print(f"Error getting user_id. Details in log.txt")
                 return
             
             # retry getting user id once
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(url, headers=request_headers, params=params)
 
         try:
             user_data = response.json()
@@ -237,30 +234,26 @@ class TwitchBot(commands.Bot):
 
     def get_follower_data(self, user_id):
         global ACCESS_TOKEN
+        global request_headers
 
         url = "https://api.twitch.tv/helix/channels/followers"
-        headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN}",
-            "Client-Id": CLIENT_ID,
-            "Content-Type": "application/json"
-        }
         params = {
             "user_id": user_id,
             "broadcaster_id": BROADCASTER_ID
         }
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(url, headers=request_headers, params=params)
 
         if response.status_code == 401:
             try:
                 ACCESS_TOKEN = refresh_access_token()
-                headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
+                request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 log_error(LOG_FILE, e)
                 print(f"Something went wrong refreshing token. Details in log.txt")
                 return
             
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(url, headers=request_headers, params=params)
 
             if not response.ok:
                 print(f"Error getting followage, more details in log.txt")
@@ -278,17 +271,13 @@ class TwitchBot(commands.Bot):
     # add VIP status to user
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"
-        headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN}",
-            "Client-Id": CLIENT_ID
-        }
         params = {
             "broadcaster_id": BROADCASTER_ID,
             "user_id": user_id
         }
 
         try:
-            response = requests.post(url, headers=headers, params=params)
+            response = requests.post(url, headers=request_headers, params=params)
         except ConnectionError:
             return "Something went wrong assigning VIP status.."
 
@@ -302,14 +291,9 @@ class TwitchBot(commands.Bot):
     
     def create_poll(self, title, choices, duration):
         global ACCESS_TOKEN
+        global request_headers
 
         uri = "https://api.twitch.tv/helix/polls"
-        headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN}",
-            "Client-Id": CLIENT_ID,
-            "Content-Type": "application/json"
-        }
-
         body = {
             "broadcaster_id": BROADCASTER_ID,
             "title": title,
@@ -318,7 +302,7 @@ class TwitchBot(commands.Bot):
             "channel_points_voting_enabled": False
         }
 
-        response = requests.post(uri, headers=headers, json=body)
+        response = requests.post(uri, headers=request_headers, json=body)
 
         if response.status_code == 401:
             try:
@@ -328,8 +312,8 @@ class TwitchBot(commands.Bot):
                 print(f"Something went wrong refreshing token. Details in log.txt")
                 return
             
-            headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
-            response = requests.post(uri, headers=headers, json=body)
+            request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
+            response = requests.post(uri, headers=request_headers, json=body)
 
             if not response.ok:
                 log_error(LOG_FILE, response.text)
@@ -346,29 +330,25 @@ class TwitchBot(commands.Bot):
     # get current twitch stream title
     def get_stream_title(self):
         global ACCESS_TOKEN
+        global request_headers
 
         url = "https://api.twitch.tv/helix/channels"
-        headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN}",
-            "Client-Id": CLIENT_ID,
-            "Content-Type": "application/json"
-        }
         params = {
             "broadcaster_id": BROADCASTER_ID
         }
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(url, headers=request_headers, params=params)
 
         if response.status_code == 401:
             try:
                 ACCESS_TOKEN = refresh_access_token()
-                headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
+                request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 log_error(LOG_FILE, e)
                 print("Error fetching stream details, details in log.txt")
                 return
             
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(url, headers=request_headers, params=params)
             
             if not response.ok:
                 log_error(LOG_FILE, response.text)
@@ -384,13 +364,9 @@ class TwitchBot(commands.Bot):
     # send patch request to update stream title
     def update_stream_title(self, new_stream_title):
         global ACCESS_TOKEN
+        global request_headers
 
         url = "https://api.twitch.tv/helix/channels"
-        headers = {
-            "Authorization": f"Bearer {ACCESS_TOKEN}",
-            "Client-Id": CLIENT_ID,
-            "Content-Type": "application/json"
-        }
         params = {
             "broadcaster_id": BROADCASTER_ID
         }
@@ -398,18 +374,18 @@ class TwitchBot(commands.Bot):
             "title": new_stream_title
         }
 
-        response = requests.patch(url, headers=headers, params=params, json=body)
+        response = requests.patch(url, headers=request_headers, params=params, json=body)
 
         if response.status_code == 401:
             try:
                 ACCESS_TOKEN = refresh_access_token()
-                headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
+                request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 log_error(LOG_FILE, e)
                 print(f"Error updating stream title. Details in log.txt")
                 return
             
-            response = requests.patch(url, headers=headers, params=params)
+            response = requests.patch(url, headers=request_headers, params=params)
 
         if "The request must update at least one channel property field." in response.text:
             log_error(LOG_FILE, f"NOTICE: {response.text}")
