@@ -69,6 +69,7 @@ class TwitchBot(commands.Bot):
         write_log(LOG_FILE, f"First time bonus data saved")
         write_points_data(self.points, POINTS_FILE)
         write_log(LOG_FILE, f"Points data saved")
+        print("Data saved!")
 
         try:
             self.close()
