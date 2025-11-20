@@ -755,7 +755,6 @@ class TwitchBot(commands.Bot):
         followage = calculate_followage_days(followed_at)
 
         await ctx.send(followage_message.replace("...", followage))
-        # await ctx.send(f"@{user} You've been following {self.nick} for {followage}!")
     followage.category = "useful"
     followage.description = "By using this command, you can see how long you've been " \
     "following the streamer for! You can also tag someone like '!followage @user' " \
