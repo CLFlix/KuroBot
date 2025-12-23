@@ -5,11 +5,11 @@ async function Commands() {
     <>
       <main className="m-10 mt-3 mb-15">
         <h1 className="text-4xl text-center">Commands</h1>
-        <section className="grid grid-cols-2 max-lg:grid-cols-1">
+        <div className="grid grid-cols-2 max-lg:grid-cols-1">
           <CommandsClientView />
-        </section>
+        </div>
         <h1 className="text-4xl text-center">Additional Features</h1>
-        <section className="flex max-2xl:grid max-2xl:grid-cols-2 gap-10 justify-center mt-5">
+        <div className="flex max-2xl:grid max-2xl:grid-cols-2 gap-10 justify-center mt-5">
           <div className="bg-gradient-to-br from-indigo-800 to-purple-800 rounded-lg p-1 text-center">
             <h1 className="text-2xl font-bold">Redemptions Listener</h1>
             <p className="text-xl max-w-[410px] max-2xl:max-w-[400px]">
@@ -35,7 +35,7 @@ async function Commands() {
               keep your rank in the first pair of brackets.
             </p>
           </div>
-        </section>
+        </div>
       </main>
     </>
   );
