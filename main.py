@@ -1062,6 +1062,26 @@ class TwitchBot(commands.Bot):
     "have enough points to do so. '!gift @KurookamiTV 500' will subtract " \
     "500 points from the invoker, and add 500 points to KurookamiTV's total."
 
+    @commands.command(name="gamble")
+    async def gamble(self, ctx, amount: int = 0):
+        user = ctx.author.name
+        if amount == 0:
+            await ctx.send(f"@{user} You didn't specify an amount. Usage: '!gamble <amount>'")
+            return
+
+        if amount > self.points[user]:
+            await ctx.send(f"@{user} You cannot afford this gamble!")
+            return
+
+        true = random.choice([0, 1])
+        if true:
+            self.add_points(user, amount * 2)
+            await ctx.send(f"@{user} Congrats, you won {amount * 2} points!")
+            return
+
+        self.remove_points(user, amount * 2)
+        await ctx.send(f"@{user} Sadge, you lost {amount} points...")
+
     # temporary VIP status
     @commands.command(name="vip")
     async def vip(self, ctx):
