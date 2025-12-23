@@ -10,7 +10,7 @@ function Home() {
             for <span className="text-pink-400">osu! </span>
             streamers!
           </h1>
-          <p className="text-xl max-w-[60%]">
+          <p className="text-xl max-w-[60%] max-xl:max-w-full">
             This locally hosted bot is built to last, taking up very few
             resources so you can enjoy streaming without having to think about
             your PC even slowing down because of it!
@@ -27,8 +27,8 @@ function Home() {
             <Link href="https://discord.gg/4HAbQm2tdp">Join the Discord!</Link>
           </span>
         </div>
-        <div className="flex max-2xl:grid max-2xl:grid-cols-2 gap-10 justify-center">
-          <div className="text-block-gradient rounded-lg p-1 text-center border border-black max-w-[14%]">
+        <div className="flex max-xl:flex-col gap-10 justify-center items-center">
+          <div className="text-block-gradient rounded-lg p-1 text-center border border-gray-700 max-w-[14%] max-lg:max-w-[80%]">
             <h1 className="text-2xl font-bold">Points System</h1>
             <p className="text-xl">
               Viewers can earn points by sending messages in chat! Points are
@@ -36,7 +36,7 @@ function Home() {
               protection!
             </p>
           </div>
-          <div className="text-block-gradient rounded-lg p-1 text-center border border-black max-w-[14%]">
+          <div className="text-block-gradient rounded-lg p-1 text-center border border-gray-700 max-w-[14%] max-lg:max-w-[80%]">
             <h1 className="text-2xl font-bold">osu! Commands</h1>
             <p className="text-xl">
               Your typical osu! commands are also included! Well-known ones like{" "}
@@ -45,7 +45,7 @@ function Home() {
               come)!
             </p>
           </div>
-          <div className="text-block-gradient rounded-lg p-1 text-center border border-black max-w-[14%]">
+          <div className="text-block-gradient rounded-lg p-1 text-center border border-gray-700 max-w-[14%] max-lg:max-w-[80%]">
             <h1 className="text-2xl font-bold">Rewards</h1>
             <p className="text-xl">
               Viewers can claim rewards by spending their points to make the
@@ -53,7 +53,7 @@ function Home() {
               silly effect over their camera!
             </p>
           </div>
-          <div className="text-block-gradient rounded-lg p-1 text-center border border-black max-w-[14%]">
+          <div className="text-block-gradient rounded-lg p-1 text-center border border-gray-700 max-w-[14%] max-lg:max-w-[80%]">
             <h1 className="text-2xl font-bold">Affiliates / Partners</h1>
             <p className="text-xl">
               If you're a Twitch Affiliate or Partner, you can use this bot to
@@ -62,7 +62,7 @@ function Home() {
             </p>
           </div>
         </div>
-        <div className="mt-4 mx-90 text-center grid grid-cols-2 justify-items-center items-center">
+        <div className="mt-4 mx-90 text-center grid grid-cols-2 max-lg:grid-cols-1 max-lg:mx-auto justify-items-center items-center">
           <div className="max-w-[65%]">
             <h1 className="text-3xl font-bold">Open-Source</h1>
             <p className="text-lg">

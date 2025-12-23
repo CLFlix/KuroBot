@@ -24,7 +24,7 @@ const CommandsTable: React.FC<Props> = ({ commandsList }: Props) => {
               {commandsList.map((command, index) => (
                 <tr
                   key={index}
-                  className="border border-gray-900 hover:scale-105 duration-300 table-command-gradient"
+                  className="border border-gray-900 hover:scale-102 duration-300 table-command-gradient"
                 >
                   <td className="p-2 text-center">
                     <code>!{command.name}</code>

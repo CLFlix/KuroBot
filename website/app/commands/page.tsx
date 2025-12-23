@@ -9,8 +9,8 @@ async function Commands() {
           <CommandsClientView />
         </div>
         <h1 className="text-4xl text-center">Additional Features</h1>
-        <div className="flex max-2xl:grid max-2xl:grid-cols-2 gap-20 justify-center mt-5">
-          <div className="text-block-gradient rounded-lg p-2 text-center max-w-[23%]">
+        <div className="flex max-2xl:flex-col gap-20 max-2xl:gap-5 justify-center mt-5">
+          <div className="text-block-gradient rounded-lg p-2 text-center max-w-[23%] border border-gray-600 max-2xl:max-w-full">
             <h1 className="text-2xl font-bold">Redemptions Listener</h1>
             <p className="text-xl">
               If you enable this, the bot will listen to all the redemptions
@@ -23,7 +23,7 @@ async function Commands() {
               system.
             </p>
           </div>
-          <div className="text-block-gradient rounded-lg p-2 text-center max-w-[23%]">
+          <div className="text-block-gradient rounded-lg p-2 text-center max-w-[23%] border border-gray-600 max-2xl:max-w-full">
             <h1 className="text-2xl font-bold">Automatic Title Updater</h1>
             <p className="text-xl">
               By enabling this, you can let the bot check whether your osu! rank
