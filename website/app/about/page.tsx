@@ -3,7 +3,7 @@ import Image from "next/image";
 function About() {
   return (
     <>
-      <main className="m-5 mb-10 mt-3 max-xl:mb-3 font-sans">
+      <main className="m-5 mb-10 mt-3 max-xl:mb-3">
         <div className="grid grid-cols-2 max-xl:grid-cols-1">
           <div>
             <h1 className="text-3xl font-bold">Me!</h1>

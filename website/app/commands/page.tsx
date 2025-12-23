@@ -9,10 +9,10 @@ async function Commands() {
           <CommandsClientView />
         </div>
         <h1 className="text-4xl text-center">Additional Features</h1>
-        <div className="flex max-2xl:grid max-2xl:grid-cols-2 gap-10 justify-center mt-5">
-          <div className="bg-gradient-to-br from-indigo-800 to-purple-800 rounded-lg p-1 text-center">
+        <div className="flex max-2xl:grid max-2xl:grid-cols-2 gap-20 justify-center mt-5">
+          <div className="text-block-gradient rounded-lg p-2 text-center max-w-[23%]">
             <h1 className="text-2xl font-bold">Redemptions Listener</h1>
-            <p className="text-xl max-w-[410px] max-2xl:max-w-[400px]">
+            <p className="text-xl">
               If you enable this, the bot will listen to all the redemptions
               made on your Twitch channel! With how things are right now, the
               bot will only recognize redemptions whose name starts with
@@ -23,9 +23,9 @@ async function Commands() {
               system.
             </p>
           </div>
-          <div className="bg-gradient-to-tl from-indigo-800 to-purple-800 rounded-lg p-1 text-center border border-black">
+          <div className="text-block-gradient rounded-lg p-2 text-center max-w-[23%]">
             <h1 className="text-2xl font-bold">Automatic Title Updater</h1>
-            <p className="text-xl max-w-[410px] max-2xl:max-w-[400px]">
+            <p className="text-xl">
               By enabling this, you can let the bot check whether your osu! rank
               has changed in comparison to what's stated in the title. If your
               rank did change, the bot will update your Twitch stream's title

@@ -15,9 +15,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen flex flex-col bg-gray-900 text-white">
+      <body className="min-h-screen flex flex-col text-white font-sans">
         <Header />
-        <main className="flex-grow bg-gradient-to-br from-gray-900 to-gray-950">
+        <main className="bg-gradient-to-br from-gray-950 to-neutral-900 flex-grow">
           {children}
         </main>
         <Footer />
