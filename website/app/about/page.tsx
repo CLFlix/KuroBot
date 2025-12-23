@@ -3,8 +3,8 @@ import Image from "next/image";
 function About() {
   return (
     <>
-      <main className="m-5 mb-10 mt-3 max-xl:mb-3 font-sans">
-        <section className="grid grid-cols-2 max-xl:grid-cols-1">
+      <main className="m-5 mb-10 mt-3 max-xl:mb-3">
+        <div className="grid grid-cols-2 max-xl:grid-cols-1">
           <div>
             <h1 className="text-3xl font-bold">Me!</h1>
             <p>
@@ -41,10 +41,7 @@ function About() {
             <p>
               KuroBot is fully open-source, meaning anyone can contribute to the
               project! You can do so by forking the{" "}
-              <a
-                href="https://github.com/CLFlix/KuroBot"
-                className="text-blue-400 hover:underline"
-              >
+              <a href="https://github.com/CLFlix/KuroBot" className="link">
                 GitHub repo
               </a>{" "}
               and opening a pull request after making your desired changes.
@@ -55,7 +52,7 @@ function About() {
               the project! On the GitHub repo, there's a{" "}
               <a
                 href="https://github.com/CLFlix/KuroBot/discussions/categories/suggestions"
-                className="text-blue-400 hover:underline"
+                className="link"
               >
                 Discussions page
               </a>{" "}
@@ -66,7 +63,7 @@ function About() {
               in the{" "}
               <a
                 href="https://github.com/CLFlix/KuroBot/issues"
-                className="text-blue-400 hover:underline"
+                className="link"
               >
                 Issues page
               </a>
@@ -82,15 +79,15 @@ function About() {
               className="max-xl:hidden rounded-2xl"
             ></Image>
           </div>
-        </section>
-        <section className="grid grid-cols-2 max-lg:grid-cols-1">
-          <section className="text-center max-lg:hidden">
+        </div>
+        <div className="grid grid-cols-2 max-lg:grid-cols-1">
+          <div className="text-center max-lg:hidden">
             <h1 className="text-3xl font-bold mt-4">Links</h1>
             <div className="flex flex-col gap-1 text-blue-400 text-xl">
               <span>
                 <a
                   href="https://www.twitch.tv/kurookamitv"
-                  className="hover:scale-110 hover:underline transition-transform duration-300 inline-block"
+                  className="big-link"
                 >
                   Twitch
                 </a>
@@ -98,7 +95,7 @@ function About() {
               <span>
                 <a
                   href="https://www.youtube.com/@Doku_Kurookami"
-                  className="hover:scale-110 hover:underline transition-transform duration-300 inline-block"
+                  className="big-link"
                 >
                   YouTube
                 </a>
@@ -106,34 +103,31 @@ function About() {
               <span>
                 <a
                   href="https://www.tiktok.com/@_kurookami_osu"
-                  className="hover:scale-110 hover:underline transition-transform duration-300 inline-block"
+                  className="big-link"
                 >
                   TikTok
                 </a>
               </span>
               <span>
-                <a
-                  href="https://discord.gg/4HAbQm2tdp"
-                  className="hover:scale-110 hover:underline transition-transform duration-300 inline-block"
-                >
+                <a href="https://discord.gg/4HAbQm2tdp" className="big-link">
                   Discord
                 </a>
               </span>
               <span>
                 <a
                   href="https://github.com/CLFlix/KuroBot"
-                  className="hover:scale-110 hover:underline transition-transform duration-300 inline-block"
+                  className="big-link"
                 >
                   GitHub Repo
                 </a>
               </span>
             </div>
-          </section>
-          <section className="text-center mt-4 pb-2">
+          </div>
+          <div className="text-center mt-4 pb-2">
             <h1 className="text-3xl font-bold">Download</h1>
             <p className="font-bold">[COMING SOON]</p>
-          </section>
-        </section>
+          </div>
+        </div>
       </main>
     </>
   );
