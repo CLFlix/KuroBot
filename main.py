@@ -79,7 +79,7 @@ class TwitchBot(commands.Bot):
     ## export commands
     def export_commands(self):
         order = ["commands", "followage", "lurk", "socials", "shoutout", "so", "points", "claim", "leaderboard", "lb", "poll", "category", "test", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
-                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "bonk", "endwith", "invert", "zoom", "memecam", "gift", "vip"]
+                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "bonk", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
 
         written = set()
         with open(r'website/public/static/commands.txt', 'w', encoding='utf-8') as commands_file:
@@ -1061,6 +1061,33 @@ class TwitchBot(commands.Bot):
     gift.description = "You can gift points to another user, if you " \
     "have enough points to do so. '!gift @KurookamiTV 500' will subtract " \
     "500 points from the invoker, and add 500 points to KurookamiTV's total."
+
+    @commands.command(name="gamble")
+    async def gamble(self, ctx, amount: int = 0):
+        user = ctx.author.name
+
+        if amount < 0:
+            await ctx.send(f"@{user} You tried gambling with a negative value? Take this: https://youtu.be/dQw4w9WgXcQ?si=l32ZYljZ4vhSA5hC")
+
+        if amount == 0:
+            await ctx.send(f"@{user} You didn't specify an amount. Usage: '!gamble <amount>'")
+            return
+
+        if amount > self.points[user]:
+            await ctx.send(f"@{user} You cannot afford this gamble!")
+            return
+
+        true = random.choice([0, 1])
+        if true:
+            self.add_points(user, amount * 2)
+            await ctx.send(f"@{user} Congrats, you won {amount * 2} points!")
+            return
+
+        self.remove_points(user, amount * 2)
+        await ctx.send(f"@{user} Sadge, you lost {amount} points...")
+    gamble.category = "redeem"
+    gamble.description = "Double or nothing! Specify the amount you want to gamble and" \
+    " see if you win double the amount back, or lose it all..."
 
     # temporary VIP status
     @commands.command(name="vip")
