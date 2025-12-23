@@ -395,6 +395,36 @@ class TwitchBot(commands.Bot):
             write_log(LOG_FILE, response.text)
             print(f"Error updating stream title, details in log.txt")
 
+    # update stream category to osu!
+    def update_stream_category(self):
+        global ACCESS_TOKEN
+        global request_headers
+
+        url = "https://api.twitch.tv/helix/channels"
+        params = {
+            "broadcaster_id": BROADCASTER_ID
+            }
+        body = {
+            "game_id": "21465" # osu! ID in twitch backend
+        }
+
+        response = requests.patch(url, headers=request_headers, params=params, json=body)
+
+        if response.status_code == 401:
+            try:
+                ACCESS_TOKEN = refresh_access_token()
+                request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
+            except ConnectionError as e:
+                write_log(LOG_FILE, f"[ERROR]: {e}")
+                print("Error updating stream category, details in log.txt")
+                return
+            
+            response = requests.patch(url, headers=request_headers, params=params, json=body)
+
+        if not response.ok:
+            write_log(LOG_FILE, response.text)
+            print(f"Error updating stream category, details in log.txt")
+
     # this loop will restart every 10 minutes, updating the stream title
     # with the current osu! rank, keeping the title up-to-date
     async def title_updater_loop(self):
@@ -492,6 +522,21 @@ class TwitchBot(commands.Bot):
     poll.category = "useful"
     poll.description = "Using this command with the necessary parameters will " \
     "create a poll of 2 minutes. (moderator only)"
+
+    # change streaming category to osu!
+    @commands.command(name="category")
+    async def category(self, ctx):
+        user = ctx.author.name
+        with open(r'mods_list.txt', 'r', encoding='utf-8') as mods_list:
+            mods = mods_list.readlines()
+
+        if not (user == self.nick or user in mods):
+            return await ctx.send("You are not allowed to use this command!")
+
+        await ctx.send("Changing stream category to osu!")
+        self.update_stream_category()
+    category.category = "useful"
+    category.description = "Change the streaming category to osu!"
 
     # show all commands, don't show commands in hidden
     @commands.command(name="commands")
