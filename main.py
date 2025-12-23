@@ -79,7 +79,7 @@ class TwitchBot(commands.Bot):
     ## export commands
     def export_commands(self):
         order = ["commands", "followage", "lurk", "socials", "shoutout", "so", "points", "claim", "leaderboard", "lb", "poll", "category", "test", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
-                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "bonk", "endwith", "invert", "zoom", "memecam", "gift", "vip"]
+                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "bonk", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
 
         written = set()
         with open(r'website/public/static/commands.txt', 'w', encoding='utf-8') as commands_file:
@@ -1081,6 +1081,9 @@ class TwitchBot(commands.Bot):
 
         self.remove_points(user, amount * 2)
         await ctx.send(f"@{user} Sadge, you lost {amount} points...")
+    gamble.category = "redeem"
+    gamble.description = "Double or nothing! Specify the amount you want to gamble and" \
+    " see if you win double the amount back, or lose it all..."
 
     # temporary VIP status
     @commands.command(name="vip")
