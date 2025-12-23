@@ -16,16 +16,17 @@ function About() {
             <p>
               After searching for a chatbot that does everything I personally
               want it to do, I couldn't find one. I wanted it to have commands
-              like "!np" and "?profile", but I didn't want to have 4 different
-              bots running on my channel. Since I'm learning how to code in
-              college, I got the idea to just make a bot of my own. I started
-              out with a simple bot with commands like "!np" and "!rank",
-              totaling about 70 lines of code. After adding more commands and a
-              points system, I now have a bot with over 1,000 lines of code. I'm
-              enjoying every step of the way, making my bot just a little better
-              and more advanced each time.
+              like <code>!np</code> and <code>!profile</code>, but I didn't want
+              to have 4 different bots running on my channel. Since I'm learning
+              how to code in college, I got the idea to just make a bot of my
+              own. I started out with a simple bot with commands like{" "}
+              <code>!np</code> and
+              <code>!rank</code>, totaling about 70 lines of code. After adding
+              more commands and a points system, I now have a bot with over
+              1.000 lines of code. I'm enjoying every step of the way, making my
+              bot just a little better and more advanced each time.
             </p>
-            <h1 className="text-3xl font-bold">Tech Stack</h1>
+            <h1 className="mt-4 text-3xl font-bold">Tech Stack</h1>
             <p>
               This bot was completely coded in Python. It uses the Twitch API
               for things like checking if a Twitch user exists{" "}
@@ -33,13 +34,10 @@ function About() {
               a user <sub>("vip")</sub>. The osu! API is also used to get the
               streamer's information to display the streamer's current rank,
               playtime and more. The website was made with React and Next.js +
-              Tailwind CSS. It may look a little scuffed, since I had just
-              started learning how to work with these frameworks in college when
-              I built it. Tailwind CSS is responsible for the decent look of
-              this website, since I SUCK at normal CSS.
+              Tailwind CSS.
             </p>
             <h1 className="text-3xl font-bold mt-4">Contribute</h1>
-            <h1 className="text-xl font-bold">Developers:</h1>
+            <h2 className="text-xl font-bold mt-1">Developers:</h2>
             <p>
               KuroBot is fully open-source, meaning anyone can contribute to the
               project! You can do so by forking the{" "}
@@ -51,7 +49,7 @@ function About() {
               </a>{" "}
               and opening a pull request after making your desired changes.
             </p>
-            <h1 className="text-xl font-bold">Anyone else:</h1>
+            <h2 className="text-xl font-bold mt-1">Anyone else:</h2>
             <p>
               Even if you don't know how to code, you can still contribute to
               the project! On the GitHub repo, there's a{" "}
@@ -64,7 +62,15 @@ function About() {
               where you can submit suggestions for what YOU think the bot should
               be able to do. I'll be sure to check out every suggestion - just
               keep in mind that this is a side project and I have to put my main
-              focus on college.
+              focus on college. If you find errors or bugs, you can report these
+              in the{" "}
+              <a
+                href="https://github.com/CLFlix/KuroBot/issues"
+                className="text-blue-400 hover:underline"
+              >
+                Issues page
+              </a>
+              , giving me a heads up.
             </p>
           </div>
           <div className="flex justify-center">
