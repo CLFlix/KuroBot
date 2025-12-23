@@ -78,7 +78,7 @@ class TwitchBot(commands.Bot):
 
     ## export commands
     def export_commands(self):
-        order = ["commands", "followage", "lurk", "socials", "shoutout", "so", "points", "claim", "leaderboard", "lb", "poll", "test", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
+        order = ["commands", "followage", "lurk", "socials", "shoutout", "so", "points", "claim", "leaderboard", "lb", "poll", "category", "test", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
                  "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "bonk", "endwith", "invert", "zoom", "memecam", "gift", "vip"]
 
         written = set()
@@ -530,13 +530,13 @@ class TwitchBot(commands.Bot):
         with open(r'mods_list.txt', 'r', encoding='utf-8') as mods_list:
             mods = mods_list.readlines()
 
-        if not (user == self.nick or user in mods):
+        if user not in mods:
             return await ctx.send("You are not allowed to use this command!")
 
         await ctx.send("Changing stream category to osu!")
         self.update_stream_category()
-    category.category = "useful"
-    category.description = "Change the streaming category to osu!"
+    category.category = "osu"
+    category.description = "Change the streaming category to osu! (mods / streamer only)"
 
     # show all commands, don't show commands in hidden
     @commands.command(name="commands")
