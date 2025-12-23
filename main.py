@@ -1065,6 +1065,10 @@ class TwitchBot(commands.Bot):
     @commands.command(name="gamble")
     async def gamble(self, ctx, amount: int = 0):
         user = ctx.author.name
+
+        if amount < 0:
+            await ctx.send(f"@{user} You tried gambling with a negative value? Take this: https://youtu.be/dQw4w9WgXcQ?si=l32ZYljZ4vhSA5hC")
+
         if amount == 0:
             await ctx.send(f"@{user} You didn't specify an amount. Usage: '!gamble <amount>'")
             return
