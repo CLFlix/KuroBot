@@ -11,6 +11,10 @@ from datetime import datetime as dt
 import asyncio
 import random
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import threading
+
 load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
@@ -63,6 +67,61 @@ class TwitchBot(commands.Bot):
 
         # manage chat message points cooldowns
         self.last_point_time = {}
+
+    def launch_backend(self):
+        self.bot_state = {
+                "rank": None,
+                "current_title": None,
+            }
+        
+        app = FastAPI()
+
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["GET"],
+            allow_headers=["*"]
+        )
+
+        @app.get("/twitchTitle")
+        def twitchTitle():
+            return self.bot_state["current_title"]
+        
+        @app.get("/rank")
+        def rank():
+            profile = get_profile()
+            self.bot_state["rank"] = profile["pp_rank"]
+            return f"#{self.bot_state["rank"]}"
+        
+        @app.get("/points")
+        def get_points():
+            return self.points
+
+        @app.get("/update_title")
+        def fire_updater():
+            current_title = self.get_stream_title()
+            self.bot_state["current_title"] = current_title
+            profile = get_profile()
+            current_rank = profile['pp_rank']
+
+            try:
+                new_stream_title = edit_stream_title(current_title, current_rank)
+                if new_stream_title != current_title:
+                    self.update_stream_title(new_stream_title)
+
+            except SyntaxError as e:
+                write_log(LOG_FILE, e)
+                print(f"Couldn't update stream title, details in log.txt")
+            except ValueError as e:
+                write_log(LOG_FILE, f"NOTICE: {e}")
+                return e
+
+        def start_api():
+            import uvicorn
+            uvicorn.run(app, host="127.0.0.1", port=7273)
+
+        threading.Thread(target=start_api, daemon=True).start()
 
     def stop(self):
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
@@ -430,6 +489,7 @@ class TwitchBot(commands.Bot):
     async def title_updater_loop(self):
         while True:
             current_title = self.get_stream_title()
+            self.bot_state["current_title"] = current_title
             profile = get_profile()
             current_rank = profile['pp_rank']
 
@@ -441,7 +501,6 @@ class TwitchBot(commands.Bot):
                 write_log(LOG_FILE, e)
                 print(f"Couldn't update stream title, details in log.txt")
             except ValueError as e:
-                # manual write: stop printing every valueError
                 write_log(LOG_FILE, f"NOTICE: {e}")
             # wait 10 minutes before restarting the loop
             await asyncio.sleep(600)
@@ -456,6 +515,7 @@ class TwitchBot(commands.Bot):
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
         if self.update:
+            self.launch_backend()
             self.loop.create_task(self.title_updater_loop())
 
     # give people points for chatting
