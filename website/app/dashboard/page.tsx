@@ -59,8 +59,8 @@ const Dashboard = () => {
     getTitle();
     getPoints();
 
-    const current_rank = setInterval(getRank, 5000); // change to something lower for dev
-    const current_title = setInterval(getTitle, 5000); // change to something lower for dev
+    const current_rank = setInterval(getRank, 60000); // change to something lower for dev
+    const current_title = setInterval(getTitle, 60000); // change to something lower for dev
     const bot_points = setInterval(getPoints, 10000); // change to something lower for dev
 
     return () => {
