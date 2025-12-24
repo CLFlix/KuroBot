@@ -54,6 +54,45 @@
   background-image: linear-gradient(to bottom right, #334155, #111827);
 }
 
+.view-commands-button {
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  background-image: linear-gradient(to right, #7c3aed, #6b21a8);
+  transition-duration: 300ms;
+  font-weight: bold;
+}
+
+.about-button {
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  background-image: linear-gradient(to right, #ef4444, #be185d);
+  transition-duration: 300ms;
+  font-weight: bold;
+}
+
+.discord-button {
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  background-image: linear-gradient(to right, #0e7490, #0284c7);
+  transition-duration: 300ms;
+  font-weight: bold;
+}
+
+.view-commands-button:hover {
+  scale: 1.03;
+  transition-duration: 300ms;
+}
+
+.about-button:hover {
+  scale: 1.03;
+  transition-duration: 300ms;
+}
+
+.discord-button:hover {
+  scale: 1.03;
+  transition-duration: 300ms;
+}
+
 .table-header-gradient {
   background-image: linear-gradient(to right, #1f43bd, #3d5881);
 }

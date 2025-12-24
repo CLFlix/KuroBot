@@ -16,14 +16,14 @@ function Home() {
             your PC even slowing down because of it!
           </p>
         </div>
-        <div className="flex flex-wrap gap-4 text-xl my-5 justify-center text-white font-bold">
-          <span className="bg-gradient-to-r from-violet-600 to-purple-800 hover:bg-purple-500 rounded-lg p-1 hover:scale-103 duration-300">
+        <div className="flex flex-wrap gap-4 text-xl my-5 justify-center">
+          <span className="view-commands-button">
             <Link href="/commands">View commands</Link>
           </span>
-          <span className="bg-gradient-to-r from-red-500 to-pink-700 hover:bg-pink-400 rounded-lg p-1 hover:scale-103 duration-300">
+          <span className="about-button">
             <Link href="/about">About the bot</Link>
           </span>
-          <span className="bg-gradient-to-r from-cyan-700 to-sky-600 hover:bg-blue-400 rounded-lg p-1 hover:scale-103 duration-300">
+          <span className="discord-button">
             <Link href="https://discord.gg/4HAbQm2tdp">Join the Discord!</Link>
           </span>
         </div>
