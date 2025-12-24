@@ -3,3 +3,5 @@ twitchio<3
 requests
 python-dotenv
 websockets
+fastapi
+uvicorn
