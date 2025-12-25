@@ -15,6 +15,8 @@ const Dashboard = () => {
   const [statusMessages, setStatusMessages] = useState<StatusMessage[]>([]);
 
   const getTitleUpdaterStatus = async () => {
+    if (!isRunning) return;
+
     const res = await fetch("http://localhost:7273/titleUpdaterOn");
 
     if (!res.ok) {
@@ -24,6 +26,17 @@ const Dashboard = () => {
 
     const data = await res.json();
     setTitleUpdaterOn(data);
+  };
+
+  const getTakesRequests = async () => {
+    if (!isRunning) return;
+
+    const res = await fetch("http://localhost:7273/takeRequests");
+
+    if (!res.ok) throw new Error("Couldn't get requests status");
+
+    const data = await res.json();
+    setTakeRequests(data === true);
   };
 
   const getTitle = async () => {
@@ -56,76 +69,6 @@ const Dashboard = () => {
     setRank(data);
   };
 
-  const sortPoints = (data: Record<string, number>) => {
-    const top_users = Object.entries(data)
-      .sort(([, a], [, b]) => b - a)
-      .slice(0, 5);
-    setTop5(top_users);
-  };
-
-  const getPoints = async () => {
-    if (!isRunning) return;
-
-    const res = await fetch("http://localhost:7273/points");
-
-    if (!res.ok) throw new Error("Could not get points.");
-
-    const data = await res.json();
-    setPoints(data);
-    sortPoints(data);
-  };
-
-  const getTakesRequests = async () => {
-    if (!isRunning) return;
-
-    const res = await fetch("http://localhost:7273/takeRequests");
-
-    if (!res.ok) throw new Error("Couldn't get requests status");
-
-    const data = await res.json();
-    setTakeRequests(data === true);
-  };
-
-  useEffect(() => {
-    getTakesRequests();
-    getTitleUpdaterStatus();
-  }, [isRunning]);
-
-  useEffect(() => {
-    getRank();
-    getTitle();
-
-    const current_rank = setInterval(getRank, 5000); // change to something lower for dev
-    const current_title = setInterval(getTitle, 5000);
-
-    return () => {
-      clearInterval(current_rank);
-      clearInterval(current_title);
-    };
-  }, [isRunning]);
-
-  useEffect(() => {
-    const getIsRunning = async () => {
-      await fetch("http://localhost:7273/isRunning")
-        .then((data) => {
-          data.json().then((hello) => setIsRunning(hello === "hello"));
-        })
-        .catch((err) => setIsRunning(false));
-    };
-    getIsRunning();
-
-    const interval = setInterval(getIsRunning, 5000);
-    return () => clearInterval(interval);
-  });
-
-  useEffect(() => {
-    getPoints();
-
-    const bot_points = setInterval(getPoints, 10000); // change to something lower for dev
-
-    return () => clearInterval(bot_points);
-  }, [isRunning]);
-
   const updateTitle = async () => {
     setLoading(true);
     setStatusMessages([]);
@@ -155,6 +98,65 @@ const Dashboard = () => {
     ]);
     setLoading(false);
   };
+
+  const getPoints = async () => {
+    if (!isRunning) return;
+
+    const res = await fetch("http://localhost:7273/points");
+
+    if (!res.ok) throw new Error("Could not get points.");
+
+    const data = await res.json();
+    setPoints(data);
+    sortPoints(data);
+  };
+
+  const sortPoints = (data: Record<string, number>) => {
+    const top_users = Object.entries(data)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5);
+    setTop5(top_users);
+  };
+
+  useEffect(() => {
+    const getIsRunning = async () => {
+      await fetch("http://localhost:7273/isRunning")
+        .then((data) => {
+          data.json().then((hello) => setIsRunning(hello === "hello"));
+        })
+        .catch((err) => setIsRunning(false));
+    };
+    getIsRunning();
+
+    const interval = setInterval(getIsRunning, 5000);
+    return () => clearInterval(interval);
+  });
+
+  useEffect(() => {
+    getTakesRequests();
+    getTitleUpdaterStatus();
+  }, [isRunning]);
+
+  useEffect(() => {
+    getRank();
+    getTitle();
+
+    const current_rank = setInterval(getRank, 60000); // change to something lower for dev
+    const current_title = setInterval(getTitle, 60000);
+
+    return () => {
+      clearInterval(current_rank);
+      clearInterval(current_title);
+    };
+  }, [isRunning]);
+
+  useEffect(() => {
+    getPoints();
+
+    const bot_points = setInterval(getPoints, 10000); // change to something lower for dev
+
+    return () => clearInterval(bot_points);
+  }, [isRunning]);
 
   useEffect(() => {
     if (statusMessages.length === 0) return;
