@@ -84,8 +84,21 @@ class TwitchBot(commands.Bot):
             allow_headers=["*"]
         )
 
+        @app.get("/isRunning")
+        def is_running():
+            return "hello"
+        
+        @app.get("/takeRequests")
+        def take_requests():
+            return self.map_requests
+
+        @app.get("/titleUpdaterOn")
+        def titleUpdaterOn():
+            return self.update
+
         @app.get("/twitchTitle")
         def twitchTitle():
+            self.bot_state["current_title"] = self.get_stream_title()
             return self.bot_state["current_title"]
         
         @app.get("/rank")
@@ -509,13 +522,13 @@ class TwitchBot(commands.Bot):
     ## events
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
+        self.launch_backend()
         print(f"Logged in as {self.nick}")
         await self.get_mods_list()
         # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
         if self.update:
-            self.launch_backend()
             self.loop.create_task(self.title_updater_loop())
 
     # give people points for chatting
