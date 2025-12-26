@@ -78,6 +78,14 @@
   font-weight: bold;
 }
 
+.dashboard-button {
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  background-image: linear-gradient(to right, #65a30d, #84cc16);
+  transition-duration: 300ms;
+  font-weight: bold;
+}
+
 .view-commands-button:hover {
   scale: 1.03;
   transition-duration: 300ms;
@@ -89,6 +97,11 @@
 }
 
 .discord-button:hover {
+  scale: 1.03;
+  transition-duration: 300ms;
+}
+
+.dashboard-button:hover {
   scale: 1.03;
   transition-duration: 300ms;
 }

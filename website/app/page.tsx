@@ -16,15 +16,22 @@ function Home() {
             your PC even slowing down because of it!
           </p>
         </div>
-        <div className="flex flex-wrap gap-4 text-xl my-5 justify-center">
-          <span className="view-commands-button">
+        <div className="flex flex-wrap gap-4 text-xl mt-4 justify-center">
+          <span className="view-commands-button border border-zinc-800">
             <Link href="/commands">View commands</Link>
           </span>
-          <span className="about-button">
+          <span className="about-button border border-zinc-800">
             <Link href="/about">About the bot</Link>
           </span>
-          <span className="discord-button">
+          <span className="discord-button border border-zinc-800">
             <Link href="https://discord.gg/4HAbQm2tdp">Join the Discord!</Link>
+          </span>
+        </div>
+        <div className="mt-4 mb-5 flex justify-center text-xl">
+          <span className="dashboard-button border border-zinc-800">
+            <Link href="/dashboard" target="_blank">
+              Go to Dashboard ↗️
+            </Link>
           </span>
         </div>
         <div className="flex max-xl:flex-col gap-10 justify-center items-center">
