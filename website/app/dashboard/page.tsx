@@ -118,6 +118,14 @@ const Dashboard = () => {
     setTop5(top_users);
   };
 
+  const stopBot = async () => {
+    const res = await fetch("http://localhost:7273/stop", {
+      method: "POST",
+    });
+    if (!res.ok) throw new Error("Couldn't request bot shutdown...");
+    return;
+  };
+
   useEffect(() => {
     const getIsRunning = async () => {
       await fetch("http://localhost:7273/isRunning")
@@ -215,7 +223,13 @@ const Dashboard = () => {
               <div className="mt-4">
                 <p className="text-xl">
                   <span className="font-bold">Automatic title updater:</span>{" "}
-                  {titleUpdaterOn ? "On" : "Off"}
+                  <span
+                    className={
+                      titleUpdaterOn ? "text-green-400" : "text-red-500"
+                    }
+                  >
+                    {titleUpdaterOn ? "On" : "Off"}
+                  </span>
                 </p>
               </div>
             </>
@@ -225,16 +239,22 @@ const Dashboard = () => {
         <div className="flex flex-col text-center">
           <div>
             <h2 className="text-2xl font-bold mt-2">Bot status</h2>
-            {isRunning ? (
-              <div>
-                <p className="text-xl text-green-400">Running...</p>
-              </div>
-            ) : (
-              <div>
-                <p className="text-xl text-red-500">Not running...</p>
-              </div>
+            <div>
+              <p
+                className={
+                  isRunning ? "text-xl text-green-400" : "text-xl text-red-500"
+                }
+              >
+                {isRunning ? "Running..." : "Not running..."}
+              </p>
+            </div>
+            {isRunning && (
+              <button className="discord-button mt-2" onClick={stopBot}>
+                Stop bot
+              </button>
             )}
           </div>
+
           {isRunning && (
             <>
               <h2 className="text-2xl font-bold mt-4">Taking requests?</h2>

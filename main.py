@@ -38,6 +38,7 @@ request_headers = {
     "Client-Id": CLIENT_ID,
     "Content-Type": "application/json"
 }
+shutdown_event = asyncio.Event() # used to stop bot from dashboard
 
 class TwitchBot(commands.Bot):
     def __init__(self, map_requests: bool, affiliate: bool, update: bool):
@@ -129,6 +130,12 @@ class TwitchBot(commands.Bot):
             except ValueError as e:
                 write_log(LOG_FILE, f"NOTICE: {e}")
                 return e
+
+        @app.post("/stop")
+        async def stop_bot():
+            shutdown_event.set()
+            self.stop()
+            return "Shutdown requested"
 
         def start_api():
             import uvicorn
@@ -500,7 +507,7 @@ class TwitchBot(commands.Bot):
     # this loop will restart every 10 minutes, updating the stream title
     # with the current osu! rank, keeping the title up-to-date
     async def title_updater_loop(self):
-        while True:
+        while not shutdown_event.is_set():
             current_title = self.get_stream_title()
             self.bot_state["current_title"] = current_title
             profile = get_profile()
@@ -516,7 +523,10 @@ class TwitchBot(commands.Bot):
             except ValueError as e:
                 write_log(LOG_FILE, f"NOTICE: {e}")
             # wait 10 minutes before restarting the loop
-            await asyncio.sleep(600)
+            try:
+                await asyncio.wait_for(shutdown_event.wait(), timeout=600)
+            except asyncio.TimeoutError:
+                pass
 
 
     ## events
@@ -1194,7 +1204,7 @@ class TwitchBot(commands.Bot):
     "this is permanent or not."
 
 
-def main():
+async def main():
     def ask_yes_no(prompt: str):
         while True:
             answer = input(prompt).strip().lower()
@@ -1211,13 +1221,15 @@ def main():
     os.system("cls" if os.name == "nt" else "clear")
 
     bot = TwitchBot(map_requests, affiliate, update)
+
     try:
-        bot.run()
+        bot_task = asyncio.create_task(bot.start())
+        await shutdown_event.wait()
     except Exception as e:
         write_log(LOG_FILE, e)
         print(f"Bot crashed. Details in {LOG_FILE}")
     finally:
-        bot.stop()
-        input("Press Enter to close...")
+        await bot.close()
 
-main()
+if __name__ == "__main__":
+    asyncio.run(main())
