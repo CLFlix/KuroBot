@@ -96,6 +96,10 @@ class TwitchBot(commands.Bot):
         @app.get("/titleUpdaterOn")
         def titleUpdaterOn():
             return self.update
+        
+        @app.get("/listener")
+        def listenerOn():
+            return self.affiliate
 
         @app.get("/twitchTitle")
         def twitchTitle():

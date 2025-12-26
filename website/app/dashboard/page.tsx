@@ -7,6 +7,7 @@ const Dashboard = () => {
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [takeRequests, setTakeRequests] = useState<boolean>(false);
   const [titleUpdaterOn, setTitleUpdaterOn] = useState<boolean>(false);
+  const [listenerOn, setListenerOn] = useState<boolean>(false);
   const [rank, setRank] = useState<number | null>(null);
   const [title, setTitle] = useState<string>("");
   const [points, setPoints] = useState<Record<string, number>>();
@@ -56,6 +57,20 @@ const Dashboard = () => {
 
     const data = await res.json();
     setTitle(data);
+  };
+
+  const getRedemptionsListenerStatus = async () => {
+    if (!isRunning) return;
+
+    const res = await fetch("http://localhost:7273/listener");
+
+    if (!res.ok) {
+      setListenerOn(false);
+      return;
+    }
+
+    const data = await res.json();
+    setListenerOn(data === true);
   };
 
   const getRank = async () => {
@@ -138,11 +153,12 @@ const Dashboard = () => {
 
     const interval = setInterval(getIsRunning, 5000);
     return () => clearInterval(interval);
-  });
+  }, []);
 
   useEffect(() => {
     getTakesRequests();
     getTitleUpdaterStatus();
+    getRedemptionsListenerStatus();
   }, [isRunning]);
 
   useEffect(() => {
@@ -229,6 +245,18 @@ const Dashboard = () => {
                     }
                   >
                     {titleUpdaterOn ? "On" : "Off"}
+                  </span>
+                </p>
+              </div>
+              <div>
+                <p className="text-xl">
+                  <span className="font-bold">
+                    Twitch Redemptions Listener:
+                  </span>{" "}
+                  <span
+                    className={listenerOn ? "text-green-400" : "text-red-500"}
+                  >
+                    {listenerOn ? "On" : "Off"}
                   </span>
                 </p>
               </div>
