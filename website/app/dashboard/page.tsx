@@ -40,6 +40,17 @@ const Dashboard = () => {
     setTakeRequests(data === true);
   };
 
+  const toggleRequests = async () => {
+    const res = await fetch("http://localhost:7273/toggleRequests", {
+      method: "POST",
+    });
+
+    if (!res.ok) throw new Error("Could not toggle requests status.");
+
+    const data = await res.json();
+    setTakeRequests(data === true);
+  };
+
   const getTitle = async () => {
     if (!isRunning) return;
 
@@ -147,7 +158,7 @@ const Dashboard = () => {
         .then((data) => {
           data.json().then((hello) => setIsRunning(hello === "hello"));
         })
-        .catch((err) => setIsRunning(false));
+        .catch(() => setIsRunning(false));
     };
     getIsRunning();
 
@@ -156,7 +167,6 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    getTakesRequests();
     getTitleUpdaterStatus();
     getRedemptionsListenerStatus();
   }, [isRunning]);
@@ -164,13 +174,16 @@ const Dashboard = () => {
   useEffect(() => {
     getRank();
     getTitle();
+    getTakesRequests();
 
     const current_rank = setInterval(getRank, 60000); // change to something lower for dev
     const current_title = setInterval(getTitle, 60000);
+    const requestStatus = setInterval(getTakesRequests, 5000);
 
     return () => {
       clearInterval(current_rank);
       clearInterval(current_title);
+      clearInterval(requestStatus);
     };
   }, [isRunning]);
 
@@ -277,23 +290,33 @@ const Dashboard = () => {
               </p>
             </div>
             {isRunning && (
-              <button className="discord-button mt-2" onClick={stopBot}>
+              <button className="discord-button mt-2 text-lg" onClick={stopBot}>
                 Stop bot
               </button>
             )}
           </div>
 
           {isRunning && (
-            <>
-              <h2 className="text-2xl font-bold mt-4">Taking requests?</h2>
-              <p
-                className={`text-xl ${
-                  takeRequests ? "text-green-400" : "text-red-400"
-                }`}
+            <div>
+              <div>
+                <h2 className="text-2xl font-bold mt-4">Taking requests?</h2>
+                <p
+                  className={`text-xl ${
+                    takeRequests ? "text-green-400" : "text-red-400"
+                  }`}
+                >
+                  {takeRequests ? "Yes" : "No"}
+                </p>
+              </div>
+              <button
+                className="discord-button mt-2 text-lg"
+                onClick={toggleRequests}
               >
-                {takeRequests ? "Yes" : "No"}
-              </p>
-            </>
+                {takeRequests
+                  ? "Stop taking requests"
+                  : "Start taking requests"}
+              </button>
+            </div>
           )}
         </div>
 
