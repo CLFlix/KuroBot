@@ -56,12 +56,6 @@ class TwitchBot(commands.Bot):
         self.affiliate = affiliate
         self.update = update
 
-        self.rq_message = (
-            "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
-            if self.map_requests is True
-            else "I will not be accepting map requests this stream :/. Maybe next stream ;)"
-            )
-
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
         self.links = read_socials_links(SOCIALS_FILE)
@@ -134,6 +128,10 @@ class TwitchBot(commands.Bot):
             except ValueError as e:
                 write_log(LOG_FILE, f"NOTICE: {e}")
                 return e
+
+        @app.post("/toggleRequests")
+        def toggleRequests():
+            self.map_requests = not self.map_requests
 
         @app.post("/stop")
         async def stop_bot():
@@ -853,7 +851,10 @@ class TwitchBot(commands.Bot):
     # show the chat if you want to accept requests or not (self.rq_message comes from main())
     @commands.command(name="rq")
     async def rq(self, ctx):
-        await ctx.send(self.rq_message)
+        if self.map_requests:
+            await ctx.send("You're free to request any map you'd like to see me play. Just paste the link in the chat!")
+        else:
+            await ctx.send("I will not be accepting map requests this stream :/. Maybe next stream ;)")
     rq.category = "osu"
     rq.description = "The streamer can decide whether they want to receive " \
     "beatmap requests. This command will then show whether they accept those requests or not."
