@@ -48,7 +48,7 @@ const Dashboard = () => {
     if (!res.ok) throw new Error("Could not toggle requests status.");
 
     const data = await res.json();
-    setTakeRequests(data === true);
+    setTakeRequests(!takeRequests);
   };
 
   const getTitle = async () => {
@@ -178,12 +178,10 @@ const Dashboard = () => {
 
     const current_rank = setInterval(getRank, 60000); // change to something lower for dev
     const current_title = setInterval(getTitle, 60000);
-    const requestStatus = setInterval(getTakesRequests, 5000);
 
     return () => {
       clearInterval(current_rank);
       clearInterval(current_title);
-      clearInterval(requestStatus);
     };
   }, [isRunning]);
 
