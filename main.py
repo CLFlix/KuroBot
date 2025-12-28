@@ -111,23 +111,8 @@ class TwitchBot(commands.Bot):
             return self.points
 
         @app.get("/update_title")
-        def fire_updater():
-            current_title = self.get_stream_title()
-            self.bot_state["current_title"] = current_title
-            profile = get_profile()
-            current_rank = profile['pp_rank']
-
-            try:
-                new_stream_title = edit_stream_title(current_title, current_rank)
-                if new_stream_title != current_title:
-                    self.update_stream_title(new_stream_title)
-
-            except SyntaxError as e:
-                write_log(LOG_FILE, e)
-                print(f"Couldn't update stream title, details in log.txt")
-            except ValueError as e:
-                write_log(LOG_FILE, f"NOTICE: {e}")
-                return e
+        async def fire_updater():
+            await self.title_updater()
 
         @app.post("/toggleRequests")
         def toggleRequests():
@@ -506,29 +491,34 @@ class TwitchBot(commands.Bot):
             write_log(LOG_FILE, response.text)
             print(f"Error updating stream category, details in log.txt")
 
+    # generalized function for title_updater_loop and post mapping
+    async def title_updater(self):
+        current_title = self.get_stream_title()
+        self.bot_state["current_title"] = current_title
+        profile = get_profile()
+        current_rank = profile["pp_rank"]
+
+        try:
+            new_stream_title = edit_stream_title(current_title, current_rank)
+            if new_stream_title != current_title:
+                self.update_stream_title(new_stream_title)
+
+        except SyntaxError as e:
+            write_log(LOG_FILE, e)
+            print(f"Couldn't update stream title, details in log.txt")
+            
+        except ValueError as e:
+            write_log(LOG_FILE, f"NOTICE: {e}")
+
     # this loop will restart every 10 minutes, updating the stream title
     # with the current osu! rank, keeping the title up-to-date
     async def title_updater_loop(self):
         while not shutdown_event.is_set():
-            current_title = self.get_stream_title()
-            self.bot_state["current_title"] = current_title
-            profile = get_profile()
-            current_rank = profile['pp_rank']
-
-            try:
-                new_stream_title = edit_stream_title(current_title, current_rank)
-                if new_stream_title != current_title:
-                    self.update_stream_title(new_stream_title)
-            except SyntaxError as e:
-                write_log(LOG_FILE, e)
-                print(f"Couldn't update stream title, details in log.txt")
-            except ValueError as e:
-                write_log(LOG_FILE, f"NOTICE: {e}")
-            # wait 10 minutes before restarting the loop
-            try:
-                await asyncio.wait_for(shutdown_event.wait(), timeout=600)
-            except asyncio.TimeoutError:
-                pass
+            await self.title_updater()
+        try:
+            await asyncio.wait_for(shutdown_event.wait(), timeout=600) # 10 minute cooldown before restarting loop
+        except asyncio.TimeoutError:
+            pass
 
 
     ## events
