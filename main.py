@@ -3,6 +3,10 @@ from refresh_access_token import refresh_access_token
 from eventsub_listener import eventsub_listener
 
 from twitchio.ext import commands
+
+# TODO: UNCOMMENT FOR VERSIONS LATER THEN 1.0.0
+# from packaging import version
+
 from dotenv import load_dotenv
 
 import os
@@ -16,6 +20,10 @@ from fastapi.middleware.cors import CORSMiddleware
 import threading
 
 load_dotenv()
+
+OWNER = "CLFlix"
+REPO = "KuroBot"
+CURRENT_VERSION = "1.0.0"
 
 TOKEN = os.getenv("TOKEN")
 BROADCASTER_ID = int(os.getenv("BROADCASTER_ID"))
@@ -62,6 +70,24 @@ class TwitchBot(commands.Bot):
 
         # manage chat message points cooldowns
         self.last_point_time = {}
+
+    # TODO: UNCOMMENT FOR VERSIONS LATER THEN 1.0.0
+    # def check_for_update(self):
+    #     url = f"https://api.github.com/repos/{OWNER}/{REPO}/releases/latest"
+    #     response = requests.get(url, timeout=10)
+    #     response.raise_for_status()
+
+    #     data = response.json()
+    #     latest_version = data["tag_name"].lstrip("v")
+
+    #     if version.parse(latest_version) > version.parse(CURRENT_VERSION):
+    #         return {
+    #             "update": True,
+    #             "latest": latest_version,
+    #             "release_url": data["html_url"]
+    #         }
+
+    #     return {"update": False}
 
     def launch_backend(self):
         self.bot_state = {
@@ -524,6 +550,9 @@ class TwitchBot(commands.Bot):
     ## events
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
+        # TODO: UNCOMMENT FOR VERSIONS LATER THEN 1.0.0
+        # if self.check_for_update()["update"]:
+        #     print(f"There is an update available for KuroBot! Go to {self.check_for_update["release_url"]} to download KuroBot {self.check_for_update["latest"]}")
         self.launch_backend()
         print(f"Logged in as {self.nick}")
         await self.get_mods_list()
