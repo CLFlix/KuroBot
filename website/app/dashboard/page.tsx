@@ -213,7 +213,7 @@ const Dashboard = () => {
               <h2 className="text-2xl font-bold mt-2">Title Updates</h2>
               <table className="mt-2">
                 <thead>
-                  <tr className="text-2xl">
+                  <tr className="text-2xl text-center">
                     <td className="table-header-gradient px-3">osu! Rank</td>
                     <td className="table-header-gradient px-3">
                       Current Stream Title
@@ -222,8 +222,8 @@ const Dashboard = () => {
                 </thead>
                 <tbody>
                   <tr className="text-center">
-                    <td className="table-command-gradient">{rank}</td>
-                    <td className="table-command-gradient">{title}</td>
+                    <td className="table-command-gradient px-3">{rank}</td>
+                    <td className="table-command-gradient px-3">{title}</td>
                   </tr>
                 </tbody>
               </table>
