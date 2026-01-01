@@ -1131,7 +1131,10 @@ class TwitchBot(commands.Bot):
             return
 
         # remove "@" from receiver + case consistency for points
-        receiver = message[0][1:].lower()
+        if (message[0].startswith("@")):
+            receiver = message[0][1:].lower()
+        else:
+            receiver = message[0].lower()
 
         try:
             amount = int(message[1])
