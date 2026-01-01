@@ -12,9 +12,13 @@ import time
 from datetime import datetime as dt
 import asyncio
 import random
+import webbrowser
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from pathlib import Path
 import threading
 
 load_dotenv()
@@ -94,13 +98,22 @@ class TwitchBot(commands.Bot):
         
         app = FastAPI()
 
+        BASE_DIR = Path(__file__).resolve().parent
+        STATIC_DIR = BASE_DIR / "website" / "out"
+
         app.add_middleware(
             CORSMiddleware,
-            allow_origins=["http://localhost:3000, https://clflix.github.io/*"],
+            allow_origins=["*"],
             allow_credentials=True,
-            allow_methods=["GET, POST"],
+            allow_methods=["*"],
             allow_headers=["*"]
         )
+
+        app.mount("/KuroBot", StaticFiles(directory=STATIC_DIR, html=True), name="static")
+        print(STATIC_DIR.exists())
+        @app.get("/")
+        def dashboard():
+            return FileResponse(STATIC_DIR / "dashboard.html")
 
         @app.get("/isRunning")
         def is_running():
@@ -152,6 +165,7 @@ class TwitchBot(commands.Bot):
             uvicorn.run(app, host="127.0.0.1", port=7273)
 
         threading.Thread(target=start_api, daemon=True).start()
+
 
     def stop(self):
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
@@ -550,8 +564,9 @@ class TwitchBot(commands.Bot):
         # TODO: UNCOMMENT FOR VERSIONS LATER THEN v0.1.0
         # if self.check_for_update()["update"]:
         #     print(f"There is an update available for KuroBot! Go to {self.check_for_update["release_url"]} to download KuroBot {self.check_for_update["latest"]}")
-        self.launch_backend()
         print(f"Logged in as {self.nick}")
+        self.launch_backend()
+        webbrowser.open("http://localhost:7273/")
         await self.get_mods_list()
         # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
         if self.affiliate:

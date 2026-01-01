@@ -18,7 +18,7 @@ const Dashboard = () => {
   const getTitleUpdaterStatus = async () => {
     if (!isRunning) return;
 
-    const res = await fetch("http://localhost:7273/titleUpdaterOn");
+    const res = await fetch("/titleUpdaterOn");
 
     if (!res.ok) {
       setTitleUpdaterOn(false);
@@ -32,7 +32,7 @@ const Dashboard = () => {
   const getTakesRequests = async () => {
     if (!isRunning) return;
 
-    const res = await fetch("http://localhost:7273/takeRequests");
+    const res = await fetch("/takeRequests");
 
     if (!res.ok) throw new Error("Couldn't get requests status");
 
@@ -41,7 +41,7 @@ const Dashboard = () => {
   };
 
   const toggleRequests = async () => {
-    const res = await fetch("http://localhost:7273/toggleRequests", {
+    const res = await fetch("/toggleRequests", {
       method: "POST",
     });
 
@@ -54,7 +54,7 @@ const Dashboard = () => {
   const getTitle = async () => {
     if (!isRunning) return;
 
-    const res = await fetch("http://localhost:7273/twitchTitle");
+    const res = await fetch("/twitchTitle");
 
     if (!res.ok) {
       setStatusMessages([
@@ -73,7 +73,7 @@ const Dashboard = () => {
   const getRedemptionsListenerStatus = async () => {
     if (!isRunning) return;
 
-    const res = await fetch("http://localhost:7273/listener");
+    const res = await fetch("/listener");
 
     if (!res.ok) {
       setListenerOn(false);
@@ -87,7 +87,7 @@ const Dashboard = () => {
   const getRank = async () => {
     if (!isRunning) return;
 
-    const res = await fetch("http://localhost:7273/rank");
+    const res = await fetch("/rank");
 
     if (!res.ok) throw new Error("Could not get current osu! rank.");
 
@@ -104,7 +104,7 @@ const Dashboard = () => {
       return;
     }
 
-    const response = await fetch("http://localhost:7273/update_title");
+    const response = await fetch("/update_title");
 
     if (!response.ok) {
       setStatusMessages([
@@ -128,7 +128,7 @@ const Dashboard = () => {
   const getPoints = async () => {
     if (!isRunning) return;
 
-    const res = await fetch("http://localhost:7273/points");
+    const res = await fetch("/points");
 
     if (!res.ok) throw new Error("Could not get points.");
 
@@ -145,7 +145,7 @@ const Dashboard = () => {
   };
 
   const stopBot = async () => {
-    const res = await fetch("http://localhost:7273/stop", {
+    const res = await fetch("/stop", {
       method: "POST",
     });
     if (!res.ok) throw new Error("Couldn't request bot shutdown...");
@@ -154,7 +154,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const getIsRunning = async () => {
-      await fetch("http://localhost:7273/isRunning")
+      await fetch("/isRunning")
         .then((data) => {
           data.json().then((hello) => setIsRunning(hello === "hello"));
         })
