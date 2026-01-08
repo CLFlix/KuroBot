@@ -54,7 +54,7 @@ const Dashboard = () => {
   const getTitle = async () => {
     if (!isRunning) return;
 
-    const res = await fetch("/twitchTitle");
+    const res = await fetch("http://localhost:7273/twitchTitle");
 
     if (!res.ok) {
       setStatusMessages([
@@ -154,7 +154,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const getIsRunning = async () => {
-      await fetch("/isRunning")
+      await fetch("http://localhost:7273/isRunning")
         .then((data) => {
           data.json().then((hello) => setIsRunning(hello === "hello"));
         })
@@ -211,7 +211,7 @@ const Dashboard = () => {
           {isRunning && (
             <>
               <h2 className="text-2xl font-bold mt-2">Title Updates</h2>
-              <table className="mt-2">
+              <table className="mt-2 max-w-[90%]">
                 <thead>
                   <tr className="text-2xl text-center">
                     <td className="table-header-gradient px-3">osu! Rank</td>
