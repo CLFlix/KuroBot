@@ -23,8 +23,6 @@ import threading
 
 load_dotenv()
 
-OWNER = "CLFlix"
-REPO = "KuroBot"
 CURRENT_VERSION = "v0.1.0"
 
 TOKEN = os.getenv("TOKEN")
@@ -51,7 +49,7 @@ request_headers = {
 shutdown_event = asyncio.Event() # used to stop bot from dashboard
 
 class TwitchBot(commands.Bot):
-    def __init__(self, map_requests: bool, affiliate: bool, update: bool):
+    def __init__(self, map_requests: bool, affiliate: bool, update_title: bool):
         super().__init__(
             token=TOKEN,
             prefix="!",
@@ -64,7 +62,7 @@ class TwitchBot(commands.Bot):
 
         self.map_requests = map_requests
         self.affiliate = affiliate
-        self.update = update
+        self.update_title = update_title
 
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
@@ -74,9 +72,11 @@ class TwitchBot(commands.Bot):
         self.last_point_time = {}
 
     def check_for_update(self):
-        url = f"https://api.github.com/repos/{OWNER}/{REPO}/releases/latest"
+        url = f"https://api.github.com/repos/CLFlix/KuroBot/releases/latest"
         response = requests.get(url, timeout=10)
-        response.raise_for_status()
+
+        if not response:
+            return
 
         data = response.json()
         latest_version = data["tag_name"].lstrip("v")
@@ -110,7 +110,7 @@ class TwitchBot(commands.Bot):
         )
 
         app.mount("/KuroBot", StaticFiles(directory=STATIC_DIR, html=True), name="static")
-        print(STATIC_DIR.exists())
+
         @app.get("/")
         def dashboard():
             return FileResponse(STATIC_DIR / "dashboard.html")
@@ -125,7 +125,7 @@ class TwitchBot(commands.Bot):
 
         @app.get("/titleUpdaterOn")
         def titleUpdaterOn():
-            return self.update
+            return self.update_title
         
         @app.get("/listener")
         def listenerOn():
@@ -162,7 +162,7 @@ class TwitchBot(commands.Bot):
 
         def start_api():
             import uvicorn
-            uvicorn.run(app, host="127.0.0.1", port=7273)
+            uvicorn.run(app, host="127.0.0.1", port=7273, log_level='critical')
 
         threading.Thread(target=start_api, daemon=True).start()
 
@@ -561,17 +561,22 @@ class TwitchBot(commands.Bot):
     ## events
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
-        # TODO: UNCOMMENT FOR VERSIONS LATER THEN v0.1.0
-        # if self.check_for_update()["update"]:
-        #     print(f"There is an update available for KuroBot! Go to {self.check_for_update["release_url"]} to download KuroBot {self.check_for_update["latest"]}")
+        update_check = self.check_for_update()
+        if update_check and update_check["update"]:
+            print(f"There is an update available for KuroBot! Go to {update_check["release_url"]} to download KuroBot version {update_check["latest"]}")
+
         print(f"Logged in as {self.nick}")
+
         self.launch_backend()
         webbrowser.open("http://localhost:7273/")
+        print("Dashboard running on http://localhost:7273/")
+
         await self.get_mods_list()
         # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
+
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
-        if self.update:
+        if self.update_title:
             self.loop.create_task(self.title_updater_loop())
 
     # give people points for chatting
