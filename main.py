@@ -71,6 +71,14 @@ class TwitchBot(commands.Bot):
         # manage chat message points cooldowns
         self.last_point_time = {}
 
+    async def run_forever(self):
+        start_task = asyncio.create_task(self.start())
+        try:
+            await shutdown_event.wait()
+        finally:
+            await self.stop()
+            await start_task
+
     def check_for_update(self):
         url = f"https://api.github.com/repos/CLFlix/KuroBot/releases/latest"
         response = requests.get(url, timeout=10)
@@ -157,27 +165,25 @@ class TwitchBot(commands.Bot):
         @app.post("/stop")
         async def stop_bot():
             shutdown_event.set()
-            self.stop()
-            return "Shutdown requested"
+            print("Stopping bot, do not close this console...")
 
         def start_api():
             import uvicorn
-            uvicorn.run(app, host="127.0.0.1", port=7273, log_level='critical')
+            uvicorn.run(app, host="127.0.0.1", port=7273, log_level='critical') # change log_level for dev
 
         threading.Thread(target=start_api, daemon=True).start()
 
 
-    def stop(self):
+    async def stop(self):
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
         write_log(LOG_FILE, f"First time bonus data saved")
+
         write_points_data(self.points, POINTS_FILE)
         write_log(LOG_FILE, f"Points data saved")
-        print("Data saved!")
 
-        try:
-            self.close()
-        except AttributeError:
-            pass
+        print("Data saved!\nBye! :D")
+        write_log(LOG_FILE, "Bye! :D")
+        await self.close()
 
     ## export commands
     def export_commands(self):
@@ -1267,13 +1273,10 @@ async def main():
     bot = TwitchBot(map_requests, affiliate, update)
 
     try:
-        bot_task = asyncio.create_task(bot.start())
-        await shutdown_event.wait()
+        await bot.run_forever()
     except Exception as e:
         write_log(LOG_FILE, e)
         print(f"Bot crashed. Details in {LOG_FILE}")
-    finally:
-        await bot.close()
 
 if __name__ == "__main__":
     asyncio.run(main())
