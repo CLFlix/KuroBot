@@ -54,7 +54,7 @@ const Dashboard = () => {
   const getTitle = async () => {
     if (!isRunning) return;
 
-    const res = await fetch("http://localhost:7273/twitchTitle");
+    const res = await fetch("/twitchTitle");
 
     if (!res.ok) {
       setStatusMessages([
@@ -154,7 +154,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const getIsRunning = async () => {
-      await fetch("http://localhost:7273/isRunning")
+      await fetch("/isRunning")
         .then((data) => {
           data.json().then((hello) => setIsRunning(hello === "hello"));
         })
