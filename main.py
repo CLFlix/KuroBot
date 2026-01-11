@@ -3,6 +3,8 @@ from refresh_access_token import refresh_access_token
 from eventsub_listener import eventsub_listener
 
 from twitchio.ext import commands
+from packaging import version
+
 from dotenv import load_dotenv
 
 import os
@@ -10,8 +12,18 @@ import time
 from datetime import datetime as dt
 import asyncio
 import random
+import webbrowser
+
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
+from pathlib import Path
+import threading
 
 load_dotenv()
+
+CURRENT_VERSION = "v0.1.0"
 
 TOKEN = os.getenv("TOKEN")
 BROADCASTER_ID = int(os.getenv("BROADCASTER_ID"))
@@ -34,9 +46,10 @@ request_headers = {
     "Client-Id": CLIENT_ID,
     "Content-Type": "application/json"
 }
+shutdown_event = asyncio.Event() # used to stop bot from dashboard
 
 class TwitchBot(commands.Bot):
-    def __init__(self, map_requests: bool, affiliate: bool, update: bool):
+    def __init__(self, map_requests: bool, affiliate: bool, update_title: bool):
         super().__init__(
             token=TOKEN,
             prefix="!",
@@ -49,13 +62,7 @@ class TwitchBot(commands.Bot):
 
         self.map_requests = map_requests
         self.affiliate = affiliate
-        self.update = update
-
-        self.rq_message = (
-            "You're free to request any map you'd like to see me play. Just paste the link in the chat!"
-            if self.map_requests is True
-            else "I will not be accepting map requests this stream :/. Maybe next stream ;)"
-            )
+        self.update_title = update_title
 
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
@@ -64,17 +71,119 @@ class TwitchBot(commands.Bot):
         # manage chat message points cooldowns
         self.last_point_time = {}
 
-    def stop(self):
+    async def run_forever(self):
+        start_task = asyncio.create_task(self.start())
+        try:
+            await shutdown_event.wait()
+        finally:
+            await self.stop()
+            await start_task
+
+    def check_for_update(self):
+        url = f"https://api.github.com/repos/CLFlix/KuroBot/releases/latest"
+        response = requests.get(url, timeout=10)
+
+        if not response:
+            return
+
+        data = response.json()
+        latest_version = data["tag_name"].lstrip("v")
+
+        if version.parse(latest_version) > version.parse(CURRENT_VERSION):
+            return {
+                "update": True,
+                "latest": latest_version,
+                "release_url": data["html_url"]
+            }
+
+        return {"update": False}
+
+    def launch_backend(self):
+        self.bot_state = {
+                "rank": None,
+                "current_title": None,
+            }
+        
+        app = FastAPI()
+
+        BASE_DIR = Path(__file__).resolve().parent
+        STATIC_DIR = BASE_DIR / "website" / "out"
+
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"]
+        )
+
+        app.mount("/KuroBot", StaticFiles(directory=STATIC_DIR, html=True), name="static")
+
+        @app.get("/")
+        def dashboard():
+            return FileResponse(STATIC_DIR / "dashboard.html")
+
+        @app.get("/isRunning")
+        def is_running():
+            return "hello"
+        
+        @app.get("/takeRequests")
+        def take_requests():
+            return self.map_requests
+
+        @app.get("/titleUpdaterOn")
+        def titleUpdaterOn():
+            return self.update_title
+        
+        @app.get("/listener")
+        def listenerOn():
+            return self.affiliate
+
+        @app.get("/twitchTitle")
+        def twitchTitle():
+            self.bot_state["current_title"] = self.get_stream_title()
+            return self.bot_state["current_title"]
+        
+        @app.get("/rank")
+        def rank():
+            profile = get_profile()
+            self.bot_state["rank"] = profile["pp_rank"]
+            return f"#{self.bot_state["rank"]}"
+        
+        @app.get("/points")
+        def get_points():
+            return self.points
+
+        @app.get("/update_title")
+        async def fire_updater():
+            await self.title_updater()
+
+        @app.post("/toggleRequests")
+        def toggleRequests():
+            self.map_requests = not self.map_requests
+
+        @app.post("/stop")
+        async def stop_bot():
+            shutdown_event.set()
+            print("Stopping bot, do not close this console...")
+
+        def start_api():
+            import uvicorn
+            uvicorn.run(app, host="127.0.0.1", port=7273, log_level='critical') # change log_level for dev
+
+        threading.Thread(target=start_api, daemon=True).start()
+
+
+    async def stop(self):
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
         write_log(LOG_FILE, f"First time bonus data saved")
+
         write_points_data(self.points, POINTS_FILE)
         write_log(LOG_FILE, f"Points data saved")
-        print("Data saved!")
 
-        try:
-            self.close()
-        except AttributeError:
-            pass
+        print("Data saved!\nBye! :D")
+        write_log(LOG_FILE, "Bye! :D")
+        await self.close()
 
     ## export commands
     def export_commands(self):
@@ -425,37 +534,55 @@ class TwitchBot(commands.Bot):
             write_log(LOG_FILE, response.text)
             print(f"Error updating stream category, details in log.txt")
 
+    # generalized function for title_updater_loop and post mapping
+    async def title_updater(self):
+        current_title = self.get_stream_title()
+        self.bot_state["current_title"] = current_title
+        profile = get_profile()
+        current_rank = profile["pp_rank"]
+
+        try:
+            new_stream_title = edit_stream_title(current_title, current_rank)
+            if new_stream_title != current_title:
+                self.update_stream_title(new_stream_title)
+
+        except SyntaxError as e:
+            write_log(LOG_FILE, e)
+            print(f"Couldn't update stream title, details in log.txt")
+            
+        except ValueError as e:
+            write_log(LOG_FILE, f"NOTICE: {e}")
+
     # this loop will restart every 10 minutes, updating the stream title
     # with the current osu! rank, keeping the title up-to-date
     async def title_updater_loop(self):
-        while True:
-            current_title = self.get_stream_title()
-            profile = get_profile()
-            current_rank = profile['pp_rank']
-
-            try:
-                new_stream_title = edit_stream_title(current_title, current_rank)
-                if new_stream_title != current_title:
-                    self.update_stream_title(new_stream_title)
-            except SyntaxError as e:
-                write_log(LOG_FILE, e)
-                print(f"Couldn't update stream title, details in log.txt")
-            except ValueError as e:
-                # manual write: stop printing every valueError
-                write_log(LOG_FILE, f"NOTICE: {e}")
-            # wait 10 minutes before restarting the loop
-            await asyncio.sleep(600)
+        while not shutdown_event.is_set():
+            await self.title_updater()
+        try:
+            await asyncio.wait_for(shutdown_event.wait(), timeout=600) # 10 minute cooldown before restarting loop
+        except asyncio.TimeoutError:
+            pass
 
 
     ## events
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
+        update_check = self.check_for_update()
+        if update_check and update_check["update"]:
+            print(f"There is an update available for KuroBot! Go to {update_check["release_url"]} to download KuroBot version {update_check["latest"]}")
+
         print(f"Logged in as {self.nick}")
+
+        self.launch_backend()
+        webbrowser.open("http://localhost:7273/")
+        print("Dashboard running on http://localhost:7273/")
+
         await self.get_mods_list()
         # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
+
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
-        if self.update:
+        if self.update_title:
             self.loop.create_task(self.title_updater_loop())
 
     # give people points for chatting
@@ -766,7 +893,10 @@ class TwitchBot(commands.Bot):
     # show the chat if you want to accept requests or not (self.rq_message comes from main())
     @commands.command(name="rq")
     async def rq(self, ctx):
-        await ctx.send(self.rq_message)
+        if self.map_requests:
+            await ctx.send("You're free to request any map you'd like to see me play. Just paste the link in the chat!")
+        else:
+            await ctx.send("I will not be accepting map requests this stream :/. Maybe next stream ;)")
     rq.category = "osu"
     rq.description = "The streamer can decide whether they want to receive " \
     "beatmap requests. This command will then show whether they accept those requests or not."
@@ -1027,7 +1157,10 @@ class TwitchBot(commands.Bot):
             return
 
         # remove "@" from receiver + case consistency for points
-        receiver = message[0][1:].lower()
+        if (message[0].startswith("@")):
+            receiver = message[0][1:].lower()
+        else:
+            receiver = message[0].lower()
 
         try:
             amount = int(message[1])
@@ -1121,7 +1254,7 @@ class TwitchBot(commands.Bot):
     "this is permanent or not."
 
 
-def main():
+async def main():
     def ask_yes_no(prompt: str):
         while True:
             answer = input(prompt).strip().lower()
@@ -1138,13 +1271,12 @@ def main():
     os.system("cls" if os.name == "nt" else "clear")
 
     bot = TwitchBot(map_requests, affiliate, update)
+
     try:
-        bot.run()
+        await bot.run_forever()
     except Exception as e:
         write_log(LOG_FILE, e)
         print(f"Bot crashed. Details in {LOG_FILE}")
-    finally:
-        bot.stop()
-        input("Press Enter to close...")
 
-main()
+if __name__ == "__main__":
+    asyncio.run(main())
