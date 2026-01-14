@@ -27,14 +27,7 @@ function Home() {
             <Link href="https://discord.gg/4HAbQm2tdp">Join the Discord!</Link>
           </span>
         </div>
-        <div className="mt-4 mb-5 flex justify-center text-xl">
-          <span className="dashboard-button border border-zinc-800">
-            <Link href="/dashboard" target="_blank">
-              Go to Dashboard ↗️
-            </Link>
-          </span>
-        </div>
-        <div className="flex max-xl:flex-col gap-10 justify-center items-center">
+        <div className="flex max-xl:flex-col gap-10 justify-center items-center mt-4">
           <div className="text-block-gradient rounded-lg p-1 text-center border border-gray-700 max-w-[14%] max-lg:max-w-[80%]">
             <h1 className="text-2xl font-bold">Points System</h1>
             <p className="text-xl">
