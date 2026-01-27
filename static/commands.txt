@@ -33,4 +33,4 @@ zoom - Make the streamer zoom in their camera for 10 minutes for 500 points! - r
 memecam - Redeeming 500 of the user's points, the streamer has to turn on an effect / filter over their camera for the next 10 minutes. - redeem
 gift - You can gift points to another user, if you have enough points to do so. '!gift @KurookamiTV 500' will subtract 500 points from the invoker, and add 500 points to KurookamiTV's total. - redeem
 gamble - Double or nothing! Specify the amount you want to gamble and see if you win double the amount back, or lose it all... - redeem
-vip - Redeeming 10.000 points, you can claim VIP status on the streamer's Twitch channel! The bot will reply with a message saying this is temporary, but the streamer can, of course, decide theirselves whether this is permanent or not. - redeem
+vip - Redeeming 1.000.000 points, you can claim VIP status on the streamer's Twitch channel! The bot will reply with a message saying this is temporary, but the streamer can, of course, decide theirselves whether this is permanent or not. - redeem
