@@ -563,15 +563,20 @@ class TwitchBot(commands.Bot):
         except ValueError as e:
             write_log(LOG_FILE, f"NOTICE: {e}")
 
+        return
+
     # this loop will restart every 10 minutes, updating the stream title
     # with the current osu! rank, keeping the title up-to-date
     async def title_updater_loop(self):
         while not shutdown_event.is_set():
+            print("Before updater")
             await self.title_updater()
-        try:
-            await asyncio.wait_for(shutdown_event.wait(), timeout=600) # 10 minute cooldown before restarting loop
-        except asyncio.TimeoutError:
-            pass
+            print("After updater")
+
+            try:
+                await asyncio.wait_for(shutdown_event.wait(), timeout=600) # 10 minute cooldown before restarting loop
+            except asyncio.TimeoutError:
+                pass
 
 
     ## events
