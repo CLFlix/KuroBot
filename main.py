@@ -273,7 +273,7 @@ class TwitchBot(commands.Bot):
 
             if response.status_code != 200:
                 write_log(LOG_FILE, response.text)
-                raise ConnectionError(f"Error getting mods list. More detailed error in log.txt")
+                raise ConnectionError(f"Error getting mods list. More detailed error in {LOG_FILE}")
 
         try:
             data = response.json()["data"]
