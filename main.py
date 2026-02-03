@@ -569,9 +569,7 @@ class TwitchBot(commands.Bot):
     # with the current osu! rank, keeping the title up-to-date
     async def title_updater_loop(self):
         while not shutdown_event.is_set():
-            print("Before updater")
             await self.title_updater()
-            print("After updater")
 
             try:
                 await asyncio.wait_for(shutdown_event.wait(), timeout=600) # 10 minute cooldown before restarting loop
