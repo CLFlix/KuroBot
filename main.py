@@ -71,6 +71,9 @@ class TwitchBot(commands.Bot):
         # manage chat message points cooldowns
         self.last_point_time = {}
 
+        # manage 5 gambles per hour
+        self.gamble_cooldown = {}
+
     async def run_forever(self):
         start_task = asyncio.create_task(self.start())
         try:
@@ -1217,6 +1220,15 @@ class TwitchBot(commands.Bot):
     @commands.command(name="gamble")
     async def gamble(self, ctx, amount: int = 0):
         user = ctx.author.name
+
+        if user in self.gamble_cooldown.keys() and self.gamble_cooldown[user] == 5:
+            await ctx.send(f"@{user} You can only use gamble 5 times per stream.")
+            return
+        
+        if user in self.gamble_cooldown.keys():
+            self.gamble_cooldown[user] += 1
+        else:
+            self.gamble_cooldown[user] = 1
         
         if amount < 0:
             await ctx.send(f"@{user} You tried gambling with a negative value? Take this: https://youtu.be/dQw4w9WgXcQ?si=l32ZYljZ4vhSA5hC")
@@ -1251,7 +1263,8 @@ class TwitchBot(commands.Bot):
         await ctx.send(f"@{user} Sadge, you lost {amount} points...")
     gamble.category = "redeem"
     gamble.description = "Gamble your points away! You have a 1 in 3 chance of winning. If you do, " \
-    "a 6-sided dice will roll and decide on a multiplier which will calculate how much you win."
+    "a 6-sided dice will roll and decide on a multiplier which will calculate how much you win. This can " \
+    "only be used 5 times per stream (per bot run)."
 
     # temporary VIP status
     @commands.command(name="vip")
