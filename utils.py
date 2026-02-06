@@ -4,6 +4,7 @@ import requests
 import os
 import json
 from datetime import datetime as dt
+from dateutil.relativedelta import relativedelta
 
 load_dotenv()
 
@@ -151,14 +152,19 @@ def edit_stream_title(current_title: str, current_rank):
     return new_title
 
 def calculate_followage_days(followed_at):
-    dt_followed_at = dt.strptime(followed_at, "%Y-%m-%dT%H:%M:%SZ")
-    days_total = (dt.now() - dt_followed_at).days
-    years, days = divmod(days_total, 365)
+    start = dt.strptime(followed_at, "%Y-%m-%dT%H:%M:%SZ")
+    now = dt.now()
+
+    rd = relativedelta(now, start)
 
     parts = []
-    if years:
-        parts.append(f"{years} year{'s' if years != 1 else ''}")
-    if days:
-        parts.append(f"{days} day{'s' if days != 1 else ''}")
+    if rd.years:
+        parts.append(f"{rd.years} year{'s' if rd.years != 1 else ''}")
+    if rd.months:
+        parts.append(f"{rd.months} month{'s' if rd.months != 1 else ''}")
+    if rd.days:
+        parts.append(f"{rd.days} day{'s' if rd.days != 1 else ''}")
+    if rd.hours:
+        parts.append(f"{rd.hours} hour{'s' if rd.hours != 1 else ''}")
 
-    return " ".join(parts) or ""
+    return " ".join(parts) if parts else ""

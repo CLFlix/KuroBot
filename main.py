@@ -931,10 +931,11 @@ class TwitchBot(commands.Bot):
             followage_message = f"@{user} has been following {self.nick} for ..."
         else:
             user = ctx.author.name
-            if user == self.nick:
-                await ctx.send(f"@{self.nick} You can't follow yourself, dummy")
-                return
             followage_message = f"@{user} You have been following {self.nick} for ..."
+
+        if self.nick == user.lower():
+            await ctx.send(f"@{user} You can't follow yourself, dummy")
+            return
 
         user_id = self.get_user_id(user)
 
