@@ -2,6 +2,7 @@ import websockets
 import os
 import json
 import requests
+from datetime import datetime as dt
 
 from dotenv import load_dotenv
 from refresh_access_token import refresh_access_token
@@ -13,6 +14,9 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 BROADCASTER_ID = os.getenv("BROADCASTER_ID")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+
+date_format = "%Y-%m-%d_%H-%M-%S"
+LOG_FILE = f'logs/{dt.now().strftime(date_format)}.txt'
 
 # channel points redemption listener
 async def eventsub_listener(redemption_handler):
@@ -56,8 +60,8 @@ async def eventsub_listener(redemption_handler):
                     # refresh access token for redemption listener, then retry subscription
                     ACCESS_TOKEN = refresh_access_token()
                 except Exception as e:
-                    print(f"Token refresh failed, details in log.txt")
-                    write_log(r'log.txt', e)
+                    print(f"Token refresh failed, details in {LOG_FILE}")
+                    write_log(LOG_FILE, e)
                     return
 
                 headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
@@ -67,9 +71,9 @@ async def eventsub_listener(redemption_handler):
                     json=sub
                 )
 
-                if response.status_code not in (200, 202): # if second try fails, stop trying to create subscription
-                    print(f"Second try to create EventSub Listener failed. Details in log.txt")
-                    write_log(r'log.txt', response.text)
+                if not response.ok: # if second try fails, stop trying to create subscription
+                    print(f"Second try to create EventSub Listener failed. Details in {LOG_FILE}")
+                    write_log(LOG_FILE, response.text)
                     return
                 
         print("Listening for redemptions...")
@@ -85,9 +89,9 @@ async def eventsub_listener(redemption_handler):
                     await redemption_handler(event)
                 elif msg_type == "revocation":
                     revocation_reason = data["payload"]["status"]
-                    print(f"The redemption subscription has been revoked. Details in log.txt")
-                    write_log(r'log.txt', revocation_reason)
+                    print(f"The redemption subscription has been revoked. Details in {LOG_FILE}")
+                    write_log(LOG_FILE, revocation_reason)
                     await redemption_handler(msg_type)
         except Exception as e:
-            print(f"EventSub Listener crashed: details in log.txt")
-            write_log(r'log.txt', e)
+            print(f"EventSub Listener crashed: details in {LOG_FILE}")
+            write_log(LOG_FILE, e)
