@@ -1219,17 +1219,21 @@ class TwitchBot(commands.Bot):
     "500 points from the invoker, and add 500 points to KurookamiTV's total."
 
     @commands.command(name="gamble")
-    async def gamble(self, ctx, amount: int = 0):
+    async def gamble(self, ctx, amount):
         user = ctx.author.name
+
+        if not amount:
+            amount = 0
+        
+        try:
+            amount = int(amount)
+        except Exception:
+            await ctx.send(f"@{user} Enter the number you want to gamble (text like '3k' won't be accepted)")
+            return
 
         if user in self.gamble_cooldown.keys() and self.gamble_cooldown[user] == 5:
             await ctx.send(f"@{user} You can only use gamble 5 times per stream.")
             return
-        
-        if user in self.gamble_cooldown.keys():
-            self.gamble_cooldown[user] += 1
-        else:
-            self.gamble_cooldown[user] = 1
         
         if amount < 0:
             await ctx.send(f"@{user} You tried gambling with a negative value? Take this: https://youtu.be/dQw4w9WgXcQ?si=l32ZYljZ4vhSA5hC")
@@ -1242,6 +1246,11 @@ class TwitchBot(commands.Bot):
         if amount > self.points[user]:
             await ctx.send(f"@{user} You cannot afford this gamble!")
             return
+
+        if user in self.gamble_cooldown.keys():
+            self.gamble_cooldown[user] += 1
+        else:
+            self.gamble_cooldown[user] = 1
 
         true = random.choice([0,0,1])
         if true:
