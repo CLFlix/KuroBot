@@ -67,6 +67,7 @@ class TwitchBot(commands.Bot):
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
         self.links = read_socials_links(SOCIALS_FILE)
+        self.links_dict = dict(item.split(": ", 1) for item in self.links.split(", "))
 
         # manage chat message points cooldowns
         self.last_point_time = {}
@@ -195,7 +196,7 @@ class TwitchBot(commands.Bot):
 
     ## export commands
     def export_commands(self):
-        order = ["commands", "followage", "lurk", "socials", "shoutout", "so", "points", "claim", "leaderboard", "lb", "poll", "category", "ping", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
+        order = ["commands", "followage", "lurk", "socials", "youtube", "yt", "discord", "tiktok", "twitter", "instagram", "insta", "linktree", "shoutout", "so", "points", "claim", "leaderboard", "lb", "poll", "category", "ping", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
                  "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "bonk", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
 
         written = set()
@@ -253,6 +254,12 @@ class TwitchBot(commands.Bot):
             self.add_points(user, cost)
 
             await channel.send(f"@{user} Your redemption has been acknowlged.")
+    
+    def get_single_social(self, social):
+        try:
+            return self.links_dict[social]
+        except:
+            pass
 
     async def get_mods_list(self):
         global ACCESS_TOKEN
@@ -701,6 +708,66 @@ class TwitchBot(commands.Bot):
         await ctx.send(f"@{ctx.author.name} {self.links}")
     socials.category = "useful"
     socials.description = "Display links to other social channels in the chat! These can be: YouTube, TikTok, Discord, Instagram, Twitter / X, or when the streamer prefers this, the link to their Linktree."
+
+    @commands.command(name="youtube")
+    async def youtube(self, ctx):
+        link = self.get_single_social("YouTube")
+        if link:
+            await ctx.send(f"@{ctx.author.name} {link}")
+    youtube.category = "useful"
+    youtube.description = "If the streamer has their YouTube linked in the bot, this command will give you this link."
+
+    @commands.command(name="yt")
+    async def yt(self, ctx):
+        await self.youtube(ctx)
+    yt.category = "useful"
+    yt.description = "Alias for !youtube"
+
+    @commands.command(name="discord")
+    async def discord(self, ctx):
+        link = self.get_single_social("Discord")
+        if link:
+            await ctx.send(f"@{ctx.author.name} {link}")
+    discord.category = "useful"
+    discord.description = "If the streamer has their Discord server linked in the bot, this command will give you this link."
+
+    @commands.command(name="tiktok")
+    async def tiktok(self, ctx):
+        link = self.get_single_social("TikTok")
+        if link:
+            await ctx.send(f"@{ctx.author.name} {link}")
+    tiktok.category = "useful"
+    tiktok.description = "If the streamer has their TikTok linked in the bot, this command will give you this link."
+
+    @commands.command(name="instagram")
+    async def instagram(self, ctx):
+        link = self.get_single_social("Instagram")
+        if link:
+            await ctx.send(f"@{ctx.author.name} {link}")
+    instagram.category = "useful"
+    instagram.description = "If the streamer has their Instagram linked in the bot, this command will give you this link."
+
+    @commands.command(name="insta")
+    async def insta(self, ctx):
+        await self.instagram(ctx)
+    insta.category = "useful"
+    insta.description = "Alias for !instagram"
+
+    @commands.command(name="twitter")
+    async def twitter(self, ctx):
+        link = self.get_single_social("Twitter / X")
+        if link:
+            await ctx.send(f"@{ctx.author.name} {link}")
+    twitter.category = "useful"
+    twitter.description = "If the streamer has their Twitter / X linked in the bot, this command will give you this link."
+
+    @commands.command(name="linktree")
+    async def linktree(self, ctx):
+        link = self.get_single_social("Linktree")
+        if link:
+            await ctx.send(f"@{ctx.author.name} {link}")
+    linktree.category = "useful"
+    linktree.description = "If the streamer has a Linktree or anything that has a similar goal linked in the bot, this command will show you the link."
 
     # shoutout the user specified
     @commands.command(name="shoutout")
