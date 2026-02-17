@@ -284,7 +284,25 @@ const Dashboard = () => {
                   isRunning ? "text-xl text-green-400" : "text-xl text-red-500"
                 }
               >
-                {isRunning ? "Running..." : "Not running..."}
+                {isRunning ? (
+                  "Running..."
+                ) : (
+                  <div>
+                    <p>"Not running..."</p>
+                    <p className="text-white">
+                      If you are running the bot and looking at the website
+                      hosted by GitHub, go to{" "}
+                      <a
+                        href="http://localhost:7273"
+                        className="link"
+                        target="_blank"
+                      >
+                        the locally hosted page
+                      </a>{" "}
+                      to view the working Dashboard.
+                    </p>
+                  </div>
+                )}
               </p>
             </div>
             {isRunning && (
