@@ -288,7 +288,7 @@ const Dashboard = () => {
                   "Running..."
                 ) : (
                   <div>
-                    <p>"Not running..."</p>
+                    <p>Not running...</p>
                     <p className="text-white">
                       If you are running the bot and looking at the website
                       hosted by GitHub, go to{" "}
