@@ -53,8 +53,8 @@ https://id.twitch.tv/oauth2/authorize?client_id=<YOUR_CLIENT_ID>&redirect_uri=ht
 
 If you need to log in, do this. You will end up on your redirect link of your twitch application, but you only need the URL of this page. In the URL, you can find `code=<AUTHORIZATION_CODE>`. Copy this authorization code and place it in the `.env` file with the variable name `CODE`.
 
-With this code, you can get the access and refresh token that the bot will need. Run the script `GetAccessToken.exe` and you should see 2 new fields appearing in the `.env` file. Your command prompt may also flash and I know this is a sign of bad intentions, but I just haven't learned what to do with that part yet in college :/\
-**IMPORTANT: DO NOT SHARE ANY OF THESE CODES WITH ANYONE**
+With this code, you can get the access and refresh token that the bot will need. Run the script `GetAccessToken.exe` and you should see 2 new fields appearing in the `.env` file. <!-- No need for cmd flash warning, cmd stays open to tell users .env has been filled with the values  -->\
+**IMPORTANT: DO NOT SHARE ANY OF THESE CODES WITH ANYONE, THIS GOES FOR THE ALL TOKENS AND ALL API KEYS**
 
 When these tokens expire, the code should automatically trigger a token refresh and it should try to connect once more. If this is not the case, create an issue with the details of the error on the [GitHub page](https://github.com/CLFlix/KuroBot/issues) and I'll look into it. Manually restarting the bot should make it connect either way, though.
 
@@ -109,4 +109,15 @@ npm install
 npm run dev
 ```
 
----
+## Data Collection
+
+I do not collect **any** data from the bot. I made this bot purely to accomodate for myself, so I don't have to use 5 different bots on my Twitch channel for slightly different features, but just this one bot that has it all. This bot runs completely locally, with only this in mind. I also have no intentions of collecting any form of user data in the future, outside of the GitHub Issues / Discussions pages.
+
+## Socials
+
+<div style="display:flex;gap:.5rem;">
+    <a href="https://www.twitch.tv/kurookamitv">Twitch</a> -
+    <a href="https://www.youtube.com/@Doku_Kurookami">YouTube</a> -
+    <a href="https://discord.gg/4HAbQm2tdp">Discord</a> -
+    <a href="https://www.tiktok.com/@_kurookami_osu">TikTok</a>
+</div>
