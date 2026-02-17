@@ -2,6 +2,14 @@ commands - Show the link to this website in chat! - useful
 followage - By using this command, you can see how long you've been following the streamer for! You can also tag someone like '!followage @user' which will then show how long this user has been following the streamer for. - useful
 lurk - Let the streamer know you're there, but in the background 🧐 - useful
 socials - Display links to other social channels in the chat! These can be: YouTube, TikTok, Discord, Instagram, Twitter / X, or when the streamer prefers this, the link to their Linktree. - useful
+youtube - If the streamer has their YouTube linked in the bot, this command will give you this link. - useful
+yt - Alias for !youtube - useful
+discord - If the streamer has their Discord server linked in the bot, this command will give you this link. - useful
+tiktok - If the streamer has their TikTok linked in the bot, this command will give you this link. - useful
+twitter - If the streamer has their Twitter / X linked in the bot, this command will give you this link. - useful
+instagram - If the streamer has their Instagram linked in the bot, this command will give you this link. - useful
+insta - Alias for !instagram - useful
+linktree - If the streamer has a Linktree or anything that has a similar goal linked in the bot, this command will show you the link. - useful
 shoutout - Use this command and tag someone right behind it like '!shoutout @user' to shout out this user's Twitch channel! (streamer only) - useful
 so - Alias for !shoutout - useful
 points - This command will show you how many bot points you have in this Twitch channel! - useful
