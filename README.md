@@ -87,7 +87,7 @@ https://clflix.github.io/KuroBot/commands
 
 ### Redemptions
 
-If enabled, this bot can listen to all redemptions made using Twitch channel points. With how it stands right now, the bot will only acknowledge rewards starting with "Exchange". This makes the bot retrieve the user that redeemed it and the cost of this reward, and add the cost to the user's bot <a href="#points">points</a>.\
+If enabled, this bot can listen to all redemptions made using Twitch channel points. With how it stands right now, the bot will only acknowledge rewards starting with "Exchange". This makes the bot retrieve the user that redeemed it and the cost of this reward, and add the cost to the user's bot points.\
 Suggestions for different features are always welcome in https://github.com/CLFlix/KuroBot/discussions/categories/suggestions
 
 ### Title Updater
