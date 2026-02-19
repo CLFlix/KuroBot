@@ -23,7 +23,7 @@ import threading
 
 load_dotenv()
 
-CURRENT_VERSION = "v0.1.0"
+CURRENT_VERSION = "v0.2.0"
 
 TOKEN = os.getenv("TOKEN")
 BROADCASTER_ID = int(os.getenv("BROADCASTER_ID"))
@@ -67,7 +67,8 @@ class TwitchBot(commands.Bot):
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
         self.links = read_socials_links(SOCIALS_FILE)
-        self.links_dict = dict(item.split(": ", 1) for item in self.links.split(", "))
+        if self.links == "No socials added\n":
+            self.links_dict = dict(item.split(": ", 1) for item in self.links.split(", "))
 
         # manage chat message points cooldowns
         self.last_point_time = {}
@@ -1024,6 +1025,9 @@ class TwitchBot(commands.Bot):
     # remember to drink!
     @commands.command(name="hydrate")
     async def hydrate(self, ctx):
+        if self.affiliate:
+            return
+        
         messages = [
             "Hydration check! You gotta take a sip!",
             "H2O.exe initializing...",
@@ -1035,10 +1039,14 @@ class TwitchBot(commands.Bot):
         random_message = random.choice(messages)
         await ctx.send(f"@{self.nick} {random_message}")
     hydrate.category = "fun"
-    hydrate.description = "Remind the streamer to drink water!"
+    hydrate.description = "Remind the streamer to drink water! Only enabled when the streamer " \
+    "says they're not an Affiliate / Partner."
 
     @commands.command(name="posture")
     async def posture(self, ctx):
+        if self.affiliate:
+            return
+        
         messages = [
             "Posture check!",
             "Check your posture!",
@@ -1051,10 +1059,14 @@ class TwitchBot(commands.Bot):
         random_message = random.choice(messages)
         await ctx.send(f"@{self.nick} {random_message}")
     posture.category = "fun"
-    posture.description = "Make the streamer check their posture."
+    posture.description = "Make the streamer check their posture. Only enabled when the streamer " \
+    "says they're not an Affiliate / Partner."
 
     @commands.command(name="stretch")
     async def stretch(self, ctx):
+        if self.affiliate:
+            return
+        
         messages = [
             "Streeeeeeeetch!",
             "Time to stretch for a sec!",
@@ -1067,7 +1079,8 @@ class TwitchBot(commands.Bot):
         random_message = random.choice(messages)
         await ctx.send(f"@{self.nick} {random_message}")
     stretch.category = "fun"
-    stretch.description = "Get the streamer to stretch for a second."
+    stretch.description = "Get the streamer to stretch for a second. Only enabled when the streamer " \
+    "says they're not an Affiliate / Partner."
 
     # roll a random number between 1 and a specified amount, with 100 as a default
     @commands.command(name="roll")
@@ -1286,7 +1299,7 @@ class TwitchBot(commands.Bot):
     "500 points from the invoker, and add 500 points to KurookamiTV's total."
 
     @commands.command(name="gamble")
-    async def gamble(self, ctx, amount):
+    async def gamble(self, ctx, amount=None):
         user = ctx.author.name
 
         if not amount:

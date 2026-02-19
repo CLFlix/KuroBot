@@ -13,14 +13,14 @@ You will need to fill in some fields in a `.env` file within this folder. Just m
 The `CHANNEL` field has to be filled with the channel you want the bot to chat in, if you use it normally, this will be your own channel name.\
 `TOKEN` will be your account token to essentially log your bot into your account to chat. You can easily find this token by going to Twitch on your browser and opening the `Network` tab in F12. Then you look for any `gql` entry. If you don't see any pop up, simply refresh the page and you should see them coming in. Click on the entry and look for `Authorization` in the `Headers` section. The value will be `OAuth YOUROAUTHTOKEN`. This `YOUROAUTHTOKEN` needs to be put in the `TOKEN` field in the `.env`.\
 `osuUsername` is self-explanatory.\
-`osuAuth` is the authorization key you need for any request to the osu! API. You can find the details on how to get this on the bottom of your osu! account settings page.
+`osuAuth` is the authorization key you need for any request to the osu! API. You can find the details on how to get this on the bottom of your osu! account settings page. You can assign the name to whatever you want, the URL that's requested can simply be `http://localhost/`.
 
 **The following are optional if you want to be able to assign VIP status, create polls and listen to redemptions through the bot. This won't work without these values.**\
 First of all you'll need a **client ID** and a **client secret** of a Twitch Application, so you can contact the twitch API.
 
 ---
 
-1. Go to [Twitch Developer Console --> Applications](https://dev.twitch.tv/console/apps)
+1. Go to <a href="https://dev.twitch.tv/console/apps" target="_blank">Twitch Developer Console --> Applications</a>
 2. Log in
 3. Register your bot. You can give it any name you want as long as it's valid. The redirect URL **should** be set to `http:localhost`. Category: Chat Bot
 4. After creating, click "Manage" on your freshly registered app and copy the client ID in the `.env` file with the variable name `CLIENT_ID`.
