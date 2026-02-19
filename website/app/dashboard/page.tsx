@@ -14,6 +14,7 @@ const Dashboard = () => {
   const [top5, setTop5] = useState<[string, number][]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [statusMessages, setStatusMessages] = useState<StatusMessage[]>([]);
+  const [stopping, setStopping] = useState<boolean>(false);
 
   const getTitleUpdaterStatus = async () => {
     if (!isRunning) return;
@@ -46,8 +47,6 @@ const Dashboard = () => {
     });
 
     if (!res.ok) throw new Error("Could not toggle requests status.");
-
-    const data = await res.json();
     setTakeRequests(!takeRequests);
   };
 
@@ -123,6 +122,7 @@ const Dashboard = () => {
       },
     ]);
     setLoading(false);
+    getTitle();
   };
 
   const getPoints = async () => {
@@ -145,6 +145,7 @@ const Dashboard = () => {
   };
 
   const stopBot = async () => {
+    setStopping(true);
     const res = await fetch("/stop", {
       method: "POST",
     });
@@ -158,7 +159,10 @@ const Dashboard = () => {
         .then((data) => {
           data.json().then((hello) => setIsRunning(hello === "hello"));
         })
-        .catch(() => setIsRunning(false));
+        .catch(() => {
+          setIsRunning(false);
+          setStopping(false);
+        });
     };
     getIsRunning();
 
@@ -285,7 +289,13 @@ const Dashboard = () => {
                 }
               >
                 {isRunning ? (
-                  "Running..."
+                  stopping ? (
+                    <p className="text-red-400">
+                      Stopping bot, don't close the terminal yourself...
+                    </p>
+                  ) : (
+                    <p className="text-green-500">Running...</p>
+                  )
                 ) : (
                   <div>
                     <p>Not running...</p>
@@ -305,11 +315,17 @@ const Dashboard = () => {
                 )}
               </p>
             </div>
-            {isRunning && (
-              <button className="discord-button mt-2 text-lg" onClick={stopBot}>
-                Stop bot
-              </button>
-            )}
+            {isRunning &&
+              (stopping ? (
+                <></>
+              ) : (
+                <button
+                  className="discord-button mt-2 text-lg"
+                  onClick={stopBot}
+                >
+                  Stop bot
+                </button>
+              ))}
           </div>
 
           {isRunning && (
