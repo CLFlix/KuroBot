@@ -1332,7 +1332,7 @@ class TwitchBot(commands.Bot):
         else:
             self.gamble_cooldown[user] = 1
 
-        true = random.choice([0,0,1])
+        true = random.choice([0,1])
         if true:
             dice = random.choice([1, 2, 3, 4, 5, 6]) # roll a dice 1-6
             dice_mapping = { # multiplier mapping
