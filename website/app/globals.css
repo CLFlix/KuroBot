@@ -119,3 +119,12 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+select {
+  padding: 4px;
+  margin-left: 4px;
+  background-color: #1a1a1a;
+  color: rgb(252, 255, 225);
+  border: gray;
+  border-radius: 2rem;
+}
