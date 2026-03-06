@@ -291,7 +291,7 @@ const Dashboard = () => {
                 {isRunning ? (
                   stopping ? (
                     <p className="text-red-400">
-                      Stopping bot, don't close the terminal yourself...
+                      Stopping bot, this might take a minute...
                     </p>
                   ) : (
                     <p className="text-green-500">Running...</p>
@@ -319,10 +319,7 @@ const Dashboard = () => {
               (stopping ? (
                 <></>
               ) : (
-                <button
-                  className="discord-button mt-2 text-lg"
-                  onClick={stopBot}
-                >
+                <button className="stop-button mt-2 text-lg" onClick={stopBot}>
                   Stop bot
                 </button>
               ))}

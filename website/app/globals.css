@@ -78,10 +78,10 @@
   font-weight: bold;
 }
 
-.dashboard-button {
+.stop-button {
   padding: 0.25rem;
   border-radius: 0.5rem;
-  background-image: linear-gradient(to right, #65a30d, #84cc16);
+  background-image: linear-gradient(to right, #c9132b, #c91a1a);
   transition-duration: 300ms;
   font-weight: bold;
 }
