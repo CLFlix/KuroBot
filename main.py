@@ -13,6 +13,8 @@ from datetime import datetime as dt
 import asyncio
 import random
 import webbrowser
+from pydantic import BaseModel
+import sys
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -49,7 +51,7 @@ request_headers = {
 shutdown_event = asyncio.Event() # used to stop bot from dashboard
 
 class TwitchBot(commands.Bot):
-    def __init__(self, map_requests: bool, affiliate: bool, update_title: bool):
+    def __init__(self):
         super().__init__(
             token=TOKEN,
             prefix="!",
@@ -60,9 +62,16 @@ class TwitchBot(commands.Bot):
         # become undefined, trying to look in a directory that doesn't exist
         first_time_startup()
 
-        self.map_requests = map_requests
-        self.affiliate = affiliate
-        self.update_title = update_title
+        if getattr(sys, 'frozen', False):
+            sys.stderr = open(LOG_FILE, 'w')
+
+        self.initialized = False
+        self.map_requests = False
+        self.affiliate = False
+        self.update_title = False
+
+        self.launch_backend()
+        webbrowser.open("http://localhost:7273/initializeBot")
 
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
@@ -128,9 +137,30 @@ class TwitchBot(commands.Bot):
         def dashboard():
             return FileResponse(STATIC_DIR / "dashboard.html")
 
+        @app.get("/initializeBot")
+        def initializeBot():
+            return FileResponse(STATIC_DIR / "initializeBot.html")
+            
+        class InitializeData(BaseModel):
+            rq: bool
+            affiliate: bool
+            update: bool
+
+        @app.post("/initialize")
+        def initialize(data: InitializeData):
+            self.map_requests = data.rq
+            self.affiliate = data.affiliate
+            self.update_title = data.update
+            self.initialized = True
+            return
+
         @app.get("/isRunning")
         def is_running():
             return "hello"
+
+        @app.get("/initStatus")
+        def initStatus():
+            return self.initialized
         
         @app.get("/takeRequests")
         def take_requests():
@@ -178,7 +208,7 @@ class TwitchBot(commands.Bot):
 
         def start_api():
             import uvicorn
-            uvicorn.run(app, host="127.0.0.1", port=7273, log_level='critical') # change log_level for dev
+            uvicorn.run(app, host="127.0.0.1", port=7273, log_config=None) # log_level='critical' for dev
 
         threading.Thread(target=start_api, daemon=True).start()
 
@@ -597,13 +627,13 @@ class TwitchBot(commands.Bot):
             print(f"There is an update available for KuroBot! Go to {update_check["release_url"]} to download KuroBot version {update_check["latest"]}")
 
         print(f"Logged in as {self.nick}")
-
-        self.launch_backend()
-        webbrowser.open("http://localhost:7273/")
         print("Dashboard running on http://localhost:7273/")
 
         await self.get_mods_list()
         # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
+
+        while not self.initialized:
+            await asyncio.sleep(0.5)
 
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
@@ -1389,22 +1419,7 @@ class TwitchBot(commands.Bot):
 
 
 async def main():
-    def ask_yes_no(prompt: str):
-        while True:
-            answer = input(prompt).strip().lower()
-            if answer in ("y", "n"):
-                return answer == "y"
-            print("Not a valid answer. Please enter 'y' or 'n'.")
-
-    map_requests = ask_yes_no("Do you accept map requests this stream? (y/n)\n")
-    affiliate = ask_yes_no("Are you a Twitch Affiliate or Partner? (y/n)\n")
-    update = ask_yes_no("Would you like the bot to update your osu! rank in the stream title? (y/n)\n")
-    
-    # clear CLI to declutter console
-    time.sleep(0.5)
-    os.system("cls" if os.name == "nt" else "clear")
-
-    bot = TwitchBot(map_requests, affiliate, update)
+    bot = TwitchBot()
 
     try:
         await bot.run_forever()
