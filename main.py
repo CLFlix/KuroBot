@@ -69,6 +69,7 @@ class TwitchBot(commands.Bot):
         self.map_requests = False
         self.affiliate = False
         self.update_title = False
+        self.update_available = False
 
         self.launch_backend()
         webbrowser.open("http://localhost:7273/initializeBot")
@@ -104,13 +105,18 @@ class TwitchBot(commands.Bot):
         latest_version = data["tag_name"].lstrip("v")
 
         if version.parse(latest_version) > version.parse(CURRENT_VERSION):
-            return {
+            self.update_available = {
                 "update": True,
                 "latest": latest_version,
                 "release_url": data["html_url"]
             }
+            return
 
-        return {"update": False}
+        self.update_available = {
+            "update": False,
+            "latest": CURRENT_VERSION,
+            "release_url": None
+        }
 
     def launch_backend(self):
         self.bot_state = {
@@ -161,6 +167,10 @@ class TwitchBot(commands.Bot):
         @app.get("/initStatus")
         def initStatus():
             return self.initialized
+        
+        @app.get("/updateStatus")
+        def is_update_available():
+            return self.update_available
         
         @app.get("/takeRequests")
         def take_requests():
@@ -622,9 +632,7 @@ class TwitchBot(commands.Bot):
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
         self.points[self.nick] = float("inf")
-        update_check = self.check_for_update()
-        if update_check and update_check["update"]:
-            print(f"There is an update available for KuroBot! Go to {update_check["release_url"]} to download KuroBot version {update_check["latest"]}")
+        self.check_for_update()
 
         print(f"Logged in as {self.nick}")
         print("Dashboard running on http://localhost:7273/")
