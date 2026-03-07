@@ -803,11 +803,11 @@ class TwitchBot(commands.Bot):
     # shoutout the user specified
     @commands.command(name="shoutout")
     async def shoutout(self, ctx, user):
-        user = ctx.author.name
+        invoker = ctx.author.name
         mods_list = self.read_mods()
 
-        if user not in mods_list:
-            await ctx.send(f"@{user} You are not allowed to use this command!")
+        if invoker not in mods_list:
+            await ctx.send(f"@{invoker} You are not allowed to use this command!")
 
         user = user.lower() if "@" not in user else user[1:].lower()
         link = f"https://www.twitch.tv/{user}"
