@@ -44,7 +44,7 @@ const initializeBot = () => {
 
   return (
     <main className="m-4 flex justify-center">
-      <div>
+      <div className="border border-neutral-700 rounded-2xl p-3 pt-0 bg-gradient-to-br from-neutral-800 to-stone-900">
         {initStatus ? (
           <div className="text-xl">
             <Link href="http://localhost:7273/" className="link">
@@ -53,47 +53,69 @@ const initializeBot = () => {
           </div>
         ) : (
           <form className="text-lg">
-            <div>
-              <label htmlFor="rq_selection">
-                Do you want to take map requests during the stream?
-              </label>
-              <select
-                name="rq_selection"
-                onChange={(e) => setRq(e.target.value === "requests_yes")}
-              >
-                <option value="requests_no">No</option>
-                <option value="requests_yes">Yes</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="affiliate_selection">
-                Are you a Twitch Affiliate / Partner?
-              </label>
-              <select
-                name="affiliate_selection"
-                onChange={(e) =>
-                  setAffiliate(e.target.value === "affiliate_yes")
-                }
-              >
-                <option value="affiliate_no">No</option>
-                <option value="affiliate_yes">Yes</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="update_selection">
-                Do you want your rank to be automatically updated in your title?
-              </label>
-              <select
-                name="update_selection"
-                onChange={(e) => setUpdate(e.target.value === "update_yes")}
-              >
-                <option value="update_no">No</option>
-                <option value="update_yes">Yes</option>
-              </select>
-            </div>
-            <div className="flex justify-center">
+            <table className="w-full border-collapse">
+              <tbody>
+                <tr className="border-b border-gray-700">
+                  <td className="py-3 pr-6">
+                    <label htmlFor="rq_selection">
+                      Do you want to take map requests during the stream?
+                    </label>
+                  </td>
+                  <td className="py-3">
+                    <select
+                      id="rq_selection"
+                      name="rq_selection"
+                      onChange={(e) => setRq(e.target.value === "requests_yes")}
+                    >
+                      <option value="requests_no">No</option>
+                      <option value="requests_yes">Yes</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-700">
+                  <td className="py-3 pr-6">
+                    <label htmlFor="affiliate_selection">
+                      Are you a Twitch Affiliate / Partner?
+                    </label>
+                  </td>
+                  <td className="py-3">
+                    <select
+                      id="affiliate_selection"
+                      name="affiliate_selection"
+                      onChange={(e) =>
+                        setAffiliate(e.target.value === "affiliate_yes")
+                      }
+                    >
+                      <option value="affiliate_no">No</option>
+                      <option value="affiliate_yes">Yes</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3 pr-6">
+                    <label htmlFor="update_selection">
+                      Do you want your rank to be automatically updated in your
+                      title?
+                    </label>
+                  </td>
+                  <td className="py-3">
+                    <select
+                      id="update_selection"
+                      name="update_selection"
+                      onChange={(e) =>
+                        setUpdate(e.target.value === "update_yes")
+                      }
+                    >
+                      <option value="update_no">No</option>
+                      <option value="update_yes">Yes</option>
+                    </select>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="flex justify-center mt-4">
               <button
-                className="discord-button mt-2"
+                className="discord-button"
                 onClick={(e) => {
                   e.preventDefault();
                   startupBot(rq, affiliate, update);
