@@ -83,7 +83,7 @@ class TwitchBot(commands.Bot):
         # manage chat message points cooldowns
         self.last_point_time = {}
 
-        # manage 5 gambles per hour
+        # manage 5 gambles per stream
         self.gamble_cooldown = {}
 
     async def run_forever(self):
@@ -631,7 +631,8 @@ class TwitchBot(commands.Bot):
     ## events
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
-        self.points[self.nick] = float("inf")
+        # self.points[self.nick] = float("inf")
+        self.points[self.nick] = 1000000
         self.check_for_update()
 
         print(f"Logged in as {self.nick}")
@@ -1369,6 +1370,7 @@ class TwitchBot(commands.Bot):
             self.gamble_cooldown[user] += 1
         else:
             self.gamble_cooldown[user] = 1
+        self.remove_points(user, amount)
 
         true = random.choice([0,1])
         if true:
@@ -1382,12 +1384,19 @@ class TwitchBot(commands.Bot):
                 6: 1.5
             }
 
-            multiplier = dice_mapping.pop(dice)
-            self.add_points(user, round(amount * multiplier))
-            await ctx.send(f"@{user} Congrats, you won {round(amount * multiplier)} points!")
+            multiplier = dice_mapping.get(dice)
+            
+            match round(multiplier - 1, 1):
+                case 0:
+                    self.add_points(user, amount)
+                    win_message = f"@{user} You didn't win, you didn't lose.. You got your {amount} points back."
+                case _: 
+                    self.add_points(user, round(amount * multiplier))
+                    win_message = f"@{user} Congrats, you won {round(amount * (multiplier - 1))} points!"
+
+            await ctx.send(win_message)
             return
 
-        self.remove_points(user, amount)
         await ctx.send(f"@{user} Sadge, you lost {amount} points...")
     gamble.category = "redeem"
     gamble.description = "Gamble your points away! You have a 1 in 3 chance of winning. If you do, " \
