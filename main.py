@@ -214,7 +214,6 @@ class TwitchBot(commands.Bot):
         @app.post("/stop")
         async def stop_bot():
             shutdown_event.set()
-            print("Stopping bot, do not close this console...")
 
         def start_api():
             import uvicorn
@@ -231,7 +230,6 @@ class TwitchBot(commands.Bot):
         write_points_data(self.points, POINTS_FILE)
         write_log(LOG_FILE, f"Points data saved")
 
-        print("Data saved!\nBye! :D")
         write_log(LOG_FILE, "Bye! :D")
         await self.close()
 
@@ -253,7 +251,7 @@ class TwitchBot(commands.Bot):
             for cmd_name in self.commands:
                 if cmd_name not in written:
                     commands_file.write(cmd_name + "\n")
-        print("Commands succesfully exported to 'website/public/static/commands.txt'")
+        print("Commands succesfully exported to 'website/public/static/commands.txt'") # keeping this print since it's only used in dev
 
     ## helper methods
     def add_points(self, user, amount):
@@ -318,7 +316,6 @@ class TwitchBot(commands.Bot):
                 request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except Exception as e:
                 write_log(LOG_FILE, e)
-                print(f"Something went wrong refreshing mods access token. Details in {LOG_FILE}")
 
             response = requests.get(uri, headers=request_headers, params=params)
 
@@ -358,14 +355,12 @@ class TwitchBot(commands.Bot):
                 ACCESS_TOKEN = refresh_access_token()
             except Exception as e:
                 write_log(LOG_FILE, e)
-                print(f"Something went wrong refreshing VIP access token. Details in {LOG_FILE}")
                 return False
             
             request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             response = requests.get(url, headers=request_headers)
 
             if not response.ok:
-                print(f"Failed to find user. Details in {LOG_FILE}")
                 write_log(LOG_FILE, response.text)
                 return False
 
@@ -390,7 +385,6 @@ class TwitchBot(commands.Bot):
                 request_headers['Authorization'] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 write_log(LOG_FILE, e)
-                print(f"Error getting user_id. Details in {LOG_FILE}")
                 return
             
             # retry getting user id once
@@ -401,7 +395,6 @@ class TwitchBot(commands.Bot):
             return user_data["data"][0]["id"]
         except requests.exceptions.JSONDecodeError as e:
             write_log(LOG_FILE, e)
-            print(f"Error getting user_id. Details in {LOG_FILE}")
 
     def get_follower_data(self, user_id):
         global ACCESS_TOKEN
@@ -421,13 +414,11 @@ class TwitchBot(commands.Bot):
                 request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 write_log(LOG_FILE, e)
-                print(f"Something went wrong refreshing token. Details in {LOG_FILE}")
                 return
             
             response = requests.get(url, headers=request_headers, params=params)
 
             if not response.ok:
-                print(f"Error getting followage, more Details in {LOG_FILE}")
                 write_log(LOG_FILE, response.text)
                 return
             
@@ -480,7 +471,6 @@ class TwitchBot(commands.Bot):
                 ACCESS_TOKEN = refresh_access_token()
             except Exception as e:
                 write_log(LOG_FILE, e)
-                print(f"Something went wrong refreshing token. Details in {LOG_FILE}")
                 return
             
             request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
@@ -516,14 +506,12 @@ class TwitchBot(commands.Bot):
                 request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 write_log(LOG_FILE, e)
-                print(f"Error fetching stream details, Details in {LOG_FILE}")
                 return
             
             response = requests.get(url, headers=request_headers, params=params)
             
             if not response.ok:
                 write_log(LOG_FILE, response.text)
-                print(f"Something went wrong getting stream information. Details in {LOG_FILE}")
 
         try:
             data = response.json()["data"]
@@ -553,7 +541,6 @@ class TwitchBot(commands.Bot):
                 request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 write_log(LOG_FILE, e)
-                print(f"Error updating stream title. Details in {LOG_FILE}")
                 return
             
             response = requests.patch(url, headers=request_headers, params=params)
@@ -563,7 +550,6 @@ class TwitchBot(commands.Bot):
 
         if not response.ok:
             write_log(LOG_FILE, response.text)
-            print(f"Error updating stream title, Details in {LOG_FILE}")
 
     # update stream category to osu!
     def update_stream_category(self):
@@ -586,14 +572,12 @@ class TwitchBot(commands.Bot):
                 request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 write_log(LOG_FILE, f"[ERROR]: {e}")
-                print(f"Error updating stream category, Details in {LOG_FILE}")
                 return
             
             response = requests.patch(url, headers=request_headers, params=params, json=body)
 
         if not response.ok:
             write_log(LOG_FILE, response.text)
-            print(f"Error updating stream category, Details in {LOG_FILE}")
 
     # generalized function for title_updater_loop and post mapping
     async def title_updater(self):
@@ -609,7 +593,6 @@ class TwitchBot(commands.Bot):
 
         except SyntaxError as e:
             write_log(LOG_FILE, e)
-            print(f"Couldn't update stream title, Details in {LOG_FILE}")
             
         except ValueError as e:
             write_log(LOG_FILE, f"NOTICE: {e}")
@@ -633,9 +616,6 @@ class TwitchBot(commands.Bot):
     async def event_ready(self):
         self.points[self.nick] = float("inf")
         self.check_for_update()
-
-        print(f"Logged in as {self.nick}")
-        print("Dashboard running on http://localhost:7273/")
 
         await self.get_mods_list()
         # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
@@ -1048,7 +1028,6 @@ class TwitchBot(commands.Bot):
         try:
             followed_at = self.get_follower_data(user_id)
         except ValueError as e:
-            print(f"Couldn't parse time, Details in {LOG_FILE}")
             write_log(LOG_FILE, e)
             return
         
@@ -1441,7 +1420,6 @@ async def main():
         await bot.run_forever()
     except Exception as e:
         write_log(LOG_FILE, e)
-        print(f"Bot crashed. Details in {LOG_FILE}")
 
 if __name__ == "__main__":
     asyncio.run(main())
