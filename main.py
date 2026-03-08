@@ -631,8 +631,7 @@ class TwitchBot(commands.Bot):
     ## events
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
-        # self.points[self.nick] = float("inf")
-        self.points[self.nick] = 1000000
+        self.points[self.nick] = float("inf")
         self.check_for_update()
 
         print(f"Logged in as {self.nick}")
