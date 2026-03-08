@@ -716,8 +716,16 @@ class TwitchBot(commands.Bot):
     # classic lurk command with additional info about muting
     @commands.command(name="lurk")
     async def lurk(self, ctx):
+        message = random.choice([
+            "Thanks for the lurk! If you want to mute the audio, please mute the tab instead of the stream, otherwise you won't count as a viewer ;)",
+            "is lurking! Appreciate you for stopping by! <3",
+            "is watching you from a dark alley...",
+            "does some other things while you're yapping in his ears. Thanks for dropping in! HeyGuys",
+            "has your stream on in the background out of pity. TwitchLit"
+        ])
+
         await ctx.send(
-            f"@{ctx.author.name} Thanks for the lurk! If you want to mute the audio, please mute the tab instead of the stream, otherwise you won't count as a viewer ;)")
+            f"@{ctx.author.name} {message}")
     lurk.category = "useful"
     lurk.description = "Let the streamer know you're there, but in the background 🧐"
 
@@ -820,7 +828,16 @@ class TwitchBot(commands.Bot):
 
         self.bonus_claimed.append(user)
         self.add_points(user, 500)
-        await ctx.send(f"@{user} You just claimed 500 points! Use !commands to find out what you can do ;)")
+
+        message = random.choice([
+            "You just claimed 500 points! Use !commands to find out what you can do CorgiDerp",
+            "Your first time bonus of 500 points have been claimed. Find out what you can do with them with !commands.",
+            "500 points have been claimed. !commands will tell you what's possible with them. CoolCat",
+            "You're now 500 points richer! Let's see what to do with them with !commands 4Head",
+            "claimed 500 points! GoldPLZ"
+        ])
+
+        await ctx.send(f"@{user} {message}")
     claim.category = "useful"
     claim.description = "After using this command, you will have claimed your " \
     "first 500 bot points. You can obtain more points by chatting in the Twitch chat."
@@ -998,9 +1015,25 @@ class TwitchBot(commands.Bot):
     @commands.command(name="rq")
     async def rq(self, ctx):
         if self.map_requests:
-            await ctx.send("You're free to request any map you'd like to see me play. Just paste the link in the chat!")
+            message = random.choice([
+                "You're free to request any map you'd like to see me play. Just paste the link in the chat! CorgiDerp",
+                "If you wanna see me play a specific map, just put the link of it in chat ArgieB8",
+                "Want to see a particular map? Just yeet the link in the chat FBCatch",
+                "You have a banger map in mind? Tell me! GoatEmotey",
+                "Specific circles you want to see? Just paste the link in here and we'll see how I do..."
+            ])
+
+            await ctx.send(f"@{ctx.author.name} {message}")
         else:
-            await ctx.send("I will not be accepting map requests this stream :/. Maybe next stream ;)")
+            message = random.choice([
+                "I will not be accepting map requests this stream BabyRage Maybe next stream..",
+                "map requests will be skipped right now. BigSad",
+                "denied.. FBBlock Maybe next time I will accept map requests.",
+                "Not taking map requests at the moment. TearGlove Sorry!",
+                "Map requests are closed for now. BOP Maybe another time!"
+            ])
+
+            await ctx.send(f"@{ctx.author.name} {message}")
     rq.category = "osu"
     rq.description = "The streamer can decide whether they want to receive " \
     "beatmap requests. This command will then show whether they accept those requests or not."
@@ -1305,7 +1338,14 @@ class TwitchBot(commands.Bot):
         can_afford, afford_message = self.remove_points(gifter, amount)
 
         if can_afford:
-            await ctx.send(f"How generous! @{gifter} gifted {amount} points to @{receiver}!")
+            return_message = random.choice([
+                f"How generous! @{gifter} gifted {amount} points to @{receiver}!",
+                f"Look at that! {amount} points have been gifted by @{gifter} to @{receiver}.",
+                f"@{gifter} send {amount} points to @{receiver}'s side! W",
+                f"@{receiver} is now {amount} points richer because of @{gifter}!",
+                f"@{gifter} could miss {amount} points and gave it to @{receiver}!"
+            ])
+            await ctx.send(return_message)
             self.add_points(receiver, amount)
             return
             
@@ -1397,7 +1437,14 @@ class TwitchBot(commands.Bot):
         succes, status_code = self.add_vip(user_id) # try adding VIP
 
         if succes:
-            await ctx.send(f"{self.nick} A temporary VIP status has been redeemed by @{user}! {afford_message}")
+            message = random.choice([
+                f"A VIP slot has been claimed by @{user}! {afford_message}",
+                f"A new VIP spot has been taken by @{user}! bleedPurple",
+                f"@{user} You are now a VIP! {afford_message} CurseLit",
+                f"R.I.P. to @{user}'s 1 million points, but they're now a VIP! 🎉",
+                f"One less VIP slot available because @{user} just spent 1 million points on one! Congrats!"
+            ])
+            await ctx.send(message)
         else:
             self.points[user] += vip_cost
             match status_code:
