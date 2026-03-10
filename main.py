@@ -13,6 +13,8 @@ from datetime import datetime as dt
 import asyncio
 import random
 import webbrowser
+from pydantic import BaseModel
+import sys
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -49,7 +51,7 @@ request_headers = {
 shutdown_event = asyncio.Event() # used to stop bot from dashboard
 
 class TwitchBot(commands.Bot):
-    def __init__(self, map_requests: bool, affiliate: bool, update_title: bool):
+    def __init__(self):
         super().__init__(
             token=TOKEN,
             prefix="!",
@@ -60,20 +62,28 @@ class TwitchBot(commands.Bot):
         # become undefined, trying to look in a directory that doesn't exist
         first_time_startup()
 
-        self.map_requests = map_requests
-        self.affiliate = affiliate
-        self.update_title = update_title
+        if getattr(sys, 'frozen', False):
+            sys.stderr = open(LOG_FILE, 'w')
+
+        self.initialized = False
+        self.map_requests = False
+        self.affiliate = False
+        self.update_title = False
+        self.update_available = False
+
+        self.launch_backend()
+        webbrowser.open("http://localhost:7273/initializeBot")
 
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
         self.links = read_socials_links(SOCIALS_FILE)
-        if self.links == "No socials added\n":
+        if self.links != "No socials added\n":
             self.links_dict = dict(item.split(": ", 1) for item in self.links.split(", "))
 
         # manage chat message points cooldowns
         self.last_point_time = {}
 
-        # manage 5 gambles per hour
+        # manage 5 gambles per stream
         self.gamble_cooldown = {}
 
     async def run_forever(self):
@@ -95,13 +105,18 @@ class TwitchBot(commands.Bot):
         latest_version = data["tag_name"].lstrip("v")
 
         if version.parse(latest_version) > version.parse(CURRENT_VERSION):
-            return {
+            self.update_available = {
                 "update": True,
                 "latest": latest_version,
                 "release_url": data["html_url"]
             }
+            return
 
-        return {"update": False}
+        self.update_available = {
+            "update": False,
+            "latest": CURRENT_VERSION,
+            "release_url": None
+        }
 
     def launch_backend(self):
         self.bot_state = {
@@ -128,9 +143,34 @@ class TwitchBot(commands.Bot):
         def dashboard():
             return FileResponse(STATIC_DIR / "dashboard.html")
 
+        @app.get("/initializeBot")
+        def initializeBot():
+            return FileResponse(STATIC_DIR / "initializeBot.html")
+            
+        class InitializeData(BaseModel):
+            rq: bool
+            affiliate: bool
+            update: bool
+
+        @app.post("/initialize")
+        def initialize(data: InitializeData):
+            self.map_requests = data.rq
+            self.affiliate = data.affiliate
+            self.update_title = data.update
+            self.initialized = True
+            return
+
         @app.get("/isRunning")
         def is_running():
             return "hello"
+
+        @app.get("/initStatus")
+        def initStatus():
+            return self.initialized
+        
+        @app.get("/updateStatus")
+        def is_update_available():
+            return self.update_available
         
         @app.get("/takeRequests")
         def take_requests():
@@ -174,11 +214,10 @@ class TwitchBot(commands.Bot):
         @app.post("/stop")
         async def stop_bot():
             shutdown_event.set()
-            print("Stopping bot, do not close this console...")
 
         def start_api():
             import uvicorn
-            uvicorn.run(app, host="127.0.0.1", port=7273, log_level='critical') # change log_level for dev
+            uvicorn.run(app, host="127.0.0.1", port=7273, log_config=None) # log_level='critical' for dev
 
         threading.Thread(target=start_api, daemon=True).start()
 
@@ -191,14 +230,13 @@ class TwitchBot(commands.Bot):
         write_points_data(self.points, POINTS_FILE)
         write_log(LOG_FILE, f"Points data saved")
 
-        print("Data saved!\nBye! :D")
         write_log(LOG_FILE, "Bye! :D")
         await self.close()
 
     ## export commands
     def export_commands(self):
         order = ["commands", "followage", "lurk", "socials", "youtube", "yt", "discord", "tiktok", "twitter", "instagram", "insta", "linktree", "shoutout", "so", "points", "claim", "leaderboard", "lb", "poll", "category", "ping", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
-                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "bonk", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
+                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "shush", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
 
         written = set()
         with open(r'website/public/static/commands.txt', 'w', encoding='utf-8') as commands_file:
@@ -213,7 +251,7 @@ class TwitchBot(commands.Bot):
             for cmd_name in self.commands:
                 if cmd_name not in written:
                     commands_file.write(cmd_name + "\n")
-        print("Commands succesfully exported to 'website/public/static/commands.txt'")
+        print("Commands succesfully exported to 'website/public/static/commands.txt'") # keeping this print since it's only used in dev
 
     ## helper methods
     def add_points(self, user, amount):
@@ -278,7 +316,6 @@ class TwitchBot(commands.Bot):
                 request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except Exception as e:
                 write_log(LOG_FILE, e)
-                print(f"Something went wrong refreshing mods access token. Details in {LOG_FILE}")
 
             response = requests.get(uri, headers=request_headers, params=params)
 
@@ -318,14 +355,12 @@ class TwitchBot(commands.Bot):
                 ACCESS_TOKEN = refresh_access_token()
             except Exception as e:
                 write_log(LOG_FILE, e)
-                print(f"Something went wrong refreshing VIP access token. Details in {LOG_FILE}")
                 return False
             
             request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             response = requests.get(url, headers=request_headers)
 
             if not response.ok:
-                print(f"Failed to find user. Details in {LOG_FILE}")
                 write_log(LOG_FILE, response.text)
                 return False
 
@@ -350,7 +385,6 @@ class TwitchBot(commands.Bot):
                 request_headers['Authorization'] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 write_log(LOG_FILE, e)
-                print(f"Error getting user_id. Details in {LOG_FILE}")
                 return
             
             # retry getting user id once
@@ -361,7 +395,6 @@ class TwitchBot(commands.Bot):
             return user_data["data"][0]["id"]
         except requests.exceptions.JSONDecodeError as e:
             write_log(LOG_FILE, e)
-            print(f"Error getting user_id. Details in {LOG_FILE}")
 
     def get_follower_data(self, user_id):
         global ACCESS_TOKEN
@@ -381,13 +414,11 @@ class TwitchBot(commands.Bot):
                 request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 write_log(LOG_FILE, e)
-                print(f"Something went wrong refreshing token. Details in {LOG_FILE}")
                 return
             
             response = requests.get(url, headers=request_headers, params=params)
 
             if not response.ok:
-                print(f"Error getting followage, more Details in {LOG_FILE}")
                 write_log(LOG_FILE, response.text)
                 return
             
@@ -440,7 +471,6 @@ class TwitchBot(commands.Bot):
                 ACCESS_TOKEN = refresh_access_token()
             except Exception as e:
                 write_log(LOG_FILE, e)
-                print(f"Something went wrong refreshing token. Details in {LOG_FILE}")
                 return
             
             request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
@@ -476,14 +506,12 @@ class TwitchBot(commands.Bot):
                 request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 write_log(LOG_FILE, e)
-                print(f"Error fetching stream details, Details in {LOG_FILE}")
                 return
             
             response = requests.get(url, headers=request_headers, params=params)
             
             if not response.ok:
                 write_log(LOG_FILE, response.text)
-                print(f"Something went wrong getting stream information. Details in {LOG_FILE}")
 
         try:
             data = response.json()["data"]
@@ -513,7 +541,6 @@ class TwitchBot(commands.Bot):
                 request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 write_log(LOG_FILE, e)
-                print(f"Error updating stream title. Details in {LOG_FILE}")
                 return
             
             response = requests.patch(url, headers=request_headers, params=params)
@@ -523,7 +550,6 @@ class TwitchBot(commands.Bot):
 
         if not response.ok:
             write_log(LOG_FILE, response.text)
-            print(f"Error updating stream title, Details in {LOG_FILE}")
 
     # update stream category to osu!
     def update_stream_category(self):
@@ -546,14 +572,12 @@ class TwitchBot(commands.Bot):
                 request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
             except ConnectionError as e:
                 write_log(LOG_FILE, f"[ERROR]: {e}")
-                print(f"Error updating stream category, Details in {LOG_FILE}")
                 return
             
             response = requests.patch(url, headers=request_headers, params=params, json=body)
 
         if not response.ok:
             write_log(LOG_FILE, response.text)
-            print(f"Error updating stream category, Details in {LOG_FILE}")
 
     # generalized function for title_updater_loop and post mapping
     async def title_updater(self):
@@ -569,7 +593,6 @@ class TwitchBot(commands.Bot):
 
         except SyntaxError as e:
             write_log(LOG_FILE, e)
-            print(f"Couldn't update stream title, Details in {LOG_FILE}")
             
         except ValueError as e:
             write_log(LOG_FILE, f"NOTICE: {e}")
@@ -592,18 +615,13 @@ class TwitchBot(commands.Bot):
     # print in console when bot is logged in and ready to be used
     async def event_ready(self):
         self.points[self.nick] = float("inf")
-        update_check = self.check_for_update()
-        if update_check and update_check["update"]:
-            print(f"There is an update available for KuroBot! Go to {update_check["release_url"]} to download KuroBot version {update_check["latest"]}")
-
-        print(f"Logged in as {self.nick}")
-
-        self.launch_backend()
-        webbrowser.open("http://localhost:7273/")
-        print("Dashboard running on http://localhost:7273/")
+        self.check_for_update()
 
         await self.get_mods_list()
         # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
+
+        while not self.initialized:
+            await asyncio.sleep(0.5)
 
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
@@ -698,8 +716,16 @@ class TwitchBot(commands.Bot):
     # classic lurk command with additional info about muting
     @commands.command(name="lurk")
     async def lurk(self, ctx):
+        message = random.choice([
+            "Thanks for the lurk! If you want to mute the audio, please mute the tab instead of the stream, otherwise you won't count as a viewer ;)",
+            "is lurking! Appreciate you for stopping by! <3",
+            "is watching you from a dark alley...",
+            "does some other things while you're yapping in his ears. Thanks for dropping in! HeyGuys",
+            "has your stream on in the background out of pity. TwitchLit"
+        ])
+
         await ctx.send(
-            f"@{ctx.author.name} Thanks for the lurk! If you want to mute the audio, please mute the tab instead of the stream, otherwise you won't count as a viewer ;)")
+            f"@{ctx.author.name} {message}")
     lurk.category = "useful"
     lurk.description = "Let the streamer know you're there, but in the background 🧐"
 
@@ -773,11 +799,11 @@ class TwitchBot(commands.Bot):
     # shoutout the user specified
     @commands.command(name="shoutout")
     async def shoutout(self, ctx, user):
-        user = ctx.author.name
+        invoker = ctx.author.name
         mods_list = self.read_mods()
 
-        if user not in mods_list:
-            await ctx.send(f"@{user} You are not allowed to use this command!")
+        if invoker not in mods_list:
+            await ctx.send(f"@{invoker} You are not allowed to use this command!")
 
         user = user.lower() if "@" not in user else user[1:].lower()
         link = f"https://www.twitch.tv/{user}"
@@ -802,7 +828,16 @@ class TwitchBot(commands.Bot):
 
         self.bonus_claimed.append(user)
         self.add_points(user, 500)
-        await ctx.send(f"@{user} You just claimed 500 points! Use !commands to find out what you can do ;)")
+
+        message = random.choice([
+            "You just claimed 500 points! Use !commands to find out what you can do CorgiDerp",
+            "Your first time bonus of 500 points have been claimed. Find out what you can do with them with !commands.",
+            "500 points have been claimed. !commands will tell you what's possible with them. CoolCat",
+            "You're now 500 points richer! Let's see what to do with them with !commands 4Head",
+            "claimed 500 points! GoldPLZ"
+        ])
+
+        await ctx.send(f"@{user} {message}")
     claim.category = "useful"
     claim.description = "After using this command, you will have claimed your " \
     "first 500 bot points. You can obtain more points by chatting in the Twitch chat."
@@ -980,9 +1015,25 @@ class TwitchBot(commands.Bot):
     @commands.command(name="rq")
     async def rq(self, ctx):
         if self.map_requests:
-            await ctx.send("You're free to request any map you'd like to see me play. Just paste the link in the chat!")
+            message = random.choice([
+                "You're free to request any map you'd like to see me play. Just paste the link in the chat! CorgiDerp",
+                "If you wanna see me play a specific map, just put the link of it in chat ArgieB8",
+                "Want to see a particular map? Just yeet the link in the chat FBCatch",
+                "You have a banger map in mind? Tell me! GoatEmotey",
+                "Specific circles you want to see? Just paste the link in here and we'll see how I do..."
+            ])
+
+            await ctx.send(f"@{ctx.author.name} {message}")
         else:
-            await ctx.send("I will not be accepting map requests this stream :/. Maybe next stream ;)")
+            message = random.choice([
+                "I will not be accepting map requests this stream BabyRage Maybe next stream..",
+                "map requests will be skipped right now. BigSad",
+                "denied.. FBBlock Maybe next time I will accept map requests.",
+                "Not taking map requests at the moment. TearGlove Sorry!",
+                "Map requests are closed for now. BOP Maybe another time!"
+            ])
+
+            await ctx.send(f"@{ctx.author.name} {message}")
     rq.category = "osu"
     rq.description = "The streamer can decide whether they want to receive " \
     "beatmap requests. This command will then show whether they accept those requests or not."
@@ -1010,7 +1061,6 @@ class TwitchBot(commands.Bot):
         try:
             followed_at = self.get_follower_data(user_id)
         except ValueError as e:
-            print(f"Couldn't parse time, Details in {LOG_FILE}")
             write_log(LOG_FILE, e)
             return
         
@@ -1168,19 +1218,19 @@ class TwitchBot(commands.Bot):
     "you get 3 points. If you tie with the bot, you gain 1 point."
 
     ## redeem points
-    @commands.command(name="bonk")
-    async def bonk(self, ctx):
+    @commands.command(name="shush")
+    async def shush(self, ctx):
         user = ctx.author.name
-        bonk_cost = 2500
+        shush_cost = 2500
 
-        can_afford, afford_message = self.remove_points(user, bonk_cost)
+        can_afford, afford_message = self.remove_points(user, shush_cost)
 
         if can_afford:
             await ctx.send(f"@{self.nick} You can't speak for the next 5 minutes! {afford_message}")
         else:
             await ctx.send(afford_message)
-    bonk.category = "redeem"
-    bonk.description = "Redeeming 2500 points, the streamer cannot speak for the next 5 minutes!"
+    shush.category = "redeem"
+    shush.description = "Redeeming 2500 points, the streamer cannot speak for the next 5 minutes!"
 
     # streamer meme cam
     @commands.command(name="memecam")
@@ -1288,7 +1338,14 @@ class TwitchBot(commands.Bot):
         can_afford, afford_message = self.remove_points(gifter, amount)
 
         if can_afford:
-            await ctx.send(f"How generous! @{gifter} gifted {amount} points to @{receiver}!")
+            return_message = random.choice([
+                f"How generous! @{gifter} gifted {amount} points to @{receiver}!",
+                f"Look at that! {amount} points have been gifted by @{gifter} to @{receiver}.",
+                f"@{gifter} send {amount} points to @{receiver}'s side! W",
+                f"@{receiver} is now {amount} points richer because of @{gifter}!",
+                f"@{gifter} could miss {amount} points and gave it to @{receiver}!"
+            ])
+            await ctx.send(return_message)
             self.add_points(receiver, amount)
             return
             
@@ -1331,6 +1388,7 @@ class TwitchBot(commands.Bot):
             self.gamble_cooldown[user] += 1
         else:
             self.gamble_cooldown[user] = 1
+        self.remove_points(user, amount)
 
         true = random.choice([0,1])
         if true:
@@ -1344,12 +1402,19 @@ class TwitchBot(commands.Bot):
                 6: 1.5
             }
 
-            multiplier = dice_mapping.pop(dice)
-            self.add_points(user, round(amount * multiplier))
-            await ctx.send(f"@{user} Congrats, you won {round(amount * multiplier)} points!")
+            multiplier = dice_mapping.get(dice)
+            
+            match round(multiplier - 1, 1):
+                case 0:
+                    self.add_points(user, amount)
+                    win_message = f"@{user} You didn't win, you didn't lose.. You got your {amount} points back."
+                case _: 
+                    self.add_points(user, round(amount * multiplier))
+                    win_message = f"@{user} Congrats, you won {round(amount * (multiplier - 1))} points!"
+
+            await ctx.send(win_message)
             return
 
-        self.remove_points(user, amount)
         await ctx.send(f"@{user} Sadge, you lost {amount} points...")
     gamble.category = "redeem"
     gamble.description = "Gamble your points away! You have a 1 in 3 chance of winning. If you do, " \
@@ -1372,7 +1437,14 @@ class TwitchBot(commands.Bot):
         succes, status_code = self.add_vip(user_id) # try adding VIP
 
         if succes:
-            await ctx.send(f"{self.nick} A temporary VIP status has been redeemed by @{user}! {afford_message}")
+            message = random.choice([
+                f"A VIP slot has been claimed by @{user}! {afford_message}",
+                f"A new VIP spot has been taken by @{user}! bleedPurple",
+                f"@{user} You are now a VIP! {afford_message} CurseLit",
+                f"R.I.P. to @{user}'s 1 million points, but they're now a VIP! 🎉",
+                f"One less VIP slot available because @{user} just spent 1 million points on one! Congrats!"
+            ])
+            await ctx.send(message)
         else:
             self.points[user] += vip_cost
             match status_code:
@@ -1389,28 +1461,12 @@ class TwitchBot(commands.Bot):
 
 
 async def main():
-    def ask_yes_no(prompt: str):
-        while True:
-            answer = input(prompt).strip().lower()
-            if answer in ("y", "n"):
-                return answer == "y"
-            print("Not a valid answer. Please enter 'y' or 'n'.")
-
-    map_requests = ask_yes_no("Do you accept map requests this stream? (y/n)\n")
-    affiliate = ask_yes_no("Are you a Twitch Affiliate or Partner? (y/n)\n")
-    update = ask_yes_no("Would you like the bot to update your osu! rank in the stream title? (y/n)\n")
-    
-    # clear CLI to declutter console
-    time.sleep(0.5)
-    os.system("cls" if os.name == "nt" else "clear")
-
-    bot = TwitchBot(map_requests, affiliate, update)
+    bot = TwitchBot()
 
     try:
         await bot.run_forever()
     except Exception as e:
         write_log(LOG_FILE, e)
-        print(f"Bot crashed. Details in {LOG_FILE}")
 
 if __name__ == "__main__":
     asyncio.run(main())

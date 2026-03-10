@@ -3,6 +3,12 @@
 import { StatusMessage } from "@/types";
 import { useEffect, useState } from "react";
 
+type UpdateInfo = {
+  update: boolean;
+  latest: string;
+  release_url: string;
+};
+
 const Dashboard = () => {
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [takeRequests, setTakeRequests] = useState<boolean>(false);
@@ -15,6 +21,9 @@ const Dashboard = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [statusMessages, setStatusMessages] = useState<StatusMessage[]>([]);
   const [stopping, setStopping] = useState<boolean>(false);
+  const [updateAvailable, setUpdateAvailable] = useState<UpdateInfo | null>(
+    null,
+  );
 
   const getTitleUpdaterStatus = async () => {
     if (!isRunning) return;
@@ -153,17 +162,26 @@ const Dashboard = () => {
     return;
   };
 
+  const getIsRunning = async () => {
+    await fetch("/isRunning")
+      .then((data) => {
+        data.json().then((hello) => setIsRunning(hello === "hello"));
+      })
+      .catch(() => {
+        setIsRunning(false);
+        setStopping(false);
+      });
+  };
+
+  const getUpdateStatus = async () => {
+    await fetch("/updateStatus")
+      .then((data) => {
+        data.json().then((data) => setUpdateAvailable(data));
+      })
+      .catch((err) => console.error(err));
+  };
+
   useEffect(() => {
-    const getIsRunning = async () => {
-      await fetch("/isRunning")
-        .then((data) => {
-          data.json().then((hello) => setIsRunning(hello === "hello"));
-        })
-        .catch(() => {
-          setIsRunning(false);
-          setStopping(false);
-        });
-    };
     getIsRunning();
 
     const interval = setInterval(getIsRunning, 5000);
@@ -173,6 +191,8 @@ const Dashboard = () => {
   useEffect(() => {
     getTitleUpdaterStatus();
     getRedemptionsListenerStatus();
+
+    setTimeout(getUpdateStatus, 1000);
   }, [isRunning]);
 
   useEffect(() => {
@@ -291,7 +311,7 @@ const Dashboard = () => {
                 {isRunning ? (
                   stopping ? (
                     <p className="text-red-400">
-                      Stopping bot, don't close the terminal yourself...
+                      Stopping bot, this might take a minute...
                     </p>
                   ) : (
                     <p className="text-green-500">Running...</p>
@@ -319,10 +339,7 @@ const Dashboard = () => {
               (stopping ? (
                 <></>
               ) : (
-                <button
-                  className="discord-button mt-2 text-lg"
-                  onClick={stopBot}
-                >
+                <button className="stop-button mt-2 text-lg" onClick={stopBot}>
                   Stop bot
                 </button>
               ))}
@@ -348,6 +365,22 @@ const Dashboard = () => {
                   ? "Stop taking requests"
                   : "Start taking requests"}
               </button>
+              {updateAvailable && (
+                <div className="text-lg mt-4">
+                  <p>
+                    KuroBot has a fancypancy update! Download KuroBot v
+                    {updateAvailable.latest} over at
+                  </p>
+                  <a
+                    href={updateAvailable.release_url}
+                    className="link"
+                    target="_blank"
+                  >
+                    {updateAvailable.release_url}
+                  </a>
+                  !
+                </div>
+              )}
             </div>
           )}
         </div>
