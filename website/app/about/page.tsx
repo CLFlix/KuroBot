@@ -126,11 +126,11 @@ function About() {
           <div className="text-center mt-4 pb-2">
             <h1 className="text-3xl font-bold">Download</h1>
             <a
-              href="https://github.com/CLFlix/KuroBot/releases/tag/v0.3.0"
-              className="link font-bold text-lg"
+              href="https://github.com/CLFlix/KuroBot/releases/tag/v1.0.0"
+              className="link font-bold text-xl"
               target="_blank"
             >
-              KuroBot v0.3.0 (Pre-release)
+              KuroBot v1.0.0
             </a>
           </div>
         </div>
