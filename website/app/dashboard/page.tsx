@@ -365,7 +365,7 @@ const Dashboard = () => {
                   ? "Stop taking requests"
                   : "Start taking requests"}
               </button>
-              {updateAvailable && (
+              {updateAvailable?.update && (
                 <div className="text-lg mt-4">
                   <p>
                     KuroBot has a fancypancy update! Download KuroBot v
