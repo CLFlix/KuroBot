@@ -77,7 +77,7 @@ class TwitchBot(commands.Bot):
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
         self.links = read_socials_links(SOCIALS_FILE)
-        if self.links != "No socials added\n":
+        if self.links != "No socials added":
             self.links_dict = dict(item.split(": ", 1) for item in self.links.split(", "))
 
         # manage chat message points cooldowns
