@@ -236,7 +236,7 @@ class TwitchBot(commands.Bot):
     ## export commands
     def export_commands(self):
         order = ["commands", "followage", "lurk", "socials", "youtube", "yt", "discord", "tiktok", "twitter", "instagram", "insta", "linktree", "shoutout", "so", "points", "claim", "leaderboard", "lb", "poll", "category", "ping", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
-                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "bonk", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
+                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "shush", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
 
         written = set()
         with open(r'website/public/static/commands.txt', 'w', encoding='utf-8') as commands_file:
@@ -1218,19 +1218,19 @@ class TwitchBot(commands.Bot):
     "you get 3 points. If you tie with the bot, you gain 1 point."
 
     ## redeem points
-    @commands.command(name="bonk")
-    async def bonk(self, ctx):
+    @commands.command(name="shush")
+    async def shush(self, ctx):
         user = ctx.author.name
-        bonk_cost = 2500
+        shush_cost = 2500
 
-        can_afford, afford_message = self.remove_points(user, bonk_cost)
+        can_afford, afford_message = self.remove_points(user, shush_cost)
 
         if can_afford:
             await ctx.send(f"@{self.nick} You can't speak for the next 5 minutes! {afford_message}")
         else:
             await ctx.send(afford_message)
-    bonk.category = "redeem"
-    bonk.description = "Redeeming 2500 points, the streamer cannot speak for the next 5 minutes!"
+    shush.category = "redeem"
+    shush.description = "Redeeming 2500 points, the streamer cannot speak for the next 5 minutes!"
 
     # streamer meme cam
     @commands.command(name="memecam")
