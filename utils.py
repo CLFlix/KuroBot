@@ -72,17 +72,20 @@ def read_socials_links(socials_file):
     return ", ".join(message_links) if message_links else "No socials added"
 
 # When osuAuth and osuUsername are filled in in the .env file, this method can look up your osu! profile
-def get_profile():
+def get_profile(user):
     profile_url = "https://osu.ppy.sh/api/get_user"
-    params = {"k": API_KEY, "u": osuUsername}
+    params = {"k": API_KEY, "u": user}
 
     try:
         response = requests.get(url=profile_url, params=params)
     except:
         raise ConnectionError("osu! API is not reachable or request failed.")
 
-    data = response.json()[0]
-    return data
+    try:
+        data = response.json()[0]
+        return (True, data)
+    except IndexError:
+        return (False, "User not found")
 
 # When you have StreamCompanion running, the command !np and !nppp will request the map through this method
 # Since this endpoint is only called occasionally through !np, the

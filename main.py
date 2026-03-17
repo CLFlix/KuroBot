@@ -191,7 +191,7 @@ class TwitchBot(commands.Bot):
         
         @app.get("/rank")
         def rank():
-            profile = get_profile()
+            profile = get_profile(osuUsername)[1]
             self.bot_state["rank"] = profile["pp_rank"]
             return f"#{self.bot_state["rank"]}"
         
@@ -583,7 +583,7 @@ class TwitchBot(commands.Bot):
     async def title_updater(self):
         current_title = self.get_stream_title()
         self.bot_state["current_title"] = current_title
-        profile = get_profile()
+        profile = get_profile()[1]
         current_rank = profile["pp_rank"]
 
         try:
@@ -936,9 +936,14 @@ class TwitchBot(commands.Bot):
 
     # show current rank (global and country)
     @commands.command(name="rank")
-    async def rank(self, ctx):
+    async def rank(self, ctx, user=osuUsername):
         try:
-            data = get_profile()
+            found, data = get_profile(user)
+
+            if not found:
+                await ctx.send(f"@{ctx.author.name} {data}")
+                return
+            
             global_rank, country_rank = data["pp_rank"], data["pp_country_rank"]
 
             await ctx.send(f"@{ctx.author.name} Global Rank: #{global_rank}, Country Rank: #{country_rank}")
@@ -946,41 +951,59 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
             write_log(LOG_FILE, e)
     rank.category = "osu"
-    rank.description = "Make the bot display the streamer's osu! rank in chat!"
+    rank.description = "!rank will show the streamer's rank in chat! You can also provide a username and " \
+    "the bot will search for that user's rank: !rank _Kurookami_"
 
     # show amount of playtime in hours
     @commands.command(name="playtime")
-    async def playtime(self, ctx):
+    async def playtime(self, ctx, user=osuUsername):
         try:
-            data = get_profile()
+            found, data = get_profile(user)
+
+            if not found:
+                await ctx.send(f"@{ctx.author.name} {data}")
+                return
+            
             total_playtime = int(data["total_seconds_played"]) // 3600
 
-            await ctx.send(f"@{ctx.author.name} {osuUsername} has played osu! for a total of {total_playtime} hours.")
+            await ctx.send(f"@{ctx.author.name} {user} has played osu! for a total of {total_playtime} hours.")
         except ConnectionError as e:
             await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
             write_log(LOG_FILE, e)
     playtime.category = "osu"
-    playtime.description = "Show how much time the streamer wasted playing osu!."
+    playtime.description = "Calling this command will show how much time the streamer " \
+    "has wasted in this game. Adding a username will find that information for that user: !playtime _Kurookami_"
 
     # show playcount
     @commands.command(name="playcount")
-    async def playcount(self, ctx):
+    async def playcount(self, ctx, user=osuUsername):
         try:
-            data = get_profile()
+            found, data = get_profile(user)
+
+            if not found:
+                await ctx.send(f"@{ctx.author.name} {data}")
+                return
+
             playcount = data["playcount"]
 
-            await ctx.send(f"@{ctx.author.name} {osuUsername} has played osu! {playcount} times.")
+            await ctx.send(f"@{ctx.author.name} {user} has played osu! {playcount} times.")
         except ConnectionError as e:
             await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
             write_log(LOG_FILE, e)
     playcount.category = "osu"
-    playcount.description = "This will show the playcount of the streamer."
+    playcount.description = "This command will show the streamer's playcount! " \
+    "You can also find other users' playcount with !playcount _Kurookami_"
 
     # get general stats at once
     @commands.command(name="osustats")
-    async def osustats(self, ctx):
+    async def osustats(self, ctx, user=osuUsername):
         try:
-            data = get_profile()
+            found, data = get_profile(user)
+
+            if not found:
+                await ctx.send(f"@{ctx.author.name} {data}")
+                return
+
             global_rank, country_rank, pp, total_playtime, playcount = (
                 data["pp_rank"],
                 data["pp_country_rank"],
@@ -989,27 +1012,33 @@ class TwitchBot(commands.Bot):
                 data["playcount"]
             )
 
-            formatted_message = f"{osuUsername}: #{global_rank}, Country rank: #{country_rank} - pp: {pp} - Playtime: {total_playtime}h - Playcount: {playcount}"
+            formatted_message = f"{user}: #{global_rank}, Country rank: #{country_rank} - pp: {pp} - Playtime: {total_playtime}h - Playcount: {playcount}"
             await ctx.send(f"@{ctx.author.name} {formatted_message}")
             
         except ConnectionError as e:
             await ctx.send(f"@{self.nick} @{ctx.author.name} Something went wrong getting osu! profile.")
             write_log(LOG_FILE, e)
     osustats.category = "osu"
-    osustats.description = "This command is some other commands combined. " \
-    "It will show the rank, country rank, total pp, playtime and playcount of the streamer."
+    osustats.description = "This command is basically rank, playtime and playcount combined. " \
+    "You can also call this for another user: !osustats _Kurookami_"
 
     @commands.command(name="profile")
-    async def profile(self, ctx):
+    async def profile(self, ctx, user=osuUsername):
         try:
-            data = get_profile()
+            found, data = get_profile(user)
+
+            if not found:
+                await ctx.send(f"@{ctx.author.name} {data}")
+                return
+            
             user_id = data["user_id"]
             await ctx.send(f"@{ctx.author.name} https://osu.ppy.sh/users/{user_id}")
         except ConnectionError as e:
             await ctx.send(f"@{self.nick} @{ctx.author.name} Something went wrong getting osu! profile.")
             write_log(LOG_FILE, e)
     profile.category = "osu"
-    profile.description = "Show the link to the osu! profile of the streamer!"
+    profile.description = "Show the link to the osu! profile of the streamer! " \
+    "You can also get someone else's profile: !profile _Kurookami_"
 
     # show the chat if you want to accept requests or not (self.rq_message comes from main())
     @commands.command(name="rq")
