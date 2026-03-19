@@ -850,7 +850,14 @@ class TwitchBot(commands.Bot):
             if self.points[user] == 1:
                 await ctx.send(f"@{user} You currently have 1 point.")
             else:
-                await ctx.send(f"@{user} You currently have {self.points[user]} points.")
+                messages = [
+                    f"@{user} You currently have {self.points[user]} points.",
+                    f"@{user} You have {self.points[user]} points in your bank!",
+                    f"{self.points[user]} points are currently in @{user}'s possession.",
+                    f"@{user}, you have {self.points[user]} points!",
+                    f"@{user} there are {self.points[user]} points in your wallet!"
+                ]
+                await ctx.send(random.choice(messages))
         else:
             await ctx.send(f"@{user} You currently have 0 points.")
     points.category = "useful"
