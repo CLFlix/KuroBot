@@ -844,22 +844,55 @@ class TwitchBot(commands.Bot):
 
     # display points
     @commands.command(name="points")
-    async def points(self, ctx):
+    async def points(self, ctx, username: str=None):
         user = ctx.author.name
-        if user in self.points:
-            if self.points[user] == 1:
-                await ctx.send(f"@{user} You currently have 1 point.")
-            else:
-                messages = [
-                    f"@{user} You currently have {self.points[user]} points.",
-                    f"@{user} You have {self.points[user]} points in your bank!",
-                    f"{self.points[user]} points are currently in @{user}'s possession.",
-                    f"@{user}, you have {self.points[user]} points!",
-                    f"@{user} there are {self.points[user]} points in your wallet!"
-                ]
-                await ctx.send(random.choice(messages))
+
+        if not username or not username.encode("ascii", "ignore").decode():
+            username = user
         else:
-            await ctx.send(f"@{user} You currently have 0 points.")
+            username = username.lstrip("@").lower() if "@" in username else username.lower()
+
+        if username in [self.nick, user]:
+            await ctx.send(f"@{username} is the points master! Infinite points to them!")
+            return
+
+        if username in self.points.keys():
+            amount = self.points[username]
+            if amount == 1:
+                if username == user:
+                    await ctx.send(f"@{user} You currently have 1 point.")
+                    return
+                else:
+                    await ctx.send(f"@{user} {username} currently has 1 point.")
+                    return
+            else:
+                if username == user:
+                    messages = [
+                        f"@{user} You currently have {amount} points.",
+                        f"@{user} You have {amount} points in your bank!",
+                        f"{amount} points are currently in @{user}'s possession.",
+                        f"@{user}, you have {amount} points!",
+                        f"@{user} there are {amount} points in your wallet!"
+                    ]
+                    await ctx.send(random.choice(messages))
+                    return
+                else:
+                    messages = [
+                        f"@{user} {username} currently has {amount} points.",
+                        f"@{user} {username} has {amount} points in your bank!",
+                        f"@{user} {amount} points are currently in {username}'s possession.",
+                        f"@{user}, {username} has {amount} points!",
+                        f"@{user}, there are {amount} points in {username}'s wallet!"
+                    ]
+                    await ctx.send(random.choice(messages))
+                    return
+        else:
+            if username == user:
+                await ctx.send(f"@{user} You currently have 0 points.")
+                return
+            else:
+                await ctx.send(f"@{user} {username} has 0 points.")
+                return
     points.category = "useful"
     points.description = "This command will show you how many bot points you have in this Twitch channel!"
 
