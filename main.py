@@ -25,7 +25,7 @@ import threading
 
 load_dotenv()
 
-CURRENT_VERSION = "v1.0.0"
+CURRENT_VERSION = "v1.1.0"
 
 TOKEN = os.getenv("TOKEN")
 BROADCASTER_ID = int(os.getenv("BROADCASTER_ID"))
