@@ -27,18 +27,15 @@ def first_time_startup():
         if r'first_time_bonus_claimed.txt' not in os.listdir(r'.'):    
             with open("first_time_bonus_claimed.txt", 'w', encoding='utf-8') as bonus_claimed_file:
                 bonus_claimed_file.write("")
-            print("Created first_time_bonus_claimed.txt")
 
         # create logs folder if it doesn't exist already
         if r'logs' not in os.listdir(r'.'):
             os.system("mkdir logs")
-            print("Created logs folder")
 
         # create file to save users' points if it doesn't exist already
         if r'points.json' not in os.listdir(r'.'):
             with open(r'points.json', 'w', encoding='utf-8') as points_file:
                 json.dump({}, points_file)
-            print("points.json successfully created")
 
         # create file for !socials command if it doesn't exist already
         if r'socials.json' not in os.listdir(r'.'):
@@ -53,9 +50,6 @@ def first_time_startup():
 
             with open(r'socials.json', 'w', encoding='utf-8') as socials_file:
                 json.dump(socials, socials_file, indent=4)
-            print(f"You can now add your social links in socials.json")
-
-        print("-------------------------------")
 
 # load the socials links
 def read_socials_links(socials_file):
