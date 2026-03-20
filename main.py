@@ -612,7 +612,6 @@ class TwitchBot(commands.Bot):
 
 
     ## events
-    # print in console when bot is logged in and ready to be used
     async def event_ready(self):
         self.points[self.nick] = float("inf")
         self.check_for_update()
@@ -894,7 +893,8 @@ class TwitchBot(commands.Bot):
                 await ctx.send(f"@{user} {username} has 0 points.")
                 return
     points.category = "useful"
-    points.description = "This command will show you how many bot points you have in this Twitch channel!"
+    points.description = "This command will show you how many bot points you have in this Twitch channel. " \
+    "You can also check other people's wallet by throwing in their username behind it!"
 
     @commands.command(name="leaderboard")
     async def leaderboard(self, ctx):

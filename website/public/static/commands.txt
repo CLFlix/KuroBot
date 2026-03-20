@@ -12,7 +12,7 @@ insta - Alias for !instagram - useful
 linktree - If the streamer has a Linktree or anything that has a similar goal linked in the bot, this command will show you the link. - useful
 shoutout - Use this command and tag someone right behind it like '!shoutout @user' to shout out this user's Twitch channel! (streamer only) - useful
 so - Alias for !shoutout - useful
-points - This command will show you how many bot points you have in this Twitch channel! - useful
+points - This command will show you how many bot points you have in this Twitch channel. You can also check other people's wallet by throwing in their username behind it! - useful
 claim - After using this command, you will have claimed your first 500 bot points. You can obtain more points by chatting in the Twitch chat. - useful
 leaderboard - '!leaderboard' will show you the top 3 bot point earners of this channel. - useful
 lb - Alias for '!leaderboard'. - useful
