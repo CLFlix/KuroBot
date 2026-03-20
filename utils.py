@@ -4,6 +4,7 @@ import requests
 import os
 import json
 from datetime import datetime as dt
+from datetime import timezone
 from dateutil.relativedelta import relativedelta
 
 load_dotenv()
@@ -155,8 +156,8 @@ def edit_stream_title(current_title: str, current_rank):
     return new_title
 
 def calculate_followage_days(followed_at):
-    start = dt.strptime(followed_at, "%Y-%m-%dT%H:%M:%SZ")
-    now = dt.now()
+    start = dt.strptime(followed_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    now = dt.now(timezone.utc)
 
     rd = relativedelta(now, start)
 
@@ -168,6 +169,8 @@ def calculate_followage_days(followed_at):
     if rd.days:
         parts.append(f"{rd.days} day{'s' if rd.days != 1 else ''}")
     if rd.hours:
+        if rd.minutes > 30:
+            rd.hours += 1
         parts.append(f"{rd.hours} hour{'s' if rd.hours != 1 else ''}")
 
-    return " ".join(parts) if parts else ""
+    return " ".join(parts) if parts else "less than an hour"
