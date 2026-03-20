@@ -1116,7 +1116,7 @@ class TwitchBot(commands.Bot):
                 user = username[1:]
             else:
                 user = username
-            followage_message = f"@{user} has been following {self.nick} for ..."
+            followage_message = f"@{ctx.author.name} @{user} has been following {self.nick} for ..."
         else:
             user = ctx.author.name
             followage_message = f"@{user} You have been following {self.nick} for ..."
@@ -1125,10 +1125,17 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{user} You can't follow yourself, dummy")
             return
 
+        if not await self.user_exists(user):
+            await ctx.send(f"@{ctx.author.name} This user doesn't exist.")
+            return
+
         user_id = self.get_user_id(user)
 
         try:
             followed_at = self.get_follower_data(user_id)
+            if not followed_at:
+                await ctx.send(f"@{ctx.author.name} This user doesn't follow {self.nick}")
+                return
         except ValueError as e:
             write_log(LOG_FILE, e)
             return
