@@ -86,6 +86,9 @@ class TwitchBot(commands.Bot):
         # manage 5 gambles per stream
         self.gamble_cooldown = {}
 
+        # manage 3 robs per stream
+        self.robbers = {}
+
     async def run_forever(self):
         start_task = asyncio.create_task(self.start())
         try:
@@ -236,7 +239,7 @@ class TwitchBot(commands.Bot):
     ## export commands
     def export_commands(self):
         order = ["commands", "followage", "lurk", "socials", "youtube", "yt", "discord", "tiktok", "twitter", "instagram", "insta", "linktree", "shoutout", "so", "points", "claim", "leaderboard", "lb", "poll", "category", "ping", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
-                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "shush", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
+                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "rob", "steal", "shush", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
 
         written = set()
         with open(r'website/public/static/commands.txt', 'w', encoding='utf-8') as commands_file:
@@ -258,7 +261,7 @@ class TwitchBot(commands.Bot):
         if user not in self.points:
             self.points[user] = amount 
         else:
-            self.points[user] += amount
+            self.points[user] = round(self.points[user] + amount)
 
     # add points as result to rps game
     def add_rps_points(self, user, rps_result):
@@ -274,7 +277,7 @@ class TwitchBot(commands.Bot):
             if self.points[user] < item_cost:
                 return False, f"@{user} You don't have enough points! You need {item_cost - self.points[user]} more points!"
             else:
-                self.points[user] -= item_cost
+                self.points[user] = round(self.points[user] - item_cost)
                 return True, f"This costed @{user} {item_cost} points."
         else:
             return False, f"@{user} You don't have enough points! You need {item_cost} more points!"
@@ -631,6 +634,10 @@ class TwitchBot(commands.Bot):
     async def event_message(self, message):
         # message.author can be None when the bot is checking it's own messages
         if not message.author or message.author.name in ["nightbot", "streamelements", "ronniabot"]:
+            return
+        
+        if message.author.name == self.nick:
+            await self.handle_commands(message)
             return
         
         # prevent points on command invoke
@@ -1292,6 +1299,71 @@ class TwitchBot(commands.Bot):
     rps.category = "fun"
     rps.description = "Play rock, paper, scissors with the bot! If you win, " \
     "you get 3 points. If you tie with the bot, you gain 1 point."
+
+    @commands.command(name="rob")
+    async def rob(self, ctx, username: str=None):
+        invoker = ctx.author.name
+
+        if not username or not username.encode("ascii", "ignore").decode():
+            await ctx.send(f"@{invoker} You didn't specify who you want to rob points from!")
+            return
+
+        if self.nick.lower() == invoker:
+            await ctx.send(f"@{invoker} A bit unfair to steal from your viewers, hm? YouWHY")
+            return
+        elif self.nick.lower() == username:
+            await ctx.send(f"@{invoker} You can't steal from the points master... LUL")
+            return
+        
+        if username not in self.points.keys():
+            await ctx.send(f"@{invoker} This user doesn't have any points, or just doesn't exist lol")
+            return
+        
+        if invoker in self.robbers.keys():
+            if len(self.robbers[invoker]) == 3:
+                await ctx.send(f"@{invoker} You've already tried robbing 3 times!")
+                return
+
+        if invoker in self.robbers.keys():
+            self.robbers[invoker].append(username)
+        else:
+            self.robbers[invoker] = [username]
+
+        robbed = random.choice([0, 0, 1])
+
+        if not robbed:
+            messages = [
+                f"@{invoker} You failed to rob {username}...",
+                f"{username} managed to escape {invoker}'s rob!",
+                f"@{invoker} {username} kept all of his points safely secured.",
+                f"{username} held on to his points @{invoker}!",
+                f"All of {username}'s points were kept away from {invoker} this time!"
+            ]
+            await ctx.send(random.choice(messages))
+            return
+        
+        percentage = random.choice([0.05, 0.06, 0.07])
+        robbed_points = round(self.points[username] * percentage)
+        self.remove_points(username, robbed_points)
+        self.add_points(invoker, robbed_points)
+
+        messages = [
+            f"@{invoker} You stole {robbed_points} points from {username}.",
+            f"{username} lost {robbed_points} points because of {invoker}!",
+            f"{robbed_points} were stolen from {username} by {invoker}.",
+            f"Oh no! {invoker} robbed {username} of {robbed_points} points!",
+            f"{username} didn't secure their vault enough.. {invoker} stole {robbed_points} points."
+        ]
+        await ctx.send(random.choice(messages))
+    rob.category = "fun"
+    rob.description = "Steal a small portion of points from another chatter! Example: !rob KurookamiTV"
+
+    @commands.command(name="steal")
+    async def steal(self, ctx):
+        await self.rob(ctx)
+    steal.category = "fun"
+    steal.description = "Alias for !rob"
+
 
     ## redeem points
     @commands.command(name="shush")
