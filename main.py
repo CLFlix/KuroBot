@@ -238,8 +238,8 @@ class TwitchBot(commands.Bot):
 
     ## export commands
     def export_commands(self):
-        order = ["commands", "followage", "lurk", "socials", "youtube", "yt", "discord", "tiktok", "twitter", "instagram", "insta", "linktree", "shoutout", "so", "points", "claim", "leaderboard", "lb", "poll", "category", "ping", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
-                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "rob", "steal", "shush", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
+        order = ["commands", "followage", "lurk", "socials", "youtube", "discord", "tiktok", "twitter", "instagram", "linktree", "shoutout", "points", "claim", "leaderboard", "poll", "category", "ping", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
+                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "rob", "shush", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
 
         written = set()
         with open(r'website/public/static/commands.txt', 'w', encoding='utf-8') as commands_file:
@@ -250,10 +250,6 @@ class TwitchBot(commands.Bot):
                     category = getattr(cmd, "category", "/")
                     commands_file.write(f"{cmd_name} - {description} - {category}\n")
                     written.add(cmd_name)
-
-            for cmd_name in self.commands:
-                if cmd_name not in written:
-                    commands_file.write(cmd_name + "\n")
         print("Commands succesfully exported to 'website/public/static/commands.txt'") # keeping this print since it's only used in dev
 
     ## helper methods
@@ -748,13 +744,12 @@ class TwitchBot(commands.Bot):
         if link:
             await ctx.send(f"@{ctx.author.name} {link}")
     youtube.category = "useful"
-    youtube.description = "If the streamer has their YouTube linked in the bot, this command will give you this link."
+    youtube.description = "If the streamer has their YouTube linked in the bot, this command will give you this link. " \
+    "Alias: !yt"
 
     @commands.command(name="yt")
     async def yt(self, ctx):
         await self.youtube(ctx)
-    yt.category = "useful"
-    yt.description = "Alias for !youtube"
 
     @commands.command(name="discord")
     async def discord(self, ctx):
@@ -778,13 +773,12 @@ class TwitchBot(commands.Bot):
         if link:
             await ctx.send(f"@{ctx.author.name} {link}")
     instagram.category = "useful"
-    instagram.description = "If the streamer has their Instagram linked in the bot, this command will give you this link."
+    instagram.description = "If the streamer has their Instagram linked in the bot, this command will give you this link. " \
+    "Alias: !insta"
 
     @commands.command(name="insta")
     async def insta(self, ctx):
         await self.instagram(ctx)
-    insta.category = "useful"
-    insta.description = "Alias for !instagram"
 
     @commands.command(name="twitter")
     async def twitter(self, ctx):
@@ -816,13 +810,12 @@ class TwitchBot(commands.Bot):
 
         await ctx.send(f"Shoutout to {user}! {link}")
     shoutout.category = "useful"
-    shoutout.description = "Use this command and tag someone right behind it like '!shoutout @user' to shout out this user's Twitch channel! (streamer only)"
+    shoutout.description = "Use this command and tag someone right behind it like '!shoutout @user' to shout out this user's Twitch channel! (mods only) " \
+    "Alias: !so"
 
     @commands.command(name="so")
     async def so(self, ctx):
         await self.shoutout(ctx)
-    so.category = "useful"
-    so.description = "Alias for !shoutout"
 
     @commands.command(name="claim")
     async def claim(self, ctx):
@@ -917,14 +910,11 @@ class TwitchBot(commands.Bot):
         await ctx.send(f"@{ctx.author.name} " + ", ".join(top_users))
     leaderboard.category = "useful"
     leaderboard.description = "'!leaderboard' will show you the top 3 " \
-    "bot point earners of this channel."
+    "bot point earners of this channel. Alias: !lb"
 
-    # leaderboard alias
     @commands.command(name="lb")
     async def lb(self, ctx):
         await self.leaderboard(ctx)
-    lb.category = "useful"
-    lb.description = "Alias for '!leaderboard'."
 
     ## osu related
     # show now playing
@@ -1356,13 +1346,12 @@ class TwitchBot(commands.Bot):
         ]
         await ctx.send(random.choice(messages))
     rob.category = "fun"
-    rob.description = "Steal a small portion of points from another chatter! Example: !rob KurookamiTV"
+    rob.description = "Steal a small portion of points from another chatter! Example: !rob KurookamiTV " \
+    "Alias: !steal"
 
     @commands.command(name="steal")
     async def steal(self, ctx):
         await self.rob(ctx)
-    steal.category = "fun"
-    steal.description = "Alias for !rob"
 
 
     ## redeem points
