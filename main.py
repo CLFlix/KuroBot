@@ -847,11 +847,14 @@ class TwitchBot(commands.Bot):
         user = ctx.author.name
 
         if not username or not username.encode("ascii", "ignore").decode():
+            if user == self.nick.lower():
+                await ctx.send(f"@{self.nick} is the points master! Infinite points to them!")
+                return
             username = user
         else:
             username = username.lstrip("@").lower() if "@" in username else username.lower()
 
-        if username in [self.nick, user]:
+        if username == self.nick.lower():
             await ctx.send(f"@{username} is the points master! Infinite points to them!")
             return
 
