@@ -810,6 +810,7 @@ class TwitchBot(commands.Bot):
 
         if invoker not in mods_list:
             await ctx.send(f"@{invoker} You are not allowed to use this command!")
+            return
 
         user = user.lower() if "@" not in user else user[1:].lower()
         link = f"https://www.twitch.tv/{user}"
