@@ -11,6 +11,7 @@ linktree - If the streamer has a Linktree or anything that has a similar goal li
 shoutout - Use this command and tag someone right behind it like '!shoutout @user' to shout out this user's Twitch channel! (mods only) Alias: !so - useful
 points - This command will show you how many bot points you have in this Twitch channel. You can also check other people's wallet by throwing in their username behind it! - useful
 claim - After using this command, you will have claimed your first 500 bot points. You can obtain more points by chatting in the Twitch chat. - useful
+daily - Viewers can chime in on your stream and claim a bonus of 50 points when they invoke this command. - useful
 leaderboard - '!leaderboard' will show you the top 3 bot point earners of this channel. Alias: !lb - useful
 poll - Using this command with the necessary parameters will create a poll of 2 minutes. (moderator only) - useful
 category - Change the streaming category to osu! (mods / streamer only) - osu

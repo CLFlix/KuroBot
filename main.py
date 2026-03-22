@@ -76,6 +76,7 @@ class TwitchBot(commands.Bot):
 
         self.points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
+        self.daily_claimed = set()
         self.links = read_socials_links(SOCIALS_FILE)
         if self.links != "No socials added":
             self.links_dict = dict(item.split(": ", 1) for item in self.links.split(", "))
@@ -238,8 +239,11 @@ class TwitchBot(commands.Bot):
 
     ## export commands
     def export_commands(self):
-        order = ["commands", "followage", "lurk", "socials", "youtube", "discord", "tiktok", "twitter", "instagram", "linktree", "shoutout", "points", "claim", "leaderboard", "poll", "category", "ping", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
-                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "rob", "shush", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
+        order = ["commands", "followage", "lurk", "socials", "youtube", "discord", "tiktok", "twitter",
+                 "instagram", "linktree", "shoutout", "points", "claim", "daily", "leaderboard", "poll",
+                 "category", "ping", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
+                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "rob",
+                 "shush", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
 
         written = set()
         with open(r'website/public/static/commands.txt', 'w', encoding='utf-8') as commands_file:
@@ -840,6 +844,30 @@ class TwitchBot(commands.Bot):
     claim.category = "useful"
     claim.description = "After using this command, you will have claimed your " \
     "first 500 bot points. You can obtain more points by chatting in the Twitch chat."
+
+    @commands.command(name="daily")
+    async def daily(self, ctx):
+        user = ctx.author.name
+        if user == self.nick:
+            return
+
+        if user in self.daily_claimed:
+            await ctx.send(f"@{user} You already claimed your daily bonus!")
+            return
+
+        self.add_points(user, 50)
+        self.daily_claimed.add(user)
+
+        messages = [
+            f"@{user} You just claimed your daily 50 points bonus!",
+            f"@{user} You claimed a daily bonus! 50 points to you!",
+            f"A daily bonus of 50 points was just claimed by @{user} !" # space before !, otherwise tag doesn't work properly
+        ]
+        choice = random.choice(messages)
+        await ctx.send(choice)
+    daily.category = "useful"
+    daily.description = "Viewers can chime in on your stream and claim a bonus " \
+    "of 50 points when they invoke this command."
 
     # display points
     @commands.command(name="points")
