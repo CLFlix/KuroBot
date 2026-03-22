@@ -750,10 +750,7 @@ class TwitchBot(commands.Bot):
     youtube.category = "useful"
     youtube.description = "If the streamer has their YouTube linked in the bot, this command will give you this link. " \
     "Alias: !yt"
-
-    @commands.command(name="yt")
-    async def yt(self, ctx):
-        await self.youtube(ctx)
+    youtube.aliases = ["yt"]
 
     @commands.command(name="discord")
     async def discord(self, ctx):
@@ -779,10 +776,7 @@ class TwitchBot(commands.Bot):
     instagram.category = "useful"
     instagram.description = "If the streamer has their Instagram linked in the bot, this command will give you this link. " \
     "Alias: !insta"
-
-    @commands.command(name="insta")
-    async def insta(self, ctx):
-        await self.instagram(ctx)
+    instagram.aliases = ["insta"]
 
     @commands.command(name="twitter")
     async def twitter(self, ctx):
@@ -802,8 +796,13 @@ class TwitchBot(commands.Bot):
 
     # shoutout the user specified
     @commands.command(name="shoutout")
-    async def shoutout(self, ctx, user):
+    async def shoutout(self, ctx, user: str=None):
         invoker = ctx.author.name
+        
+        if not user or not user.encode("ascii", "ignore").decode():
+            await ctx.send(f"@{invoker} You didn't specify a user to shoutout :/")
+            return
+        
         mods_list = self.read_mods()
 
         if invoker not in mods_list:
@@ -816,10 +815,7 @@ class TwitchBot(commands.Bot):
     shoutout.category = "useful"
     shoutout.description = "Use this command and tag someone right behind it like '!shoutout @user' to shout out this user's Twitch channel! (mods only) " \
     "Alias: !so"
-
-    @commands.command(name="so")
-    async def so(self, ctx):
-        await self.shoutout(ctx)
+    shoutout.aliases = ["so"]
 
     @commands.command(name="claim")
     async def claim(self, ctx):
@@ -942,10 +938,7 @@ class TwitchBot(commands.Bot):
     leaderboard.category = "useful"
     leaderboard.description = "'!leaderboard' will show you the top 3 " \
     "bot point earners of this channel. Alias: !lb"
-
-    @commands.command(name="lb")
-    async def lb(self, ctx):
-        await self.leaderboard(ctx)
+    leaderboard.aliases = ["lb"]
 
     ## osu related
     # show now playing
@@ -1379,10 +1372,7 @@ class TwitchBot(commands.Bot):
     rob.category = "fun"
     rob.description = "Steal a small portion of points from another chatter! Example: !rob KurookamiTV " \
     "Alias: !steal"
-
-    @commands.command(name="steal")
-    async def steal(self, ctx):
-        await self.rob(ctx)
+    rob.aliases = ["steal"]
 
 
     ## redeem points
