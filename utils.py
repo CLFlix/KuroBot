@@ -120,12 +120,12 @@ def write_points_data(viewer_points, points_file):
         json.dump(viewer_points, points_output, indent=4)
 
 def get_bonus_claimed(first_time_bonus_file):
-    bonus_claimed = []
+    bonus_claimed = set()
     with open(first_time_bonus_file, 'r', encoding='utf-8') as file:
         lines = file.readlines()
 
     for line in lines:
-        bonus_claimed.append(line.strip().lower())
+        bonus_claimed.add(line.strip())
 
     return bonus_claimed
 
