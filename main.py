@@ -74,7 +74,7 @@ class TwitchBot(commands.Bot):
         self.launch_backend()
         webbrowser.open("http://localhost:7273/initializeBot")
 
-        self.points = get_points_data(POINTS_FILE)
+        self.user_points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
         self.daily_claimed = set()
         self.links = read_socials_links(SOCIALS_FILE)
@@ -202,7 +202,7 @@ class TwitchBot(commands.Bot):
         @app.get("/points")
         def get_points():
             req_points = {}
-            for username, points_amount in self.points.items():
+            for username, points_amount in self.user_points.items():
                 if username != self.nick:
                     req_points[username] = points_amount
             return req_points
@@ -230,8 +230,8 @@ class TwitchBot(commands.Bot):
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
         write_log(LOG_FILE, f"First time bonus data saved")
 
-        self.points[self.nick] = 0
-        write_points_data(self.points, POINTS_FILE)
+        self.user_points[self.nick] = 0
+        write_points_data(self.user_points, POINTS_FILE)
         write_log(LOG_FILE, f"Points data saved")
 
         write_log(LOG_FILE, "Bye! :D")
@@ -258,10 +258,10 @@ class TwitchBot(commands.Bot):
 
     ## helper methods
     def add_points(self, user, amount):
-        if user not in self.points:
-            self.points[user] = amount 
+        if user not in self.user_points:
+            self.user_points[user] = amount 
         else:
-            self.points[user] = round(self.points[user] + amount)
+            self.user_points[user] = round(self.user_points[user] + amount)
 
     # add points as result to rps game
     def add_rps_points(self, user, rps_result):
@@ -273,11 +273,11 @@ class TwitchBot(commands.Bot):
 
     # check points for points redeeming
     def remove_points(self, user, item_cost):
-        if user in self.points:
-            if self.points[user] < item_cost:
-                return False, f"@{user} You don't have enough points! You need {item_cost - self.points[user]} more points!"
+        if user in self.user_points:
+            if self.user_points[user] < item_cost:
+                return False, f"@{user} You don't have enough points! You need {item_cost - self.user_points[user]} more points!"
             else:
-                self.points[user] = round(self.points[user] - item_cost)
+                self.user_points[user] = round(self.user_points[user] - item_cost)
                 return True, f"This costed @{user} {item_cost} points."
         else:
             return False, f"@{user} You don't have enough points! You need {item_cost} more points!"
@@ -616,7 +616,7 @@ class TwitchBot(commands.Bot):
 
     ## events
     async def event_ready(self):
-        self.points[self.nick] = float("inf")
+        self.user_points[self.nick] = float("inf")
         self.check_for_update()
 
         await self.get_mods_list()
@@ -798,7 +798,7 @@ class TwitchBot(commands.Bot):
     @commands.command(name="shoutout")
     async def shoutout(self, ctx, user: str=None):
         invoker = ctx.author.name
-        
+
         if not user or not user.encode("ascii", "ignore").decode():
             await ctx.send(f"@{invoker} You didn't specify a user to shoutout :/")
             return
@@ -882,8 +882,8 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{username} is the points master! Infinite points to them!")
             return
 
-        if username in self.points.keys():
-            amount = self.points[username]
+        if username in self.user_points.keys():
+            amount = self.user_points[username]
             if amount == 1:
                 if username == user:
                     await ctx.send(f"@{user} You currently have 1 point.")
@@ -925,7 +925,7 @@ class TwitchBot(commands.Bot):
 
     @commands.command(name="leaderboard")
     async def leaderboard(self, ctx):
-        ranking = sorted(self.points.items(), key=lambda user: user[1], reverse=True)
+        ranking = sorted(self.user_points.items(), key=lambda user: user[1], reverse=True)
 
         if not ranking:
             await ctx.send(f"@{ctx.author.name} No one is on the leaderboard yet!")
@@ -1329,7 +1329,7 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{invoker} You can't steal from the points master... LUL")
             return
         
-        if username not in self.points.keys():
+        if username not in self.user_points.keys():
             await ctx.send(f"@{invoker} This user doesn't have any points, or just doesn't exist lol")
             return
         
@@ -1357,7 +1357,7 @@ class TwitchBot(commands.Bot):
             return
         
         percentage = random.choice([0.05, 0.06, 0.07])
-        robbed_points = round(self.points[username] * percentage)
+        robbed_points = round(self.user_points[username] * percentage)
         self.remove_points(username, robbed_points)
         self.add_points(invoker, robbed_points)
 
@@ -1538,7 +1538,7 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{user} You didn't specify an amount. Usage: '!gamble <amount>'")
             return
 
-        if amount > self.points[user]:
+        if amount > self.user_points[user]:
             await ctx.send(f"@{user} You cannot afford this gamble!")
             return
 
@@ -1604,7 +1604,7 @@ class TwitchBot(commands.Bot):
             ])
             await ctx.send(message)
         else:
-            self.points[user] += vip_cost
+            self.user_points[user] += vip_cost
             match status_code:
                 case 422:
                     await ctx.send(f"@{user} You already are a VIP!")
