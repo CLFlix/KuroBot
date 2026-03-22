@@ -899,8 +899,8 @@ class TwitchBot(commands.Bot):
                     messages = [
                         f"@{user} You currently have {amount} points.",
                         f"@{user} You have {amount} points in your bank!",
-                        f"{amount} points are currently in @{user}'s possession.",
-                        f"@{user}, you have {amount} points!",
+                        f"{amount} points are currently in @{user} 's possession.",
+                        f"@{user} , you have {amount} points!",
                         f"@{user} there are {amount} points in your wallet!"
                     ]
                     await ctx.send(random.choice(messages))
@@ -909,9 +909,9 @@ class TwitchBot(commands.Bot):
                     messages = [
                         f"@{user} {username} currently has {amount} points.",
                         f"@{user} {username} has {amount} points in your bank!",
-                        f"@{user} {amount} points are currently in {username}'s possession.",
-                        f"@{user}, {username} has {amount} points!",
-                        f"@{user}, there are {amount} points in {username}'s wallet!"
+                        f"@{user} {amount} points are currently in {username} 's possession.",
+                        f"@{user} , {username} has {amount} points!",
+                        f"@{user} , there are {amount} points in {username} 's wallet!"
                     ]
                     await ctx.send(random.choice(messages))
                     return
@@ -992,7 +992,7 @@ class TwitchBot(commands.Bot):
                 await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid} | PP: {pp_str}")
 
         except ConnectionError as e:
-            await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
+            await ctx.send(f"@{self.nick} , @{ctx.author.name} Something went wrong")
             write_log(LOG_FILE, e)
     nppp.category = "osu"
     nppp.description = "This will make the bot reply with the map the streamer " \
@@ -1012,7 +1012,7 @@ class TwitchBot(commands.Bot):
 
             await ctx.send(f"@{ctx.author.name} Global Rank: #{global_rank}, Country Rank: #{country_rank}")
         except ConnectionError as e:
-            await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
+            await ctx.send(f"@{self.nick} , @{ctx.author.name} Something went wrong")
             write_log(LOG_FILE, e)
     rank.category = "osu"
     rank.description = "!rank will show the streamer's rank in chat! You can also provide a username and " \
@@ -1032,7 +1032,7 @@ class TwitchBot(commands.Bot):
 
             await ctx.send(f"@{ctx.author.name} {user} has played osu! for a total of {total_playtime} hours.")
         except ConnectionError as e:
-            await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
+            await ctx.send(f"@{self.nick} , @{ctx.author.name} Something went wrong")
             write_log(LOG_FILE, e)
     playtime.category = "osu"
     playtime.description = "Calling this command will show how much time the streamer " \
@@ -1052,7 +1052,7 @@ class TwitchBot(commands.Bot):
 
             await ctx.send(f"@{ctx.author.name} {user} has played osu! {playcount} times.")
         except ConnectionError as e:
-            await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
+            await ctx.send(f"@{self.nick} , @{ctx.author.name} Something went wrong")
             write_log(LOG_FILE, e)
     playcount.category = "osu"
     playcount.description = "This command will show the streamer's playcount! " \
@@ -1351,10 +1351,10 @@ class TwitchBot(commands.Bot):
         if not robbed:
             messages = [
                 f"@{invoker} You failed to rob {username}...",
-                f"{username} managed to escape {invoker}'s rob!",
+                f"{username} managed to escape {invoker} 's rob!",
                 f"@{invoker} {username} kept all of his points safely secured.",
-                f"{username} held on to his points @{invoker}!",
-                f"All of {username}'s points were kept away from {invoker} this time!"
+                f"{username} held on to his points @{invoker} !",
+                f"All of {username} 's points were kept away from {invoker} this time!"
             ]
             await ctx.send(random.choice(messages))
             return
@@ -1365,9 +1365,9 @@ class TwitchBot(commands.Bot):
         self.add_points(invoker, robbed_points)
 
         messages = [
-            f"@{invoker} You stole {robbed_points} points from {username}.",
-            f"{username} lost {robbed_points} points because of {invoker}!",
-            f"{robbed_points} were stolen from {username} by {invoker}.",
+            f"@{invoker} You stole {robbed_points} points from {username} .",
+            f"{username} lost {robbed_points} points because of {invoker} !",
+            f"{robbed_points} were stolen from {username} by {invoker} .",
             f"Oh no! {invoker} robbed {username} of {robbed_points} points!",
             f"{username} didn't secure their vault enough.. {invoker} stole {robbed_points} points."
         ]
@@ -1500,11 +1500,11 @@ class TwitchBot(commands.Bot):
 
         if can_afford:
             return_message = random.choice([
-                f"How generous! @{gifter} gifted {amount} points to @{receiver}!",
-                f"Look at that! {amount} points have been gifted by @{gifter} to @{receiver}.",
-                f"@{gifter} send {amount} points to @{receiver}'s side! W",
-                f"@{receiver} is now {amount} points richer because of @{gifter}!",
-                f"@{gifter} could miss {amount} points and gave it to @{receiver}!"
+                f"How generous! @{gifter} gifted {amount} points to @{receiver} !",
+                f"Look at that! {amount} points have been gifted by @{gifter} to @{receiver}. ",
+                f"@{gifter} send {amount} points to @{receiver} 's side! W",
+                f"@{receiver} is now {amount} points richer because of @{gifter} !",
+                f"@{gifter} could miss {amount} points and gave it to @{receiver} !"
             ])
             await ctx.send(return_message)
             self.add_points(receiver, amount)
@@ -1599,10 +1599,10 @@ class TwitchBot(commands.Bot):
 
         if succes:
             message = random.choice([
-                f"A VIP slot has been claimed by @{user}! {afford_message}",
-                f"A new VIP spot has been taken by @{user}! bleedPurple",
+                f"A VIP slot has been claimed by @{user} ! {afford_message}",
+                f"A new VIP spot has been taken by @{user} ! bleedPurple",
                 f"@{user} You are now a VIP! {afford_message} CurseLit",
-                f"R.I.P. to @{user}'s 1 million points, but they're now a VIP! 🎉",
+                f"R.I.P. to @{user} 's 1 million points, but they're now a VIP! 🎉",
                 f"One less VIP slot available because @{user} just spent 1 million points on one! Congrats!"
             ])
             await ctx.send(message)
