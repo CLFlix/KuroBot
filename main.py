@@ -814,7 +814,7 @@ class TwitchBot(commands.Bot):
         user = user.lower() if "@" not in user else user[1:].lower()
         link = f"https://www.twitch.tv/{user}"
 
-        await ctx.send(f"Shoutout to {user}! {link}")
+        await ctx.send(f"Shoutout to {user} ! {link}")
     shoutout.category = "useful"
     shoutout.description = "Use this command and tag someone right behind it like '!shoutout @user' to shout out this user's Twitch channel! (mods only) " \
     "Alias: !so"
@@ -860,7 +860,7 @@ class TwitchBot(commands.Bot):
         messages = [
             f"@{user} You just claimed your daily 50 points bonus!",
             f"@{user} You claimed a daily bonus! 50 points to you!",
-            f"A daily bonus of 50 points was just claimed by @{user} !" # space before !, otherwise tag doesn't work properly
+            f"A daily bonus of 50 points was just claimed by @{user} !"
         ]
         choice = random.choice(messages)
         await ctx.send(choice)
