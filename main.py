@@ -1000,7 +1000,7 @@ class TwitchBot(commands.Bot):
 
     # show current rank (global and country)
     @commands.command(name="rank")
-    async def rank(self, ctx, user=osuUsername):
+    async def rank(self, ctx, *, user=osuUsername):
         try:
             found, data = get_profile(user)
 
@@ -1020,7 +1020,7 @@ class TwitchBot(commands.Bot):
 
     # show amount of playtime in hours
     @commands.command(name="playtime")
-    async def playtime(self, ctx, user=osuUsername):
+    async def playtime(self, ctx, *, user=osuUsername):
         try:
             found, data = get_profile(user)
 
@@ -1040,7 +1040,7 @@ class TwitchBot(commands.Bot):
 
     # show playcount
     @commands.command(name="playcount")
-    async def playcount(self, ctx, user=osuUsername):
+    async def playcount(self, ctx, *, user=osuUsername):
         try:
             found, data = get_profile(user)
 
@@ -1060,7 +1060,7 @@ class TwitchBot(commands.Bot):
 
     # get general stats at once
     @commands.command(name="osustats")
-    async def osustats(self, ctx, user=osuUsername):
+    async def osustats(self, ctx, *, user=osuUsername):
         try:
             found, data = get_profile(user)
 
@@ -1087,7 +1087,7 @@ class TwitchBot(commands.Bot):
     "You can also call this for another user: !osustats _Kurookami_"
 
     @commands.command(name="profile")
-    async def profile(self, ctx, user=osuUsername):
+    async def profile(self, ctx, *, user=osuUsername):
         try:
             found, data = get_profile(user)
 
