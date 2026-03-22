@@ -277,7 +277,10 @@ class TwitchBot(commands.Bot):
             if self.user_points[user] < item_cost:
                 return False, f"@{user} You don't have enough points! You need {item_cost - self.user_points[user]} more points!"
             else:
+                if user == self.nick:
+                    self.user_points[self.nick] = item_cost
                 self.user_points[user] = round(self.user_points[user] - item_cost)
+                self.user_points[self.nick] = float('inf')
                 return True, f"This costed @{user} {item_cost} points."
         else:
             return False, f"@{user} You don't have enough points! You need {item_cost} more points!"
