@@ -589,7 +589,7 @@ class TwitchBot(commands.Bot):
     async def title_updater(self):
         current_title = self.get_stream_title()
         self.bot_state["current_title"] = current_title
-        profile = get_profile()[1]
+        profile = get_profile(osuUsername)[1]
         current_rank = profile["pp_rank"]
 
         try:
