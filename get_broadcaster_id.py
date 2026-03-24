@@ -59,7 +59,7 @@ def get_broadcaster_id():
         time.sleep(3)
 
     except requests.exceptions.JSONDecodeError as e:
-        print(f"Something went wrong. Please open an issue so the developer can fix this ASAP: https://github.com/CLFlix/KuroBot/issues\n{e}")
+        print(f"{e}\n\n-----------------------------------------\nSomething went wrong. Please open an issue so the developer can fix this ASAP: https://github.com/CLFlix/KuroBot/issues")
         print("Visible for 30 seconds")
         time.sleep(30)
         return

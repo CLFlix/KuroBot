@@ -25,7 +25,7 @@ import threading
 
 load_dotenv()
 
-CURRENT_VERSION = "v1.0.0"
+CURRENT_VERSION = "v2.0.0"
 
 TOKEN = os.getenv("TOKEN")
 BROADCASTER_ID = int(os.getenv("BROADCASTER_ID"))
@@ -74,8 +74,9 @@ class TwitchBot(commands.Bot):
         self.launch_backend()
         webbrowser.open("http://localhost:7273/initializeBot")
 
-        self.points = get_points_data(POINTS_FILE)
+        self.user_points = get_points_data(POINTS_FILE)
         self.bonus_claimed = get_bonus_claimed(FIRST_TIME_BONUS_FILE)
+        self.daily_claimed = set()
         self.links = read_socials_links(SOCIALS_FILE)
         if self.links != "No socials added":
             self.links_dict = dict(item.split(": ", 1) for item in self.links.split(", "))
@@ -85,6 +86,9 @@ class TwitchBot(commands.Bot):
 
         # manage 5 gambles per stream
         self.gamble_cooldown = {}
+
+        # manage 3 robs per stream
+        self.robbers = {}
 
     async def run_forever(self):
         start_task = asyncio.create_task(self.start())
@@ -191,14 +195,14 @@ class TwitchBot(commands.Bot):
         
         @app.get("/rank")
         def rank():
-            profile = get_profile()
+            profile = get_profile(osuUsername)[1]
             self.bot_state["rank"] = profile["pp_rank"]
             return f"#{self.bot_state["rank"]}"
         
         @app.get("/points")
         def get_points():
             req_points = {}
-            for username, points_amount in self.points.items():
+            for username, points_amount in self.user_points.items():
                 if username != self.nick:
                     req_points[username] = points_amount
             return req_points
@@ -226,8 +230,8 @@ class TwitchBot(commands.Bot):
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
         write_log(LOG_FILE, f"First time bonus data saved")
 
-        self.points[self.nick] = 0
-        write_points_data(self.points, POINTS_FILE)
+        self.user_points[self.nick] = 0
+        write_points_data(self.user_points, POINTS_FILE)
         write_log(LOG_FILE, f"Points data saved")
 
         write_log(LOG_FILE, "Bye! :D")
@@ -235,8 +239,11 @@ class TwitchBot(commands.Bot):
 
     ## export commands
     def export_commands(self):
-        order = ["commands", "followage", "lurk", "socials", "youtube", "yt", "discord", "tiktok", "twitter", "instagram", "insta", "linktree", "shoutout", "so", "points", "claim", "leaderboard", "lb", "poll", "category", "ping", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
-                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "shush", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
+        order = ["commands", "followage", "lurk", "socials", "youtube", "discord", "tiktok", "twitter",
+                 "instagram", "linktree", "shoutout", "points", "claim", "daily", "leaderboard", "poll",
+                 "category", "ping", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
+                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "rob",
+                 "shush", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
 
         written = set()
         with open(r'website/public/static/commands.txt', 'w', encoding='utf-8') as commands_file:
@@ -247,18 +254,14 @@ class TwitchBot(commands.Bot):
                     category = getattr(cmd, "category", "/")
                     commands_file.write(f"{cmd_name} - {description} - {category}\n")
                     written.add(cmd_name)
-
-            for cmd_name in self.commands:
-                if cmd_name not in written:
-                    commands_file.write(cmd_name + "\n")
         print("Commands succesfully exported to 'website/public/static/commands.txt'") # keeping this print since it's only used in dev
 
     ## helper methods
     def add_points(self, user, amount):
-        if user not in self.points:
-            self.points[user] = amount 
+        if user not in self.user_points:
+            self.user_points[user] = amount 
         else:
-            self.points[user] += amount
+            self.user_points[user] = round(self.user_points[user] + amount)
 
     # add points as result to rps game
     def add_rps_points(self, user, rps_result):
@@ -270,11 +273,14 @@ class TwitchBot(commands.Bot):
 
     # check points for points redeeming
     def remove_points(self, user, item_cost):
-        if user in self.points:
-            if self.points[user] < item_cost:
-                return False, f"@{user} You don't have enough points! You need {item_cost - self.points[user]} more points!"
+        if user in self.user_points:
+            if self.user_points[user] < item_cost:
+                return False, f"@{user} You don't have enough points! You need {item_cost - self.user_points[user]} more points!"
             else:
-                self.points[user] -= item_cost
+                if user == self.nick:
+                    self.user_points[self.nick] = item_cost
+                self.user_points[user] = round(self.user_points[user] - item_cost)
+                self.user_points[self.nick] = float('inf')
                 return True, f"This costed @{user} {item_cost} points."
         else:
             return False, f"@{user} You don't have enough points! You need {item_cost} more points!"
@@ -583,7 +589,7 @@ class TwitchBot(commands.Bot):
     async def title_updater(self):
         current_title = self.get_stream_title()
         self.bot_state["current_title"] = current_title
-        profile = get_profile()
+        profile = get_profile(osuUsername)[1]
         current_rank = profile["pp_rank"]
 
         try:
@@ -612,9 +618,8 @@ class TwitchBot(commands.Bot):
 
 
     ## events
-    # print in console when bot is logged in and ready to be used
     async def event_ready(self):
-        self.points[self.nick] = float("inf")
+        self.user_points[self.nick] = float("inf")
         self.check_for_update()
 
         await self.get_mods_list()
@@ -632,6 +637,10 @@ class TwitchBot(commands.Bot):
     async def event_message(self, message):
         # message.author can be None when the bot is checking it's own messages
         if not message.author or message.author.name in ["nightbot", "streamelements", "ronniabot"]:
+            return
+        
+        if message.author.name == self.nick:
+            await self.handle_commands(message)
             return
         
         # prevent points on command invoke
@@ -742,13 +751,9 @@ class TwitchBot(commands.Bot):
         if link:
             await ctx.send(f"@{ctx.author.name} {link}")
     youtube.category = "useful"
-    youtube.description = "If the streamer has their YouTube linked in the bot, this command will give you this link."
-
-    @commands.command(name="yt")
-    async def yt(self, ctx):
-        await self.youtube(ctx)
-    yt.category = "useful"
-    yt.description = "Alias for !youtube"
+    youtube.description = "If the streamer has their YouTube linked in the bot, this command will give you this link. " \
+    "Alias: !yt"
+    youtube.aliases = ["yt"]
 
     @commands.command(name="discord")
     async def discord(self, ctx):
@@ -772,13 +777,9 @@ class TwitchBot(commands.Bot):
         if link:
             await ctx.send(f"@{ctx.author.name} {link}")
     instagram.category = "useful"
-    instagram.description = "If the streamer has their Instagram linked in the bot, this command will give you this link."
-
-    @commands.command(name="insta")
-    async def insta(self, ctx):
-        await self.instagram(ctx)
-    insta.category = "useful"
-    insta.description = "Alias for !instagram"
+    instagram.description = "If the streamer has their Instagram linked in the bot, this command will give you this link. " \
+    "Alias: !insta"
+    instagram.aliases = ["insta"]
 
     @commands.command(name="twitter")
     async def twitter(self, ctx):
@@ -798,25 +799,27 @@ class TwitchBot(commands.Bot):
 
     # shoutout the user specified
     @commands.command(name="shoutout")
-    async def shoutout(self, ctx, user):
+    async def shoutout(self, ctx, user: str=None):
         invoker = ctx.author.name
+
+        if not user or not user.encode("ascii", "ignore").decode():
+            await ctx.send(f"@{invoker} You didn't specify a user to shoutout :/")
+            return
+        
         mods_list = self.read_mods()
 
         if invoker not in mods_list:
             await ctx.send(f"@{invoker} You are not allowed to use this command!")
+            return
 
         user = user.lower() if "@" not in user else user[1:].lower()
         link = f"https://www.twitch.tv/{user}"
 
-        await ctx.send(f"Shoutout to {user}! {link}")
+        await ctx.send(f"Shoutout to {user} ! {link}")
     shoutout.category = "useful"
-    shoutout.description = "Use this command and tag someone right behind it like '!shoutout @user' to shout out this user's Twitch channel! (streamer only)"
-
-    @commands.command(name="so")
-    async def so(self, ctx):
-        await self.shoutout(ctx)
-    so.category = "useful"
-    so.description = "Alias for !shoutout"
+    shoutout.description = "Use this command and tag someone right behind it like '!shoutout @user' to shout out this user's Twitch channel! (mods only) " \
+    "Alias: !so"
+    shoutout.aliases = ["so"]
 
     @commands.command(name="claim")
     async def claim(self, ctx):
@@ -842,23 +845,91 @@ class TwitchBot(commands.Bot):
     claim.description = "After using this command, you will have claimed your " \
     "first 500 bot points. You can obtain more points by chatting in the Twitch chat."
 
+    @commands.command(name="daily")
+    async def daily(self, ctx):
+        user = ctx.author.name
+        if user == self.nick:
+            return
+
+        if user in self.daily_claimed:
+            await ctx.send(f"@{user} You already claimed your daily bonus!")
+            return
+
+        self.add_points(user, 50)
+        self.daily_claimed.add(user)
+
+        messages = [
+            f"@{user} You just claimed your daily 50 points bonus!",
+            f"@{user} You claimed a daily bonus! 50 points to you!",
+            f"A daily bonus of 50 points was just claimed by @{user} !"
+        ]
+        choice = random.choice(messages)
+        await ctx.send(choice)
+    daily.category = "useful"
+    daily.description = "Viewers can chime in on your stream and claim a bonus " \
+    "of 50 points when they invoke this command."
+
     # display points
     @commands.command(name="points")
-    async def points(self, ctx):
+    async def points(self, ctx, username: str=None):
         user = ctx.author.name
-        if user in self.points:
-            if self.points[user] == 1:
-                await ctx.send(f"@{user} You currently have 1 point.")
-            else:
-                await ctx.send(f"@{user} You currently have {self.points[user]} points.")
+
+        if not username or not username.encode("ascii", "ignore").decode():
+            if user == self.nick.lower():
+                await ctx.send(f"@{self.nick} is the points master! Infinite points to them!")
+                return
+            username = user
         else:
-            await ctx.send(f"@{user} You currently have 0 points.")
+            username = username.lstrip("@").lower() if "@" in username else username.lower()
+
+        if username == self.nick.lower():
+            await ctx.send(f"@{username} is the points master! Infinite points to them!")
+            return
+
+        if username in self.user_points.keys():
+            amount = self.user_points[username]
+            if amount == 1:
+                if username == user:
+                    await ctx.send(f"@{user} You currently have 1 point.")
+                    return
+                else:
+                    await ctx.send(f"@{user} {username} currently has 1 point.")
+                    return
+            else:
+                if username == user:
+                    messages = [
+                        f"@{user} You currently have {amount} points.",
+                        f"@{user} You have {amount} points in your bank!",
+                        f"{amount} points are currently in @{user} 's possession.",
+                        f"@{user} , you have {amount} points!",
+                        f"@{user} there are {amount} points in your wallet!"
+                    ]
+                    await ctx.send(random.choice(messages))
+                    return
+                else:
+                    messages = [
+                        f"@{user} {username} currently has {amount} points.",
+                        f"@{user} {username} has {amount} points in your bank!",
+                        f"@{user} {amount} points are currently in {username} 's possession.",
+                        f"@{user} , {username} has {amount} points!",
+                        f"@{user} , there are {amount} points in {username} 's wallet!"
+                    ]
+                    await ctx.send(random.choice(messages))
+                    return
+        else:
+            if username == user:
+                await ctx.send(f"@{user} You currently have 0 points.")
+                return
+            else:
+                await ctx.send(f"@{user} {username} has 0 points.")
+                return
     points.category = "useful"
-    points.description = "This command will show you how many bot points you have in this Twitch channel!"
+    points.description = "This command will show you how many bot points you have in this Twitch channel. " \
+    "You can also check other people's wallet by throwing in their username behind it!"
 
     @commands.command(name="leaderboard")
     async def leaderboard(self, ctx):
-        ranking = sorted(self.points.items(), key=lambda user: user[1], reverse=True)
+        ranking = sorted(self.user_points.items(), key=lambda user: user[1], reverse=True)
 
         if not ranking:
             await ctx.send(f"@{ctx.author.name} No one is on the leaderboard yet!")
@@ -870,14 +941,8 @@ class TwitchBot(commands.Bot):
         await ctx.send(f"@{ctx.author.name} " + ", ".join(top_users))
     leaderboard.category = "useful"
     leaderboard.description = "'!leaderboard' will show you the top 3 " \
-    "bot point earners of this channel."
-
-    # leaderboard alias
-    @commands.command(name="lb")
-    async def lb(self, ctx):
-        await self.leaderboard(ctx)
-    lb.category = "useful"
-    lb.description = "Alias for '!leaderboard'."
+    "bot point earners of this channel. Alias: !lb"
+    leaderboard.aliases = ["lb"]
 
     ## osu related
     # show now playing
@@ -928,7 +993,7 @@ class TwitchBot(commands.Bot):
                 await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid} | PP: {pp_str}")
 
         except ConnectionError as e:
-            await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
+            await ctx.send(f"@{self.nick} , @{ctx.author.name} Something went wrong")
             write_log(LOG_FILE, e)
     nppp.category = "osu"
     nppp.description = "This will make the bot reply with the map the streamer " \
@@ -936,51 +1001,74 @@ class TwitchBot(commands.Bot):
 
     # show current rank (global and country)
     @commands.command(name="rank")
-    async def rank(self, ctx):
+    async def rank(self, ctx, *, user=osuUsername):
         try:
-            data = get_profile()
+            found, data = get_profile(user)
+
+            if not found:
+                await ctx.send(f"@{ctx.author.name} {data}")
+                return
+            
             global_rank, country_rank = data["pp_rank"], data["pp_country_rank"]
 
             await ctx.send(f"@{ctx.author.name} Global Rank: #{global_rank}, Country Rank: #{country_rank}")
         except ConnectionError as e:
-            await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
+            await ctx.send(f"@{self.nick} , @{ctx.author.name} Something went wrong")
             write_log(LOG_FILE, e)
     rank.category = "osu"
-    rank.description = "Make the bot display the streamer's osu! rank in chat!"
+    rank.description = "!rank will show the streamer's rank in chat! You can also provide a username and " \
+    "the bot will search for that user's rank: !rank _Kurookami_"
 
     # show amount of playtime in hours
     @commands.command(name="playtime")
-    async def playtime(self, ctx):
+    async def playtime(self, ctx, *, user=osuUsername):
         try:
-            data = get_profile()
+            found, data = get_profile(user)
+
+            if not found:
+                await ctx.send(f"@{ctx.author.name} {data}")
+                return
+            
             total_playtime = int(data["total_seconds_played"]) // 3600
 
-            await ctx.send(f"@{ctx.author.name} {osuUsername} has played osu! for a total of {total_playtime} hours.")
+            await ctx.send(f"@{ctx.author.name} {user} has played osu! for a total of {total_playtime} hours.")
         except ConnectionError as e:
-            await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
+            await ctx.send(f"@{self.nick} , @{ctx.author.name} Something went wrong")
             write_log(LOG_FILE, e)
     playtime.category = "osu"
-    playtime.description = "Show how much time the streamer wasted playing osu!."
+    playtime.description = "Calling this command will show how much time the streamer " \
+    "has wasted in this game. Adding a username will find that information for that user: !playtime _Kurookami_"
 
     # show playcount
     @commands.command(name="playcount")
-    async def playcount(self, ctx):
+    async def playcount(self, ctx, *, user=osuUsername):
         try:
-            data = get_profile()
+            found, data = get_profile(user)
+
+            if not found:
+                await ctx.send(f"@{ctx.author.name} {data}")
+                return
+
             playcount = data["playcount"]
 
-            await ctx.send(f"@{ctx.author.name} {osuUsername} has played osu! {playcount} times.")
+            await ctx.send(f"@{ctx.author.name} {user} has played osu! {playcount} times.")
         except ConnectionError as e:
-            await ctx.send(f"@{self.nick}, @{ctx.author.name} Something went wrong")
+            await ctx.send(f"@{self.nick} , @{ctx.author.name} Something went wrong")
             write_log(LOG_FILE, e)
     playcount.category = "osu"
-    playcount.description = "This will show the playcount of the streamer."
+    playcount.description = "This command will show the streamer's playcount! " \
+    "You can also find other users' playcount with !playcount _Kurookami_"
 
     # get general stats at once
     @commands.command(name="osustats")
-    async def osustats(self, ctx):
+    async def osustats(self, ctx, *, user=osuUsername):
         try:
-            data = get_profile()
+            found, data = get_profile(user)
+
+            if not found:
+                await ctx.send(f"@{ctx.author.name} {data}")
+                return
+
             global_rank, country_rank, pp, total_playtime, playcount = (
                 data["pp_rank"],
                 data["pp_country_rank"],
@@ -989,27 +1077,33 @@ class TwitchBot(commands.Bot):
                 data["playcount"]
             )
 
-            formatted_message = f"{osuUsername}: #{global_rank}, Country rank: #{country_rank} - pp: {pp} - Playtime: {total_playtime}h - Playcount: {playcount}"
+            formatted_message = f"{user}: #{global_rank}, Country rank: #{country_rank} - pp: {pp} - Playtime: {total_playtime}h - Playcount: {playcount}"
             await ctx.send(f"@{ctx.author.name} {formatted_message}")
             
         except ConnectionError as e:
             await ctx.send(f"@{self.nick} @{ctx.author.name} Something went wrong getting osu! profile.")
             write_log(LOG_FILE, e)
     osustats.category = "osu"
-    osustats.description = "This command is some other commands combined. " \
-    "It will show the rank, country rank, total pp, playtime and playcount of the streamer."
+    osustats.description = "This command is basically rank, playtime and playcount combined. " \
+    "You can also call this for another user: !osustats _Kurookami_"
 
     @commands.command(name="profile")
-    async def profile(self, ctx):
+    async def profile(self, ctx, *, user=osuUsername):
         try:
-            data = get_profile()
+            found, data = get_profile(user)
+
+            if not found:
+                await ctx.send(f"@{ctx.author.name} {data}")
+                return
+            
             user_id = data["user_id"]
             await ctx.send(f"@{ctx.author.name} https://osu.ppy.sh/users/{user_id}")
         except ConnectionError as e:
             await ctx.send(f"@{self.nick} @{ctx.author.name} Something went wrong getting osu! profile.")
             write_log(LOG_FILE, e)
     profile.category = "osu"
-    profile.description = "Show the link to the osu! profile of the streamer!"
+    profile.description = "Show the link to the osu! profile of the streamer! " \
+    "You can also get someone else's profile: !profile _Kurookami_"
 
     # show the chat if you want to accept requests or not (self.rq_message comes from main())
     @commands.command(name="rq")
@@ -1047,7 +1141,7 @@ class TwitchBot(commands.Bot):
                 user = username[1:]
             else:
                 user = username
-            followage_message = f"@{user} has been following {self.nick} for ..."
+            followage_message = f"@{ctx.author.name} @{user} has been following {self.nick} for ..."
         else:
             user = ctx.author.name
             followage_message = f"@{user} You have been following {self.nick} for ..."
@@ -1056,10 +1150,17 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{user} You can't follow yourself, dummy")
             return
 
+        if not await self.user_exists(user):
+            await ctx.send(f"@{ctx.author.name} This user doesn't exist.")
+            return
+
         user_id = self.get_user_id(user)
 
         try:
             followed_at = self.get_follower_data(user_id)
+            if not followed_at:
+                await ctx.send(f"@{ctx.author.name} This user doesn't follow {self.nick}")
+                return
         except ValueError as e:
             write_log(LOG_FILE, e)
             return
@@ -1217,6 +1318,67 @@ class TwitchBot(commands.Bot):
     rps.description = "Play rock, paper, scissors with the bot! If you win, " \
     "you get 3 points. If you tie with the bot, you gain 1 point."
 
+    @commands.command(name="rob")
+    async def rob(self, ctx, username: str=None):
+        invoker = ctx.author.name
+
+        if not username or not username.encode("ascii", "ignore").decode():
+            await ctx.send(f"@{invoker} You didn't specify who you want to rob points from!")
+            return
+
+        if self.nick.lower() == invoker:
+            await ctx.send(f"@{invoker} A bit unfair to steal from your viewers, hm? YouWHY")
+            return
+        elif self.nick.lower() == username:
+            await ctx.send(f"@{invoker} You can't steal from the points master... LUL")
+            return
+        
+        if username not in self.user_points.keys():
+            await ctx.send(f"@{invoker} This user doesn't have any points, or just doesn't exist lol")
+            return
+        
+        if invoker in self.robbers.keys():
+            if len(self.robbers[invoker]) == 3:
+                await ctx.send(f"@{invoker} You've already tried robbing 3 times!")
+                return
+
+        if invoker in self.robbers.keys():
+            self.robbers[invoker].append(username)
+        else:
+            self.robbers[invoker] = [username]
+
+        robbed = random.choice([0, 0, 1])
+
+        if not robbed:
+            messages = [
+                f"@{invoker} You failed to rob {username}...",
+                f"{username} managed to escape {invoker} 's rob!",
+                f"@{invoker} {username} kept all of his points safely secured.",
+                f"{username} held on to his points @{invoker} !",
+                f"All of {username} 's points were kept away from {invoker} this time!"
+            ]
+            await ctx.send(random.choice(messages))
+            return
+        
+        percentage = random.choice([0.05, 0.06, 0.07])
+        robbed_points = round(self.user_points[username] * percentage)
+        self.remove_points(username, robbed_points)
+        self.add_points(invoker, robbed_points)
+
+        messages = [
+            f"@{invoker} You stole {robbed_points} points from {username} .",
+            f"{username} lost {robbed_points} points because of {invoker} !",
+            f"{robbed_points} were stolen from {username} by {invoker} .",
+            f"Oh no! {invoker} robbed {username} of {robbed_points} points!",
+            f"{username} didn't secure their vault enough.. {invoker} stole {robbed_points} points."
+        ]
+        await ctx.send(random.choice(messages))
+    rob.category = "fun"
+    rob.description = "Steal a small portion of points from another chatter! Example: !rob KurookamiTV " \
+    "Alias: !steal"
+    rob.aliases = ["steal"]
+
+
     ## redeem points
     @commands.command(name="shush")
     async def shush(self, ctx):
@@ -1339,11 +1501,11 @@ class TwitchBot(commands.Bot):
 
         if can_afford:
             return_message = random.choice([
-                f"How generous! @{gifter} gifted {amount} points to @{receiver}!",
-                f"Look at that! {amount} points have been gifted by @{gifter} to @{receiver}.",
-                f"@{gifter} send {amount} points to @{receiver}'s side! W",
-                f"@{receiver} is now {amount} points richer because of @{gifter}!",
-                f"@{gifter} could miss {amount} points and gave it to @{receiver}!"
+                f"How generous! @{gifter} gifted {amount} points to @{receiver} !",
+                f"Look at that! {amount} points have been gifted by @{gifter} to @{receiver}. ",
+                f"@{gifter} send {amount} points to @{receiver} 's side! W",
+                f"@{receiver} is now {amount} points richer because of @{gifter} !",
+                f"@{gifter} could miss {amount} points and gave it to @{receiver} !"
             ])
             await ctx.send(return_message)
             self.add_points(receiver, amount)
@@ -1380,7 +1542,7 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{user} You didn't specify an amount. Usage: '!gamble <amount>'")
             return
 
-        if amount > self.points[user]:
+        if amount > self.user_points[user]:
             await ctx.send(f"@{user} You cannot afford this gamble!")
             return
 
@@ -1438,15 +1600,15 @@ class TwitchBot(commands.Bot):
 
         if succes:
             message = random.choice([
-                f"A VIP slot has been claimed by @{user}! {afford_message}",
-                f"A new VIP spot has been taken by @{user}! bleedPurple",
+                f"A VIP slot has been claimed by @{user} ! {afford_message}",
+                f"A new VIP spot has been taken by @{user} ! bleedPurple",
                 f"@{user} You are now a VIP! {afford_message} CurseLit",
-                f"R.I.P. to @{user}'s 1 million points, but they're now a VIP! 🎉",
+                f"R.I.P. to @{user} 's 1 million points, but they're now a VIP! 🎉",
                 f"One less VIP slot available because @{user} just spent 1 million points on one! Congrats!"
             ])
             await ctx.send(message)
         else:
-            self.points[user] += vip_cost
+            self.user_points[user] += vip_cost
             match status_code:
                 case 422:
                     await ctx.send(f"@{user} You already are a VIP!")

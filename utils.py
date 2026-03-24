@@ -4,6 +4,7 @@ import requests
 import os
 import json
 from datetime import datetime as dt
+from datetime import timezone
 from dateutil.relativedelta import relativedelta
 
 load_dotenv()
@@ -26,18 +27,15 @@ def first_time_startup():
         if r'first_time_bonus_claimed.txt' not in os.listdir(r'.'):    
             with open("first_time_bonus_claimed.txt", 'w', encoding='utf-8') as bonus_claimed_file:
                 bonus_claimed_file.write("")
-            print("Created first_time_bonus_claimed.txt")
 
         # create logs folder if it doesn't exist already
         if r'logs' not in os.listdir(r'.'):
             os.system("mkdir logs")
-            print("Created logs folder")
 
         # create file to save users' points if it doesn't exist already
         if r'points.json' not in os.listdir(r'.'):
             with open(r'points.json', 'w', encoding='utf-8') as points_file:
                 json.dump({}, points_file)
-            print("points.json successfully created")
 
         # create file for !socials command if it doesn't exist already
         if r'socials.json' not in os.listdir(r'.'):
@@ -52,9 +50,6 @@ def first_time_startup():
 
             with open(r'socials.json', 'w', encoding='utf-8') as socials_file:
                 json.dump(socials, socials_file, indent=4)
-            print(f"You can now add your social links in socials.json")
-
-        print("-------------------------------")
 
 # load the socials links
 def read_socials_links(socials_file):
@@ -72,17 +67,20 @@ def read_socials_links(socials_file):
     return ", ".join(message_links) if message_links else "No socials added"
 
 # When osuAuth and osuUsername are filled in in the .env file, this method can look up your osu! profile
-def get_profile():
+def get_profile(user):
     profile_url = "https://osu.ppy.sh/api/get_user"
-    params = {"k": API_KEY, "u": osuUsername}
+    params = {"k": API_KEY, "u": user}
 
     try:
         response = requests.get(url=profile_url, params=params)
     except:
         raise ConnectionError("osu! API is not reachable or request failed.")
 
-    data = response.json()[0]
-    return data
+    try:
+        data = response.json()[0]
+        return (True, data)
+    except IndexError:
+        return (False, "User not found")
 
 # When you have StreamCompanion running, the command !np and !nppp will request the map through this method
 # Since this endpoint is only called occasionally through !np, the
@@ -122,12 +120,12 @@ def write_points_data(viewer_points, points_file):
         json.dump(viewer_points, points_output, indent=4)
 
 def get_bonus_claimed(first_time_bonus_file):
-    bonus_claimed = []
+    bonus_claimed = set()
     with open(first_time_bonus_file, 'r', encoding='utf-8') as file:
         lines = file.readlines()
 
     for line in lines:
-        bonus_claimed.append(line.strip().lower())
+        bonus_claimed.add(line.strip())
 
     return bonus_claimed
 
@@ -152,8 +150,8 @@ def edit_stream_title(current_title: str, current_rank):
     return new_title
 
 def calculate_followage_days(followed_at):
-    start = dt.strptime(followed_at, "%Y-%m-%dT%H:%M:%SZ")
-    now = dt.now()
+    start = dt.strptime(followed_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    now = dt.now(timezone.utc)
 
     rd = relativedelta(now, start)
 
@@ -165,6 +163,8 @@ def calculate_followage_days(followed_at):
     if rd.days:
         parts.append(f"{rd.days} day{'s' if rd.days != 1 else ''}")
     if rd.hours:
+        if rd.minutes > 30:
+            rd.hours += 1
         parts.append(f"{rd.hours} hour{'s' if rd.hours != 1 else ''}")
 
-    return " ".join(parts) if parts else ""
+    return " ".join(parts) if parts else "less than an hour"

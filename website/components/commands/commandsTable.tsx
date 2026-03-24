@@ -7,6 +7,12 @@ type Props = {
 };
 
 const CommandsTable: React.FC<Props> = ({ commandsList }: Props) => {
+  commandsList.map((command) => {
+    if (command.description.includes("Alias")) {
+      command.description = command.description.replace("Alias", "\nAlias");
+    }
+  });
+
   return (
     <>
       <div className="flex justify-center mb-5">
@@ -29,7 +35,7 @@ const CommandsTable: React.FC<Props> = ({ commandsList }: Props) => {
                   <td className="p-2 text-center">
                     <code>!{command.name}</code>
                   </td>
-                  <td className="p-2 max-w-[700px] whitespace-normal break-words">
+                  <td className="p-2 max-w-[700px] whitespace-pre-wrap break-words">
                     {command.description}
                   </td>
                 </tr>

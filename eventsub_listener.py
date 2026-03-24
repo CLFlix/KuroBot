@@ -60,7 +60,6 @@ async def eventsub_listener(redemption_handler):
                     # refresh access token for redemption listener, then retry subscription
                     ACCESS_TOKEN = refresh_access_token()
                 except Exception as e:
-                    print(f"Token refresh failed, details in {LOG_FILE}")
                     write_log(LOG_FILE, e)
                     return
 
@@ -72,12 +71,9 @@ async def eventsub_listener(redemption_handler):
                 )
 
                 if not response.ok: # if second try fails, stop trying to create subscription
-                    print(f"Second try to create EventSub Listener failed. Details in {LOG_FILE}")
                     write_log(LOG_FILE, response.text)
                     return
-                
-        print("Listening for redemptions...")
-        
+                        
         # wait for incoming notifications
         try:
             async for message in ws:
@@ -89,9 +85,7 @@ async def eventsub_listener(redemption_handler):
                     await redemption_handler(event)
                 elif msg_type == "revocation":
                     revocation_reason = data["payload"]["status"]
-                    print(f"The redemption subscription has been revoked. Details in {LOG_FILE}")
                     write_log(LOG_FILE, revocation_reason)
                     await redemption_handler(msg_type)
         except Exception as e:
-            print(f"EventSub Listener crashed: details in {LOG_FILE}")
             write_log(LOG_FILE, e)
