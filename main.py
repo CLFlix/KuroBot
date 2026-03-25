@@ -89,6 +89,8 @@ class TwitchBot(commands.Bot):
 
         # manage 3 robs per stream
         self.robbers = {}
+        # only get robbed once per stream
+        self.robbed = set()
 
     async def run_forever(self):
         start_task = asyncio.create_task(self.start())
@@ -1325,6 +1327,12 @@ class TwitchBot(commands.Bot):
         if not username or not username.encode("ascii", "ignore").decode():
             await ctx.send(f"@{invoker} You didn't specify who you want to rob points from!")
             return
+        
+        username = username.lstrip("@") if "@" in username else username
+
+        if username in self.robbed:
+            await ctx.send(f"@{invoker} {username} already has been robbed today!")
+            return
 
         if self.nick.lower() == invoker:
             await ctx.send(f"@{invoker} A bit unfair to steal from your viewers, hm? YouWHY")
@@ -1332,15 +1340,17 @@ class TwitchBot(commands.Bot):
         elif self.nick.lower() == username:
             await ctx.send(f"@{invoker} You can't steal from the points master... LUL")
             return
-        
+        elif username == invoker:
+            await ctx.send(f"@{invoker} what are you doing?? Stealing from yourself? LUL")
+            return
+
         if username not in self.user_points.keys():
             await ctx.send(f"@{invoker} This user doesn't have any points, or just doesn't exist lol")
             return
         
-        if invoker in self.robbers.keys():
-            if len(self.robbers[invoker]) == 3:
-                await ctx.send(f"@{invoker} You've already tried robbing 3 times!")
-                return
+        if invoker in self.robbers.keys() and len(self.robbers[invoker]) == 3:
+            await ctx.send(f"@{invoker} You've already tried robbing 3 times!")
+            return
 
         if invoker in self.robbers.keys():
             self.robbers[invoker].append(username)
@@ -1364,6 +1374,7 @@ class TwitchBot(commands.Bot):
         robbed_points = round(self.user_points[username] * percentage)
         self.remove_points(username, robbed_points)
         self.add_points(invoker, robbed_points)
+        self.robbed.add(username)
 
         messages = [
             f"@{invoker} You stole {robbed_points} points from {username} .",
