@@ -269,9 +269,9 @@ class TwitchBot(commands.Bot):
     def add_rps_points(self, user, rps_result):
         match rps_result:
             case "win":
-                self.add_points(user, 3)
+                self.add_points(user, 15)
             case "tie":
-                self.add_points(user, 1)
+                self.add_points(user, 5)
 
     # check points for points redeeming
     def remove_points(self, user, item_cost):
