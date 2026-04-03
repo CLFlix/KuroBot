@@ -275,14 +275,14 @@ class TwitchBot(commands.Bot):
 
     # check points for points redeeming
     def remove_points(self, user, item_cost):
+        if user == self.nick:
+            return True, f"Infinite points - {item_cost}?? lol"
+
         if user in self.user_points:
             if self.user_points[user] < item_cost:
                 return False, f"@{user} You don't have enough points! You need {item_cost - self.user_points[user]} more points!"
             else:
-                if user == self.nick:
-                    self.user_points[self.nick] = item_cost
                 self.user_points[user] = round(self.user_points[user] - item_cost)
-                self.user_points[self.nick] = float('inf')
                 return True, f"This costed @{user} {item_cost} points."
         else:
             return False, f"@{user} You don't have enough points! You need {item_cost} more points!"
