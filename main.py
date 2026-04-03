@@ -1318,7 +1318,7 @@ class TwitchBot(commands.Bot):
             self.add_rps_points(ctx.author.name, result)
     rps.category = "fun"
     rps.description = "Play rock, paper, scissors with the bot! If you win, " \
-    "you get 3 points. If you tie with the bot, you gain 1 point."
+    "you get 15 points. If you tie with the bot, you gain 5 points."
 
     @commands.command(name="rob")
     async def rob(self, ctx, username: str=None):
