@@ -92,6 +92,9 @@ class TwitchBot(commands.Bot):
         # only get robbed once per stream
         self.robbed = set()
 
+        # initialize self.endwith_redeemed for check
+        self.endwith_redeemed = False
+
     async def run_forever(self):
         start_task = asyncio.create_task(self.start())
         try:
@@ -1428,6 +1431,10 @@ class TwitchBot(commands.Bot):
         user = ctx.author.name
         endwith_cost = 300
 
+        if self.endwith_redeemed:
+            await ctx.send(f"@{user} Endwith already has been redeemed!")
+            return
+
         if map_link == None:
             await ctx.send(f"@{user} Please send the map link or the title of the song you'd like to see the stream end with: '!endwith <link or title>'")
             return
@@ -1435,6 +1442,7 @@ class TwitchBot(commands.Bot):
         can_afford, afford_message = self.remove_points(user, endwith_cost)
 
         if can_afford:
+            self.endwith_redeemed = True
             await ctx.send(f"@{self.nick} You have to end stream with {map_link}! {afford_message}")
         else:
             await ctx.send(afford_message)
