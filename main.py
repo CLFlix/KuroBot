@@ -987,15 +987,17 @@ class TwitchBot(commands.Bot):
             title = map_info["titleRoman"] 
             diffname = map_info["diffName"]
             mods = map_info["mods"]
-            
+            pp_str = f"95%: {map_info['osu_m95PP']:.0f}, 99%: {map_info['osu_m99PP']:.0f}, 100%: {map_info['osu_mSSPP']:.0f}"
+            diff_settings = {"ar": map_info["mAR"], "od": map_info["mOD"], "hp": map_info["mHP"], "cs": map_info["mCS"]}
+
             formatted_mods = format_mods(mods)
 
             if formatted_mods:
-                pp_str = f"95%: {map_info['osu_m95PP']:.0f}, 99%: {map_info['osu_m99PP']:.0f}, 100%: {map_info['osu_mSSPP']:.0f}"
-                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] +{formatted_mods} https://osu.ppy.sh/b/{mapid} | PP: {pp_str}")
+                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] +{formatted_mods} https://osu.ppy.sh/b/{mapid} | {pp_str} | " \
+                               f"AR: {diff_settings['ar']}, OD: {diff_settings['od']}, CS: {diff_settings['cs']}, HP: {diff_settings['hp']}")
             else:
-                pp_str = f"95%: {map_info['osu_95PP']:.0f}, 99%: {map_info['osu_99PP']:.0f}, 100%: {map_info['osu_SSPP']:.0f}"
-                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid} | PP: {pp_str}")
+                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid} | {pp_str} | " \
+                               f"AR: {diff_settings['ar']}, OD: {diff_settings['od']}, CS: {diff_settings['cs']}, HP: {diff_settings['hp']}")
 
         except ConnectionError as e:
             await ctx.send(f"@{self.nick} , @{ctx.author.name} Something went wrong")
