@@ -99,12 +99,10 @@ def get_map():
 
 # receive mods and take away the comma
 def format_mods(mods):
-    formatted_mods = mods
-
-    if formatted_mods == "NM":
+    if mods == "NM":
         formatted_mods = None
-    elif len(formatted_mods) > 2:
-        formatted_mods = formatted_mods.replace(",", "")
+    elif len(mods) > 2:
+        formatted_mods = mods.replace(",", "")
     
     return formatted_mods
 
