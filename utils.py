@@ -101,10 +101,12 @@ def get_map():
 def format_mods(mods):
     if mods == "NM":
         formatted_mods = None
+        return formatted_mods
     elif len(mods) > 2:
         formatted_mods = mods.replace(",", "")
-    
-    return formatted_mods
+        return formatted_mods
+        
+    return mods
 
 # Get the points of every viewer
 def get_points_data(points_file):
