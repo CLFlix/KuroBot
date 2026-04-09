@@ -25,7 +25,7 @@ import threading
 
 load_dotenv()
 
-CURRENT_VERSION = "v2.1.0"
+CURRENT_VERSION = "v2.2.0"
 
 TOKEN = os.getenv("TOKEN")
 BROADCASTER_ID = int(os.getenv("BROADCASTER_ID"))
@@ -91,6 +91,9 @@ class TwitchBot(commands.Bot):
         self.robbers = {}
         # only get robbed once per stream
         self.robbed = set()
+
+        # initialize self.endwith_redeemed for check
+        self.endwith_redeemed = False
 
     async def run_forever(self):
         start_task = asyncio.create_task(self.start())
@@ -269,20 +272,20 @@ class TwitchBot(commands.Bot):
     def add_rps_points(self, user, rps_result):
         match rps_result:
             case "win":
-                self.add_points(user, 3)
+                self.add_points(user, 15)
             case "tie":
-                self.add_points(user, 1)
+                self.add_points(user, 5)
 
     # check points for points redeeming
     def remove_points(self, user, item_cost):
+        if user == self.nick:
+            return True, f"Infinite points - {item_cost}?? lol"
+
         if user in self.user_points:
             if self.user_points[user] < item_cost:
                 return False, f"@{user} You don't have enough points! You need {item_cost - self.user_points[user]} more points!"
             else:
-                if user == self.nick:
-                    self.user_points[self.nick] = item_cost
                 self.user_points[user] = round(self.user_points[user] - item_cost)
-                self.user_points[self.nick] = float('inf')
                 return True, f"This costed @{user} {item_cost} points."
         else:
             return False, f"@{user} You don't have enough points! You need {item_cost} more points!"
@@ -984,15 +987,17 @@ class TwitchBot(commands.Bot):
             title = map_info["titleRoman"] 
             diffname = map_info["diffName"]
             mods = map_info["mods"]
-            
+            pp_str = f"95%: {map_info['osu_m95PP']:.0f}, 99%: {map_info['osu_m99PP']:.0f}, 100%: {map_info['osu_mSSPP']:.0f}"
+            diff_settings = {"ar": map_info["mAR"], "od": map_info["mOD"], "hp": map_info["mHP"], "cs": map_info["mCS"]}
+
             formatted_mods = format_mods(mods)
 
             if formatted_mods:
-                pp_str = f"95%: {map_info['osu_m95PP']:.0f}, 99%: {map_info['osu_m99PP']:.0f}, 100%: {map_info['osu_mSSPP']:.0f}"
-                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] +{formatted_mods} https://osu.ppy.sh/b/{mapid} | PP: {pp_str}")
+                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] +{formatted_mods} https://osu.ppy.sh/b/{mapid} | {pp_str} | " \
+                               f"AR: {diff_settings['ar']}, OD: {diff_settings['od']}, CS: {diff_settings['cs']}, HP: {diff_settings['hp']}")
             else:
-                pp_str = f"95%: {map_info['osu_95PP']:.0f}, 99%: {map_info['osu_99PP']:.0f}, 100%: {map_info['osu_SSPP']:.0f}"
-                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid} | PP: {pp_str}")
+                await ctx.send(f"@{ctx.author.name} Now playing: {artist} - {title} [{diffname}] https://osu.ppy.sh/b/{mapid} | {pp_str} | " \
+                               f"AR: {diff_settings['ar']}, OD: {diff_settings['od']}, CS: {diff_settings['cs']}, HP: {diff_settings['hp']}")
 
         except ConnectionError as e:
             await ctx.send(f"@{self.nick} , @{ctx.author.name} Something went wrong")
@@ -1249,7 +1254,7 @@ class TwitchBot(commands.Bot):
     # replaces all r/l to w and sends it back in chat
     @commands.command(name="owo")
     async def owo(self, ctx, *, message: str = "Type in a message after '!owo' and I will owo-fy it."):
-        owofied_message = message.replace("l", "w").replace("r", "w")
+        owofied_message = message.translate(message.maketrans({"r": "w", "l": "w", "R": "W", "L": "W", "TH": "F", "th": "f"}))
         await ctx.send(f"@{ctx.author.name} {owofied_message}")
     owo.category = "fun"
     owo.description = "This command will return your message after " \
@@ -1318,7 +1323,7 @@ class TwitchBot(commands.Bot):
             self.add_rps_points(ctx.author.name, result)
     rps.category = "fun"
     rps.description = "Play rock, paper, scissors with the bot! If you win, " \
-    "you get 3 points. If you tie with the bot, you gain 1 point."
+    "you get 15 points. If you tie with the bot, you gain 5 points."
 
     @commands.command(name="rob")
     async def rob(self, ctx, username: str=None):
@@ -1428,6 +1433,10 @@ class TwitchBot(commands.Bot):
         user = ctx.author.name
         endwith_cost = 300
 
+        if self.endwith_redeemed:
+            await ctx.send(f"@{user} Endwith already has been redeemed!")
+            return
+
         if map_link == None:
             await ctx.send(f"@{user} Please send the map link or the title of the song you'd like to see the stream end with: '!endwith <link or title>'")
             return
@@ -1435,6 +1444,7 @@ class TwitchBot(commands.Bot):
         can_afford, afford_message = self.remove_points(user, endwith_cost)
 
         if can_afford:
+            self.endwith_redeemed = True
             await ctx.send(f"@{self.nick} You have to end stream with {map_link}! {afford_message}")
         else:
             await ctx.send(afford_message)
