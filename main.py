@@ -1334,7 +1334,7 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{invoker} You didn't specify who you want to rob points from!")
             return
         
-        username = username.lstrip("@") if "@" in username else username
+        username = username.lstrip("@").lower() if "@" in username else username.lower()
 
         if username in self.robbed:
             await ctx.send(f"@{invoker} {username} already has been robbed today!")
