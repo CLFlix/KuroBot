@@ -1363,20 +1363,23 @@ class TwitchBot(commands.Bot):
         else:
             self.robbers[invoker] = [username]
 
-        robbed = random.choice([0, 0, 1])
 
-        if not robbed:
+        steal_chance = 0.33
+
+        if random.random() > steal_chance:
+            fine = round(self.user_points[invoker] * random.uniform(0.02, 0.04))
+            self.remove_points(invoker, fine)
             messages = [
                 f"@{invoker} You failed to rob {username}...",
                 f"{username} managed to escape {invoker} 's rob!",
-                f"@{invoker} {username} kept all of his points safely secured.",
+                f"@{invoker} {username} kept all of their points safely secured.",
                 f"{username} held on to his points @{invoker} !",
                 f"All of {username} 's points were kept away from {invoker} this time!"
             ]
             await ctx.send(random.choice(messages))
             return
         
-        percentage = random.choice([0.05, 0.06, 0.07])
+        percentage = random.uniform(0.03, 0.07)
         robbed_points = round(self.user_points[username] * percentage)
         self.remove_points(username, robbed_points)
         self.add_points(invoker, robbed_points)
@@ -1391,7 +1394,9 @@ class TwitchBot(commands.Bot):
         ]
         await ctx.send(random.choice(messages))
     rob.category = "fun"
-    rob.description = "Steal a small portion of points from another chatter! Example: !rob KurookamiTV " \
+    rob.description = "Steal a small portion of points from another chatter! Watch out, though, " \
+    "there's only a 1/3 chance you will successfully steal. If you don't, you lose points... " \
+    "Example: !rob KurookamiTV " \
     "Alias: !steal"
     rob.aliases = ["steal"]
 
