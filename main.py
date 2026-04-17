@@ -628,7 +628,7 @@ class TwitchBot(commands.Bot):
         self.check_for_update()
 
         await self.get_mods_list()
-        self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
+        # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
 
         while not self.initialized:
             await asyncio.sleep(0.5)
