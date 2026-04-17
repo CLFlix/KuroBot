@@ -628,7 +628,7 @@ class TwitchBot(commands.Bot):
         self.check_for_update()
 
         await self.get_mods_list()
-        # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
+        self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
 
         while not self.initialized:
             await asyncio.sleep(0.5)
@@ -1259,7 +1259,7 @@ class TwitchBot(commands.Bot):
         await ctx.send(f"@{ctx.author.name} {owofied_message}")
     owo.category = "fun"
     owo.description = "This command will return your message after " \
-    "replacing all the l's and r's with w's. This way, 'Hello world' " \
+    "replacing all the l's and r's with w's, and replacing all 'th' with 'f'. This way, 'Hello world' " \
     "becomes 'Hewwo wowwd'."
 
     # return your message in SpOnGeBoB cApItAlIzAtIoN

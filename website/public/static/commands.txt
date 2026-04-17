@@ -27,7 +27,7 @@ osustats - This command is basically rank, playtime and playcount combined. You 
 hydrate - Remind the streamer to drink water! Only enabled when the streamer says they're not an Affiliate / Partner. - fun
 posture - Make the streamer check their posture. Only enabled when the streamer says they're not an Affiliate / Partner. - fun
 stretch - Get the streamer to stretch for a second. Only enabled when the streamer says they're not an Affiliate / Partner. - fun
-owo - This command will return your message after replacing all the l's and r's with w's. This way, 'Hello world' becomes 'Hewwo wowwd'. - fun
+owo - This command will return your message after replacing all the l's and r's with w's, and replacing all 'th' with 'f'. This way, 'Hello world' becomes 'Hewwo wowwd'. - fun
 mock - Hanging in the same style as 'owo', this command will return your message in SpOnGeBoB cApItAlIzAtIoN. - fun
 rps - Play rock, paper, scissors with the bot! If you win, you get 15 points. If you tie with the bot, you gain 5 points. - fun
 roll - If you don't specify the maximum, this command will roll a random number between 1 and 100. By specifying the maximum like 'roll 1000', this will roll any number between 1 and the specified number, in this case 1000. - fun
