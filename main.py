@@ -25,7 +25,7 @@ import threading
 
 load_dotenv()
 
-CURRENT_VERSION = "v2.2.0"
+CURRENT_VERSION = "v2.2.1"
 
 TOKEN = os.getenv("TOKEN")
 BROADCASTER_ID = int(os.getenv("BROADCASTER_ID"))
@@ -1254,11 +1254,12 @@ class TwitchBot(commands.Bot):
     # replaces all r/l to w and sends it back in chat
     @commands.command(name="owo")
     async def owo(self, ctx, *, message: str = "Type in a message after '!owo' and I will owo-fy it."):
-        owofied_message = message.translate(message.maketrans({"r": "w", "l": "w", "R": "W", "L": "W", "TH": "F", "th": "f"}))
+        owofied_message = message.translate(str.maketrans({"r": "w", "l": "w", "R": "W", "L": "W"}))
+        owofied_message = owofied_message.replace("TH", "F").replace("th", "f").replace("Th", "F")
         await ctx.send(f"@{ctx.author.name} {owofied_message}")
     owo.category = "fun"
     owo.description = "This command will return your message after " \
-    "replacing all the l's and r's with w's. This way, 'Hello world' " \
+    "replacing all the l's and r's with w's, and replacing all 'th' with 'f'. This way, 'Hello world' " \
     "becomes 'Hewwo wowwd'."
 
     # return your message in SpOnGeBoB cApItAlIzAtIoN
@@ -1333,7 +1334,7 @@ class TwitchBot(commands.Bot):
             await ctx.send(f"@{invoker} You didn't specify who you want to rob points from!")
             return
         
-        username = username.lstrip("@") if "@" in username else username
+        username = username.lstrip("@").lower() if "@" in username else username.lower()
 
         if username in self.robbed:
             await ctx.send(f"@{invoker} {username} already has been robbed today!")
@@ -1362,20 +1363,23 @@ class TwitchBot(commands.Bot):
         else:
             self.robbers[invoker] = [username]
 
-        robbed = random.choice([0, 0, 1])
 
-        if not robbed:
+        steal_chance = 0.33
+
+        if random.random() > steal_chance:
+            fine = round(self.user_points[invoker] * random.uniform(0.02, 0.04))
+            self.remove_points(invoker, fine)
             messages = [
                 f"@{invoker} You failed to rob {username}...",
                 f"{username} managed to escape {invoker} 's rob!",
-                f"@{invoker} {username} kept all of his points safely secured.",
+                f"@{invoker} {username} kept all of their points safely secured.",
                 f"{username} held on to his points @{invoker} !",
                 f"All of {username} 's points were kept away from {invoker} this time!"
             ]
             await ctx.send(random.choice(messages))
             return
         
-        percentage = random.choice([0.05, 0.06, 0.07])
+        percentage = random.uniform(0.03, 0.07)
         robbed_points = round(self.user_points[username] * percentage)
         self.remove_points(username, robbed_points)
         self.add_points(invoker, robbed_points)
@@ -1390,7 +1394,9 @@ class TwitchBot(commands.Bot):
         ]
         await ctx.send(random.choice(messages))
     rob.category = "fun"
-    rob.description = "Steal a small portion of points from another chatter! Example: !rob KurookamiTV " \
+    rob.description = "Steal a small portion of points from another chatter! Watch out, though, " \
+    "there's only a 1/3 chance you will successfully steal. If you don't, you lose points... " \
+    "Example: !rob KurookamiTV " \
     "Alias: !steal"
     rob.aliases = ["steal"]
 
