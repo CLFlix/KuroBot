@@ -1254,7 +1254,8 @@ class TwitchBot(commands.Bot):
     # replaces all r/l to w and sends it back in chat
     @commands.command(name="owo")
     async def owo(self, ctx, *, message: str = "Type in a message after '!owo' and I will owo-fy it."):
-        owofied_message = message.translate(message.maketrans({"r": "w", "l": "w", "R": "W", "L": "W", "TH": "F", "th": "f"}))
+        owofied_message = message.translate(str.maketrans({"r": "w", "l": "w", "R": "W", "L": "W"}))
+        owofied_message = owofied_message.replace("TH", "F").replace("th", "f").replace("Th", "F")
         await ctx.send(f"@{ctx.author.name} {owofied_message}")
     owo.category = "fun"
     owo.description = "This command will return your message after " \
