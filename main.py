@@ -1369,12 +1369,13 @@ class TwitchBot(commands.Bot):
         if random.random() > steal_chance:
             fine = round(self.user_points[invoker] * random.uniform(0.02, 0.04))
             self.remove_points(invoker, fine)
+            lost_points_message = f"You just lost 1 point!" if fine == 1 else f"You just lost {fine} points!"
             messages = [
-                f"@{invoker} You failed to rob {username}...",
-                f"{username} managed to escape {invoker} 's rob!",
-                f"@{invoker} {username} kept all of their points safely secured.",
-                f"{username} held on to his points @{invoker} !",
-                f"All of {username} 's points were kept away from {invoker} this time!"
+                f"@{invoker} You failed to rob {username}... {lost_points_message}",
+                f"{username} managed to escape {invoker} 's rob! {lost_points_message}",
+                f"@{invoker} {username} kept all of their points safely secured. {lost_points_message}",
+                f"{username} held on to his points @{invoker} {lost_points_message}!",
+                f"All of {username} 's points were kept away from {invoker} this time! {lost_points_message}"
             ]
             await ctx.send(random.choice(messages))
             return
