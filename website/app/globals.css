@@ -143,6 +143,56 @@
   background-image: linear-gradient(to bottom right, #2b2e36, #1a1813);
 }
 
+.commandsTable {
+  & thead {
+    color: white;
+    background-image: linear-gradient(to right, #1f43bd, #3d5881);
+
+    & th {
+      padding: 0.5rem;
+      text-align: center;
+    }
+
+    & th:first-child {
+      width: 16.667%;
+    }
+
+    & th:nth-child(2) {
+      max-width: 200px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  & tbody {
+    & tr {
+      border: 1px solid #333;
+      background-image: linear-gradient(to bottom right, #2b2e36, #1a1813);
+      transition: all;
+      transition-duration: 200ms;
+
+      & td {
+        padding: 0.5rem;
+      }
+
+      & td:first-child {
+        text-align: center;
+      }
+
+      & td:nth-child(2) {
+        max-width: 700px;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+      }
+    }
+
+    & tr:hover {
+      scale: 102%;
+    }
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
