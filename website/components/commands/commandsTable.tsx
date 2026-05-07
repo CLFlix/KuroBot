@@ -7,16 +7,17 @@ type Props = {
 };
 
 const CommandsTable: React.FC<Props> = ({ commandsList }: Props) => {
-  commandsList.map((command) => {
-    if (command.description.includes("Alias")) {
-      command.description = command.description.replace("Alias", "\nAlias");
-    }
-  });
+  const processedCommands = commandsList.map((command) => ({
+    ...command,
+    description: command.description.includes("Alias")
+      ? command.description.replace("Alias", "\nAlias")
+      : command.description,
+  }));
 
   return (
     <>
       <div className="flex justify-center mb-5">
-        {commandsList && (
+        {processedCommands && (
           <table className="commandsTable">
             <thead>
               <tr>
@@ -25,7 +26,7 @@ const CommandsTable: React.FC<Props> = ({ commandsList }: Props) => {
               </tr>
             </thead>
             <tbody>
-              {commandsList.map((command, index) => (
+              {processedCommands.map((command, index) => (
                 <tr key={index}>
                   <td>
                     <code>!{command.name}</code>
