@@ -42,12 +42,41 @@
   scale: 1.1;
 }
 
-.header-gradient {
+.header {
   background-image: linear-gradient(to right, #2a51d4, #204070);
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+
+  @media (max-width: 1023px) {
+    gap: 1.25rem;
+  }
 }
 
-.footer-gradient {
-  background-image: linear-gradient(to bottom right, #1f2937, oklch(20.5% 0 0));
+.footer {
+  position: fixed;
+  bottom: 0;
+  align-items: center;
+  min-width: 100%;
+
+  & nav {
+    background-image: linear-gradient(
+      to bottom right,
+      #1f2937,
+      oklch(20.5% 0 0)
+    );
+    display: flex;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    justify-content: center;
+    gap: 1.75rem;
+
+    @media (max-width: 1023px) {
+      gap: 0.75rem;
+    }
+  }
 }
 
 .text-block-gradient {
