@@ -15,7 +15,7 @@ const Header = () => {
   return (
     <header>
       <nav>
-        <ul className="header-gradient text-white text-3xl max-lg:text-xl flex justify-center gap-6 max-lg:gap-5">
+        <ul className="header">
           {links.map((link) => (
             <li key={link.href} className="hover:scale-103 duration-300">
               <Link
