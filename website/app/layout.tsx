@@ -17,7 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen flex flex-col text-white font-sans">
         <Header />
-        <main className="bg-gradient-to-br from-gray-950 to-neutral-900 flex-grow">
+        <main className="bg-gradient-to-br from-stone-950 to-neutral-900 flex-grow">
           {children}
         </main>
         <Footer />

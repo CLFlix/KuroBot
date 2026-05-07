@@ -20,16 +20,16 @@
 }
 
 .link {
-  color: oklch(70.7% 0.165 254.624);
+  color: #ec817a;
 }
 
 .link:hover {
-  color: oklch(90.5% 0.182 98.111);
+  color: #40e0d0;
   text-decoration: underline;
 }
 
 .big-link {
-  color: oklch(70.7% 0.165 254.624);
+  color: #ec817a;
   display: inline-block;
   transition-property: transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -37,13 +37,13 @@
 }
 
 .big-link:hover {
-  color: oklch(90.5% 0.182 98.111);
+  color: #40e0d0;
   text-decoration: underline;
   scale: 1.1;
 }
 
 .header {
-  background-image: linear-gradient(to right, #2a51d4, #204070);
+  background-image: linear-gradient(to right, #dd362a, #c44c44);
   display: flex;
   justify-content: center;
   gap: 1.5rem;
@@ -82,7 +82,7 @@
 .view-commands-button {
   padding: 0.25rem;
   border-radius: 0.5rem;
-  background-image: linear-gradient(to right, #7c3aed, #6b21a8);
+  background-image: linear-gradient(to right, #7c3aedbe, #6b21a8be);
   transition-duration: 300ms;
   font-weight: bold;
 }
@@ -90,7 +90,7 @@
 .about-button {
   padding: 0.25rem;
   border-radius: 0.5rem;
-  background-image: linear-gradient(to right, #ef4444, #be185d);
+  background-image: linear-gradient(to right, #ef4444be, #be185dbe);
   transition-duration: 300ms;
   font-weight: bold;
 }
@@ -98,7 +98,7 @@
 .discord-button {
   padding: 0.25rem;
   border-radius: 0.5rem;
-  background-image: linear-gradient(to right, #0e7490, #0284c7);
+  background-image: linear-gradient(to right, #0e7490be, #0284c7be);
   transition-duration: 300ms;
   font-weight: bold;
 }
@@ -134,7 +134,7 @@
 .commandsTable {
   & thead {
     color: white;
-    background-image: linear-gradient(to right, #1f43bd, #3d5881);
+    background-image: linear-gradient(to right, #da4c42, #b44c45);
 
     & th {
       padding: 0.5rem;
@@ -156,7 +156,7 @@
   & tbody {
     & tr {
       border: 1px solid #333;
-      background-image: linear-gradient(to bottom right, #2b2e36, #1a1813);
+      background-image: linear-gradient(to bottom right, #2e2322, #1a1613);
       transition: all;
       transition-duration: 200ms;
 
@@ -182,7 +182,7 @@
 }
 
 .additionalFeatureBlock {
-  background-image: linear-gradient(to bottom right, #334155, #111827);
+  background-image: linear-gradient(to bottom right, #99494334, #272727);
   padding: 0.5rem;
   border-radius: 0.5rem;
   border: 1px solid #4b5563;
@@ -195,7 +195,7 @@
 }
 
 .featureOverviewBlock {
-  background-image: linear-gradient(to bottom right, #334155, #111827);
+  background-image: linear-gradient(to bottom right, #99494334, #272727);
   padding: 0.25rem;
   border: 1px solid #374151;
   border-radius: 0.5rem;
