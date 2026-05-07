@@ -135,14 +135,6 @@
   transition-duration: 300ms;
 }
 
-.table-header-gradient {
-  background-image: linear-gradient(to right, #1f43bd, #3d5881);
-}
-
-.table-command-gradient {
-  background-image: linear-gradient(to bottom right, #2b2e36, #1a1813);
-}
-
 .commandsTable {
   & thead {
     color: white;
@@ -191,6 +183,9 @@
       scale: 102%;
     }
   }
+}
+
+.additionalFeatureBlock {
 }
 
 body {
