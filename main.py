@@ -235,6 +235,7 @@ class TwitchBot(commands.Bot):
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
         write_log(LOG_FILE, f"First time bonus data saved")
 
+        self.clear_banned_users()
         self.user_points[self.nick] = 0
         write_points_data(self.user_points, POINTS_FILE)
         write_log(LOG_FILE, f"Points data saved")
@@ -345,6 +346,44 @@ class TwitchBot(commands.Bot):
 
         except requests.exceptions.JSONDecodeError:
             raise RuntimeError("Couldn't get moderators list.")
+        
+    def get_banned_users(self):
+        global ACCESS_TOKEN
+        global request_headers
+
+        uri = "https://api.twitch.tv/helix/moderation/banned"
+        params = {"broadcaster_id": BROADCASTER_ID}
+
+        response = requests.get(uri, headers=request_headers, params=params)
+
+        if response.status_code == 401:
+            try:
+                ACCESS_TOKEN = refresh_access_token()
+                request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
+            except Exception as e:
+                write_log(LOG_FILE, e)
+
+            response = requests.get(uri, headers=request_headers, params=params)
+
+            if response.status_code != 200:
+                write_log(LOG_FILE, response.text)
+                raise ConnectionError("Couldn't get banned users list.")
+
+        try:
+            data: list = response.json()["data"]
+            banned_users = set()
+            for banned_user in data:
+                banned_users.add(banned_user["user_login"])
+            return banned_users
+        except requests.exceptions.JSONDecodeError:
+            write_log(LOG_FILE, "Couldn't decode banned users list response.")
+
+    def clear_banned_users(self):
+        banned_users = self.get_banned_users()
+
+        for user in banned_users:
+            if user in self.user_points.keys():
+                del self.user_points[user]
         
     def read_mods(self):
         with open(r'mods_list.txt', 'r', encoding='utf-8') as mods_list:
