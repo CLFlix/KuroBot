@@ -86,7 +86,7 @@
 .view-commands-button {
   padding: 0.25rem;
   border-radius: 0.5rem;
-  background-image: linear-gradient(to right, #7c3aedbe, #6b21a8be);
+  background-image: linear-gradient(to right, #7c3aed, #6b21a8);
   transition-duration: 300ms;
   font-weight: bold;
 }
@@ -94,7 +94,7 @@
 .about-button {
   padding: 0.25rem;
   border-radius: 0.5rem;
-  background-image: linear-gradient(to right, #ef4444be, #be185dbe);
+  background-image: linear-gradient(to right, #ef4444, #be185d);
   transition-duration: 300ms;
   font-weight: bold;
 }
@@ -102,7 +102,7 @@
 .discord-button {
   padding: 0.25rem;
   border-radius: 0.5rem;
-  background-image: linear-gradient(to right, #0e7490be, #0284c7be);
+  background-image: linear-gradient(to right, #0e7490, #0284c7);
   transition-duration: 300ms;
   font-weight: bold;
 }
@@ -160,7 +160,7 @@
   & tbody {
     & tr {
       border: 1px solid #333;
-      background-image: linear-gradient(to bottom right, #2e2322, #1a1613);
+      background-image: linear-gradient(to bottom right, #2e2b2a, #2c2520cb);
       transition: all;
       transition-duration: 200ms;
 
@@ -186,7 +186,7 @@
 }
 
 .additionalFeatureBlock {
-  background-image: linear-gradient(to bottom right, #99494334, #272727);
+  background-image: linear-gradient(to bottom right, #2e2b2a, #2c2520cb);
   padding: 0.5rem;
   border-radius: 0.5rem;
   border: 1px solid #4b5563;
@@ -199,7 +199,7 @@
 }
 
 .featureOverviewBlock {
-  background-image: linear-gradient(to bottom right, #99494334, #272727);
+  background-image: linear-gradient(to bottom right, #2e2b2a, #2c2520cb);
   padding: 0.25rem;
   border: 1px solid #374151;
   border-radius: 0.5rem;
