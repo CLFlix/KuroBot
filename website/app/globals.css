@@ -130,8 +130,8 @@
   transition-duration: 300ms;
 }
 
-.dashboard-button:hover {
-  scale: 1.03;
+.stop-button:hover {
+  scale: 1.04;
   transition-duration: 300ms;
 }
 
@@ -208,6 +208,45 @@
 
   @media (max-width: 1023px) {
     max-width: 80%;
+  }
+}
+
+.pointsTable,
+.streamTitleTable {
+  & thead {
+    color: white;
+    background-image: linear-gradient(to right, #da4c42, #b44c45);
+
+    & th {
+      padding: 0.5rem;
+      text-align: center;
+    }
+
+    & th:first-child {
+      width: 16.667%;
+    }
+
+    & th:nth-child(2) {
+      max-width: 200px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  & tbody {
+    text-align: center;
+
+    & tr {
+      border: 1px solid #333;
+      background-image: linear-gradient(to bottom right, #2e2b2a, #2c2520cb);
+      transition: all;
+      transition-duration: 200ms;
+
+      & td {
+        padding: 0.5rem;
+      }
+    }
   }
 }
 

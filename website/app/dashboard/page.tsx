@@ -235,19 +235,17 @@ const Dashboard = () => {
           {isRunning && (
             <>
               <h2 className="text-2xl font-bold mt-2">Title Updates</h2>
-              <table className="mt-2 max-w-[90%]">
+              <table className="streamTitleTable mt-1">
                 <thead>
                   <tr className="text-2xl text-center">
-                    <td className="table-header-gradient px-3">osu! Rank</td>
-                    <td className="table-header-gradient px-3">
-                      Current Stream Title
-                    </td>
+                    <td className="px-3">osu! Rank</td>
+                    <td className="px-3">Current Stream Title</td>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="text-center">
-                    <td className="table-command-gradient px-3">{rank}</td>
-                    <td className="table-command-gradient px-3">{title}</td>
+                    <td className="px-3">{rank}</td>
+                    <td className="px-3">{title}</td>
                   </tr>
                 </tbody>
               </table>
@@ -390,22 +388,18 @@ const Dashboard = () => {
             {points && (
               <div>
                 <h2 className="text-xl font-bold mt-2">Top 5 Points Owners:</h2>
-                <table className="mt-3">
+                <table className="pointsTable mt-3">
                   <thead>
                     <tr className="text-center text-2xl">
-                      <td className="table-header-gradient px-3">Username</td>
-                      <td className="table-header-gradient px-3">Amount</td>
+                      <td className="px-3">Username</td>
+                      <td className="px-3">Amount</td>
                     </tr>
                   </thead>
                   <tbody>
                     {top5.map((user, index) => (
                       <tr key={index}>
-                        <td className="px-2 py-1 table-command-gradient">
-                          {user[0]}
-                        </td>
-                        <td className="px-2 py-1 table-command-gradient text-center">
-                          {user[1]}
-                        </td>
+                        <td className="px-2 py-1">{user[0]}</td>
+                        <td className="px-2 py-1 text-center">{user[1]}</td>
                       </tr>
                     ))}
                   </tbody>
