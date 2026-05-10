@@ -1,5 +1,6 @@
 "use client";
 
+import CountDownTimer from "@/components/countDownTimer";
 import { StatusMessage } from "@/types";
 import { useEffect, useState } from "react";
 
@@ -24,6 +25,8 @@ const Dashboard = () => {
   const [updateAvailable, setUpdateAvailable] = useState<UpdateInfo | null>(
     null,
   );
+
+  const baseUrl = "http://localhost:7273";
 
   const getTitleUpdaterStatus = async () => {
     if (!isRunning) return;
@@ -62,7 +65,7 @@ const Dashboard = () => {
   const getTitle = async () => {
     if (!isRunning) return;
 
-    const res = await fetch("/twitchTitle");
+    const res = await fetch(`${baseUrl}/twitchTitle`);
 
     if (!res.ok) {
       setStatusMessages([
@@ -137,7 +140,7 @@ const Dashboard = () => {
   const getPoints = async () => {
     if (!isRunning) return;
 
-    const res = await fetch("/points");
+    const res = await fetch(`${baseUrl}/points`);
 
     if (!res.ok) throw new Error("Could not get points.");
 
@@ -163,7 +166,7 @@ const Dashboard = () => {
   };
 
   const getIsRunning = async () => {
-    await fetch("/isRunning")
+    await fetch(`${baseUrl}/isRunning`)
       .then((data) => {
         data.json().then((hello) => setIsRunning(hello === "hello"));
       })
@@ -231,7 +234,7 @@ const Dashboard = () => {
     <main className="mt-4 mx-4">
       <h1 className="text-3xl font-bold text-center">KuroBot Dashboard</h1>
       <div className="grid grid-cols-3">
-        <div>
+        <div className="flex flex-col">
           {isRunning && (
             <>
               <h2 className="text-2xl font-bold mt-2">Title Updates</h2>
@@ -295,6 +298,8 @@ const Dashboard = () => {
               </div>
             </>
           )}
+
+          <CountDownTimer name="Shush" duration={300} />
         </div>
 
         <div className="flex flex-col text-center">
