@@ -250,6 +250,61 @@
   }
 }
 
+.countDownTimer {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0.5rem;
+
+  & .title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    font-size: x-large;
+    font-weight: bold;
+  }
+
+  & .buttons {
+    display: flex;
+    font-size: large;
+    gap: 16px;
+  }
+
+  & .timerPauseButton,
+  .timerStartButton {
+    background-image: linear-gradient(
+      to bottom right,
+      hsl(220, 75%, 45%),
+      hsl(220, 65%, 40%)
+    );
+    font-weight: bold;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    transition-duration: 300ms;
+  }
+
+  & .timerPauseButton:hover,
+  .timerStartButton:hover {
+    scale: 1.04;
+    transition-duration: 300ms;
+  }
+
+  & .timerIncrease,
+  .timerDecrease {
+    background-image: linear-gradient(
+      to bottom right,
+      hsl(150, 45%, 30%),
+      hsl(150, 45%, 35%)
+    );
+
+    font-weight: bold;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    transition-duration: 300ms;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

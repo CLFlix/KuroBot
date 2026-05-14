@@ -28,6 +28,16 @@ const Dashboard = () => {
 
   const baseUrl = "http://localhost:7273";
 
+  const timers = [
+    { name: "shush", duration: 300 },
+    { name: "memecam", duration: 600 },
+    { name: "zoom", duration: 600 },
+    { name: "invert", duration: 600 },
+  ];
+  const remainder = timers.length % 3;
+  const fullRows = timers.slice(0, timers.length - (remainder || 0));
+  const lastRow = remainder ? timers.slice(-remainder) : [];
+
   const getTitleUpdaterStatus = async () => {
     if (!isRunning) return;
 
@@ -298,8 +308,6 @@ const Dashboard = () => {
               </div>
             </>
           )}
-
-          <CountDownTimer name="Shush" duration={300} />
         </div>
 
         <div className="flex flex-col text-center">
@@ -414,6 +422,25 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+
+      {
+        <div className="mt-4 w-[55%] grid grid-cols-3 content-center mx-auto">
+          {fullRows.map((t) => (
+            <CountDownTimer key={t.name} name={t.name} duration={t.duration} />
+          ))}
+          {lastRow.length > 0 && (
+            <div className="col-span-3 flex justify-center gap-x-30">
+              {lastRow.map((t) => (
+                <CountDownTimer
+                  key={t.name}
+                  name={t.name}
+                  duration={t.duration}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      }
     </main>
   );
 };

@@ -10,14 +10,19 @@ type Props = {
 
 const CountDownTimer: React.FC<Props> = ({ name, duration }: Props) => {
   const [timerName, setTimerName] = useState<string>("");
+  const [timerDuration, setTimerDuration] = useState<number>(1000 * duration);
 
   const { countdown, start, reset, pause, isRunning } = useCountdownTimer({
-    timer: 1000 * duration,
+    timer: timerDuration,
   });
 
   useEffect(() => {
     setTimerName(name);
   }, []);
+
+  useEffect(() => {
+    reset();
+  }, [timerDuration]);
 
   function formatTime(countdownTime: number) {
     const minutes = Math.floor(countdownTime / 1000 / 60);
@@ -26,22 +31,48 @@ const CountDownTimer: React.FC<Props> = ({ name, duration }: Props) => {
     return `${minutes}:${seconds}`;
   }
 
+  function changeDuration(delta: number) {
+    setTimerDuration((prev) => Math.max(0, prev + delta * 1000));
+  }
+
   return (
     <div className="countDownTimer">
-      <h3 className="timerName">{timerName}</h3>
-      <div className="timeLeft">{formatTime(countdown)}</div>
-      <button className="timerResetButton" onClick={reset}>
-        Reset
-      </button>
-      {isRunning ? (
-        <button className="timerPauseButton" onClick={pause}>
-          Pause
+      <div className="title">
+        <h3 className="timerName capitalize">{timerName}</h3>
+        <p className="timeLeft">{formatTime(countdown)}</p>
+      </div>
+      <div className="buttons">
+        <button
+          onClick={() => changeDuration(-duration)}
+          className="timerDecrease"
+        >
+          -{formatTime(duration * 1000)}
         </button>
-      ) : (
-        <button className="timerStartButton" onClick={start}>
-          Start
+        <button
+          className="stop-button"
+          onClick={() => {
+            setTimerDuration(duration * 1000);
+            reset();
+          }}
+        >
+          Reset
         </button>
-      )}
+        {isRunning ? (
+          <button className="timerPauseButton" onClick={pause}>
+            Pause
+          </button>
+        ) : (
+          <button className="timerStartButton" onClick={start}>
+            Start
+          </button>
+        )}
+        <button
+          onClick={() => changeDuration(duration)}
+          className="timerIncrease"
+        >
+          +{formatTime(duration * 1000)}
+        </button>
+      </div>
     </div>
   );
 };
