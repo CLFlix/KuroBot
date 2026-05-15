@@ -26,7 +26,7 @@ const Dashboard = () => {
     null,
   );
 
-  const baseUrl = "http://localhost:7273";
+  // const baseUrl = "http://localhost:7273"; // used for testing
 
   const timers = [
     { name: "shush", duration: 300 },
@@ -75,7 +75,7 @@ const Dashboard = () => {
   const getTitle = async () => {
     if (!isRunning) return;
 
-    const res = await fetch(`${baseUrl}/twitchTitle`);
+    const res = await fetch("/twitchTitle");
 
     if (!res.ok) {
       setStatusMessages([
@@ -150,7 +150,7 @@ const Dashboard = () => {
   const getPoints = async () => {
     if (!isRunning) return;
 
-    const res = await fetch(`${baseUrl}/points`);
+    const res = await fetch("/points");
 
     if (!res.ok) throw new Error("Could not get points.");
 
@@ -176,7 +176,7 @@ const Dashboard = () => {
   };
 
   const getIsRunning = async () => {
-    await fetch(`${baseUrl}/isRunning`)
+    await fetch("/isRunning")
       .then((data) => {
         data.json().then((hello) => setIsRunning(hello === "hello"));
       })
