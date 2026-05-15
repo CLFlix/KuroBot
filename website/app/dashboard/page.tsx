@@ -251,14 +251,14 @@ const Dashboard = () => {
               <table className="streamTitleTable mt-1">
                 <thead>
                   <tr className="text-2xl text-center">
-                    <td className="px-3">osu! Rank</td>
-                    <td className="px-3">Current Stream Title</td>
+                    <td>osu! Rank</td>
+                    <td>Current Stream Title</td>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="text-center">
-                    <td className="px-3">{rank}</td>
-                    <td className="px-3">{title}</td>
+                    <td>{rank}</td>
+                    <td>{title}</td>
                   </tr>
                 </tbody>
               </table>

@@ -211,8 +211,7 @@
   }
 }
 
-.pointsTable,
-.streamTitleTable {
+.pointsTable {
   & thead {
     color: white;
     background-image: linear-gradient(to right, #da4c42, #b44c45);
@@ -220,17 +219,6 @@
     & th {
       padding: 0.5rem;
       text-align: center;
-    }
-
-    & th:first-child {
-      width: 16.667%;
-    }
-
-    & th:nth-child(2) {
-      max-width: 200px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
     }
   }
 
@@ -240,8 +228,6 @@
     & tr {
       border: 1px solid #333;
       background-image: linear-gradient(to bottom right, #2e2b2a, #2c2520cb);
-      transition: all;
-      transition-duration: 200ms;
 
       & td {
         padding: 0.5rem;
@@ -250,6 +236,28 @@
   }
 }
 
+.streamTitleTable {
+  width: 80%;
+  & thead {
+    color: white;
+    background-image: linear-gradient(to right, #da4c42, #b44c45);
+    text-align: center;
+  }
+
+  & tbody {
+    text-align: center;
+
+    & tr {
+      border: 1px solid #333;
+      background-image: linear-gradient(to bottom right, #2e2b2a, #2c2520cb);
+    }
+
+    & td:first-child {
+      font-weight: bold;
+      width: 30%;
+    }
+  }
+}
 .countDownTimer {
   display: inline-flex;
   flex-direction: column;
