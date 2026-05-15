@@ -55,7 +55,7 @@ const initializeBot = () => {
           <form className="text-lg">
             <table className="w-full border-collapse">
               <tbody>
-                <tr className="border-b border-gray-700">
+                <tr className="border-b border-red-800/50">
                   <td className="py-3 pr-6">
                     <label htmlFor="rq_selection">
                       Do you want to take map requests during the stream?
@@ -72,7 +72,7 @@ const initializeBot = () => {
                     </select>
                   </td>
                 </tr>
-                <tr className="border-b border-gray-700">
+                <tr className="border-b border-red-800/50">
                   <td className="py-3 pr-6">
                     <label htmlFor="affiliate_selection">
                       Are you a Twitch Affiliate / Partner?
