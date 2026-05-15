@@ -423,7 +423,7 @@ const Dashboard = () => {
         )}
       </div>
 
-      {
+      {isRunning && (
         <div className="mt-4 w-[55%] grid grid-cols-3 content-center mx-auto">
           {fullRows.map((t) => (
             <CountDownTimer key={t.name} name={t.name} duration={t.duration} />
@@ -440,7 +440,7 @@ const Dashboard = () => {
             </div>
           )}
         </div>
-      }
+      )}
     </main>
   );
 };
