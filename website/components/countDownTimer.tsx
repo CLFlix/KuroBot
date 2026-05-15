@@ -12,6 +12,9 @@ const CountDownTimer: React.FC<Props> = ({ name, duration }: Props) => {
   const [timerName, setTimerName] = useState<string>("");
   const [timerDuration, setTimerDuration] = useState<number>(1000 * duration);
 
+  const bell = new Audio("/static/audio/softBellSound.mp3");
+  bell.volume = 0.3;
+
   const { countdown, start, reset, pause, isRunning } = useCountdownTimer({
     timer: timerDuration,
   });
@@ -33,6 +36,15 @@ const CountDownTimer: React.FC<Props> = ({ name, duration }: Props) => {
 
   function changeDuration(delta: number) {
     setTimerDuration((prev) => Math.max(0, prev + delta * 1000));
+  }
+
+  function playBellSound() {
+    bell.play();
+  }
+
+  // play sound when timer ends
+  if (isRunning && countdown === 0) {
+    playBellSound();
   }
 
   return (
