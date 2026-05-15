@@ -92,7 +92,7 @@ Suggestions for different features are always welcome in https://github.com/CLFl
 
 ### Title Updater
 
-If enabled, the bot will perform a check every 10 minutes on your stream title, looking for a change in osu! rank. If there is a change in rank, the bot will then update your stream title with your current osu! rank, replacing your old rank. This will only work correctly if you have your osu! rank in the title between brackets: [\<rank>]. If you have multiple things between brackets in your title, let your rank be the first, since only the content of the first pair of brackets will be replaced.
+If enabled, the bot will perform a check every 10 minutes on your stream title, looking for a change in osu! rank. If there is a change in rank, the bot will then update your stream title with your current osu! rank, replacing your old rank. If you don't have brackets `[]` in your title, the bot will put your rank in your title as the first thing in there. You want it in a different spot? Just place these `[]` in the position you want your rank in your title!
 
 ## For developers
 
