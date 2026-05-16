@@ -28,7 +28,7 @@ function Home() {
           </span>
         </div>
         <div className="flex max-xl:flex-col gap-10 justify-center items-center mt-4">
-          <div className="text-block-gradient rounded-lg p-1 text-center border border-gray-700 max-w-[14%] max-lg:max-w-[80%]">
+          <div className="featureOverviewBlock">
             <h1 className="text-2xl font-bold">Points System</h1>
             <p className="text-xl">
               Viewers can earn points by sending messages in chat! Points are
@@ -36,7 +36,7 @@ function Home() {
               protection!
             </p>
           </div>
-          <div className="text-block-gradient rounded-lg p-1 text-center border border-gray-700 max-w-[14%] max-lg:max-w-[80%]">
+          <div className="featureOverviewBlock">
             <h1 className="text-2xl font-bold">osu! Commands</h1>
             <p className="text-xl">
               Your typical osu! commands are also included! Well-known ones like{" "}
@@ -45,7 +45,7 @@ function Home() {
               come)!
             </p>
           </div>
-          <div className="text-block-gradient rounded-lg p-1 text-center border border-gray-700 max-w-[14%] max-lg:max-w-[80%]">
+          <div className="featureOverviewBlock">
             <h1 className="text-2xl font-bold">Rewards</h1>
             <p className="text-xl">
               Viewers can claim rewards by spending their points to make the
@@ -53,7 +53,7 @@ function Home() {
               silly effect over their camera!
             </p>
           </div>
-          <div className="text-block-gradient rounded-lg p-1 text-center border border-gray-700 max-w-[14%] max-lg:max-w-[80%]">
+          <div className="featureOverviewBlock">
             <h1 className="text-2xl font-bold">Affiliates / Partners</h1>
             <p className="text-xl">
               If you're a Twitch Affiliate or Partner, you can use this bot to

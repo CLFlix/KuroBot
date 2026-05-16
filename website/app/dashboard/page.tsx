@@ -1,5 +1,6 @@
 "use client";
 
+import CountDownTimer from "@/components/countDownTimer";
 import { StatusMessage } from "@/types";
 import { useEffect, useState } from "react";
 
@@ -24,6 +25,18 @@ const Dashboard = () => {
   const [updateAvailable, setUpdateAvailable] = useState<UpdateInfo | null>(
     null,
   );
+
+  // const baseUrl = "http://localhost:7273"; // used for testing
+
+  const timers = [
+    { name: "shush", duration: 300 },
+    { name: "memecam", duration: 600 },
+    { name: "zoom", duration: 600 },
+    { name: "invert", duration: 600 },
+  ];
+  const remainder = timers.length % 3;
+  const fullRows = timers.slice(0, timers.length - (remainder || 0));
+  const lastRow = remainder ? timers.slice(-remainder) : [];
 
   const getTitleUpdaterStatus = async () => {
     if (!isRunning) return;
@@ -231,23 +244,21 @@ const Dashboard = () => {
     <main className="mt-4 mx-4">
       <h1 className="text-3xl font-bold text-center">KuroBot Dashboard</h1>
       <div className="grid grid-cols-3">
-        <div>
+        <div className="flex flex-col">
           {isRunning && (
             <>
               <h2 className="text-2xl font-bold mt-2">Title Updates</h2>
-              <table className="mt-2 max-w-[90%]">
+              <table className="streamTitleTable mt-1">
                 <thead>
                   <tr className="text-2xl text-center">
-                    <td className="table-header-gradient px-3">osu! Rank</td>
-                    <td className="table-header-gradient px-3">
-                      Current Stream Title
-                    </td>
+                    <td>osu! Rank</td>
+                    <td>Current Stream Title</td>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="text-center">
-                    <td className="table-command-gradient px-3">{rank}</td>
-                    <td className="table-command-gradient px-3">{title}</td>
+                    <td>{rank}</td>
+                    <td>{title}</td>
                   </tr>
                 </tbody>
               </table>
@@ -390,22 +401,18 @@ const Dashboard = () => {
             {points && (
               <div>
                 <h2 className="text-xl font-bold mt-2">Top 5 Points Owners:</h2>
-                <table className="mt-3">
+                <table className="pointsTable mt-3">
                   <thead>
                     <tr className="text-center text-2xl">
-                      <td className="table-header-gradient px-3">Username</td>
-                      <td className="table-header-gradient px-3">Amount</td>
+                      <td className="px-3">Username</td>
+                      <td className="px-3">Amount</td>
                     </tr>
                   </thead>
                   <tbody>
                     {top5.map((user, index) => (
                       <tr key={index}>
-                        <td className="px-2 py-1 table-command-gradient">
-                          {user[0]}
-                        </td>
-                        <td className="px-2 py-1 table-command-gradient text-center">
-                          {user[1]}
-                        </td>
+                        <td className="px-2 py-1">{user[0]}</td>
+                        <td className="px-2 py-1 text-center">{user[1]}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -415,6 +422,25 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+
+      {isRunning && (
+        <div className="mt-4 w-[55%] grid grid-cols-3 content-center mx-auto">
+          {fullRows.map((t) => (
+            <CountDownTimer key={t.name} name={t.name} duration={t.duration} />
+          ))}
+          {lastRow.length > 0 && (
+            <div className="col-span-3 flex justify-center gap-x-30">
+              {lastRow.map((t) => (
+                <CountDownTimer
+                  key={t.name}
+                  name={t.name}
+                  duration={t.duration}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </main>
   );
 };

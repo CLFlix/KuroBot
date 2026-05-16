@@ -25,7 +25,7 @@ import threading
 
 load_dotenv()
 
-CURRENT_VERSION = "v2.2.1"
+CURRENT_VERSION = "v2.3.0"
 
 TOKEN = os.getenv("TOKEN")
 BROADCASTER_ID = int(os.getenv("BROADCASTER_ID"))
@@ -235,6 +235,7 @@ class TwitchBot(commands.Bot):
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
         write_log(LOG_FILE, f"First time bonus data saved")
 
+        self.clear_banned_users()
         self.user_points[self.nick] = 0
         write_points_data(self.user_points, POINTS_FILE)
         write_log(LOG_FILE, f"Points data saved")
@@ -345,6 +346,44 @@ class TwitchBot(commands.Bot):
 
         except requests.exceptions.JSONDecodeError:
             raise RuntimeError("Couldn't get moderators list.")
+        
+    def get_banned_users(self):
+        global ACCESS_TOKEN
+        global request_headers
+
+        uri = "https://api.twitch.tv/helix/moderation/banned"
+        params = {"broadcaster_id": BROADCASTER_ID}
+
+        response = requests.get(uri, headers=request_headers, params=params)
+
+        if response.status_code == 401:
+            try:
+                ACCESS_TOKEN = refresh_access_token()
+                request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
+            except Exception as e:
+                write_log(LOG_FILE, e)
+
+            response = requests.get(uri, headers=request_headers, params=params)
+
+            if response.status_code != 200:
+                write_log(LOG_FILE, response.text)
+                raise ConnectionError("Couldn't get banned users list.")
+
+        try:
+            data: list = response.json()["data"]
+            banned_users = set()
+            for banned_user in data:
+                banned_users.add(banned_user["user_login"])
+            return banned_users
+        except requests.exceptions.JSONDecodeError:
+            write_log(LOG_FILE, "Couldn't decode banned users list response.")
+
+    def clear_banned_users(self):
+        banned_users = self.get_banned_users()
+
+        for user in banned_users:
+            if user in self.user_points.keys():
+                del self.user_points[user]
         
     def read_mods(self):
         with open(r'mods_list.txt', 'r', encoding='utf-8') as mods_list:
@@ -1369,12 +1408,13 @@ class TwitchBot(commands.Bot):
         if random.random() > steal_chance:
             fine = round(self.user_points[invoker] * random.uniform(0.02, 0.04))
             self.remove_points(invoker, fine)
+            lost_points_message = f"You just lost 1 point!" if fine == 1 else f"You just lost {fine} points!"
             messages = [
-                f"@{invoker} You failed to rob {username}...",
-                f"{username} managed to escape {invoker} 's rob!",
-                f"@{invoker} {username} kept all of their points safely secured.",
-                f"{username} held on to his points @{invoker} !",
-                f"All of {username} 's points were kept away from {invoker} this time!"
+                f"@{invoker} You failed to rob {username}... {lost_points_message}",
+                f"{username} managed to escape {invoker} 's rob! {lost_points_message}",
+                f"@{invoker} {username} kept all of their points safely secured. {lost_points_message}",
+                f"{username} held on to his points @{invoker} {lost_points_message}!",
+                f"All of {username} 's points were kept away from {invoker} this time! {lost_points_message}"
             ]
             await ctx.send(random.choice(messages))
             return

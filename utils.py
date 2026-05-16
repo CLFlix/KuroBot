@@ -139,7 +139,9 @@ def edit_stream_title(current_title: str, current_rank):
     close_bracket_index = current_title.find("]")
 
     if open_bracket_index == -1 or close_bracket_index == -1:
-        raise SyntaxError("Title malformed, there is no rank between brackets - [] - in the title.")
+        new_title_rank = f"[#{current_rank}]"
+        new_title = f"{new_title_rank} {current_title}"
+        return new_title
 
     if current_rank in current_title[open_bracket_index + 1 : close_bracket_index]:
         raise ValueError("Didn't update title with the same rank, avoided crash.")

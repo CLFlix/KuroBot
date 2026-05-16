@@ -20,16 +20,16 @@
 }
 
 .link {
-  color: oklch(70.7% 0.165 254.624);
+  color: #ec817a;
 }
 
 .link:hover {
-  color: oklch(90.5% 0.182 98.111);
+  color: #40e0d0;
   text-decoration: underline;
 }
 
 .big-link {
-  color: oklch(70.7% 0.165 254.624);
+  color: #ec817a;
   display: inline-block;
   transition-property: transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -37,21 +37,50 @@
 }
 
 .big-link:hover {
-  color: oklch(90.5% 0.182 98.111);
+  color: #40e0d0;
   text-decoration: underline;
   scale: 1.1;
 }
 
-.header-gradient {
-  background-image: linear-gradient(to right, #2a51d4, #204070);
+.header {
+  background-image: linear-gradient(to right, #dd362a, #c44c44);
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+
+  @media (max-width: 1023px) {
+    gap: 1.25rem;
+  }
 }
 
-.footer-gradient {
-  background-image: linear-gradient(to bottom right, #1f2937, oklch(20.5% 0 0));
-}
+.footer {
+  position: fixed;
+  bottom: 0;
+  align-items: center;
+  min-width: 100%;
 
-.text-block-gradient {
-  background-image: linear-gradient(to bottom right, #334155, #111827);
+  @media (max-width: 1023px) {
+    position: relative;
+  }
+
+  & nav {
+    background-image: linear-gradient(
+      to bottom right,
+      #1f2937,
+      oklch(20.5% 0 0)
+    );
+    display: flex;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    justify-content: center;
+    gap: 1.75rem;
+
+    @media (max-width: 1023px) {
+      gap: 0.75rem;
+    }
+  }
 }
 
 .view-commands-button {
@@ -101,17 +130,187 @@
   transition-duration: 300ms;
 }
 
-.dashboard-button:hover {
-  scale: 1.03;
+.stop-button:hover {
+  scale: 1.04;
   transition-duration: 300ms;
 }
 
-.table-header-gradient {
-  background-image: linear-gradient(to right, #1f43bd, #3d5881);
+.commandsTable {
+  & thead {
+    color: white;
+    background-image: linear-gradient(to right, #da4c42, #b44c45);
+
+    & th {
+      padding: 0.5rem;
+      text-align: center;
+    }
+
+    & th:first-child {
+      width: 16.667%;
+    }
+
+    & th:nth-child(2) {
+      max-width: 200px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  & tbody {
+    & tr {
+      border: 1px solid #333;
+      background-image: linear-gradient(to bottom right, #2e2b2a, #2c2520cb);
+      transition: all;
+      transition-duration: 200ms;
+
+      & td {
+        padding: 0.5rem;
+      }
+
+      & td:first-child {
+        text-align: center;
+      }
+
+      & td:nth-child(2) {
+        max-width: 700px;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+      }
+    }
+
+    & tr:hover {
+      scale: 102%;
+    }
+  }
 }
 
-.table-command-gradient {
-  background-image: linear-gradient(to bottom right, #2b2e36, #1a1813);
+.additionalFeatureBlock {
+  background-image: linear-gradient(to bottom right, #2e2b2a, #2c2520cb);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #4b5563;
+  text-align: center;
+  max-width: 23%;
+
+  @media (max-width: 1023px) {
+    max-width: 100%;
+  }
+}
+
+.featureOverviewBlock {
+  background-image: linear-gradient(to bottom right, #2e2b2a, #2c2520cb);
+  padding: 0.25rem;
+  border: 1px solid #374151;
+  border-radius: 0.5rem;
+  text-align: center;
+  max-width: 14%;
+
+  @media (max-width: 1023px) {
+    max-width: 80%;
+  }
+}
+
+.pointsTable {
+  & thead {
+    color: white;
+    background-image: linear-gradient(to right, #da4c42, #b44c45);
+
+    & th {
+      padding: 0.5rem;
+      text-align: center;
+    }
+  }
+
+  & tbody {
+    text-align: center;
+
+    & tr {
+      border: 1px solid #333;
+      background-image: linear-gradient(to bottom right, #2e2b2a, #2c2520cb);
+
+      & td {
+        padding: 0.5rem;
+      }
+    }
+  }
+}
+
+.streamTitleTable {
+  width: 80%;
+  & thead {
+    color: white;
+    background-image: linear-gradient(to right, #da4c42, #b44c45);
+    text-align: center;
+  }
+
+  & tbody {
+    text-align: center;
+
+    & tr {
+      border: 1px solid #333;
+      background-image: linear-gradient(to bottom right, #2e2b2a, #2c2520cb);
+    }
+
+    & td:first-child {
+      font-weight: bold;
+      width: 30%;
+    }
+  }
+}
+.countDownTimer {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0.5rem;
+
+  & .title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    font-size: x-large;
+    font-weight: bold;
+  }
+
+  & .buttons {
+    display: flex;
+    font-size: large;
+    gap: 16px;
+  }
+
+  & .timerPauseButton,
+  .timerStartButton {
+    background-image: linear-gradient(
+      to bottom right,
+      hsl(220, 75%, 45%),
+      hsl(220, 65%, 40%)
+    );
+    font-weight: bold;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    transition-duration: 300ms;
+  }
+
+  & .timerPauseButton:hover,
+  .timerStartButton:hover {
+    scale: 1.04;
+    transition-duration: 300ms;
+  }
+
+  & .timerIncrease,
+  .timerDecrease {
+    background-image: linear-gradient(
+      to bottom right,
+      hsl(150, 45%, 30%),
+      hsl(150, 45%, 35%)
+    );
+
+    font-weight: bold;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    transition-duration: 300ms;
+  }
 }
 
 body {
