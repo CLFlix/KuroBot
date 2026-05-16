@@ -12,8 +12,8 @@ const CountDownTimer: React.FC<Props> = ({ name, duration }: Props) => {
   const [timerName, setTimerName] = useState<string>("");
   const [timerDuration, setTimerDuration] = useState<number>(1000 * duration);
 
-  const bell = new Audio("/KuroBot/static/audio/softBellSound.mp3");
-  bell.volume = 0.3;
+  const alarm = new Audio("/KuroBot/static/audio/softAlarmSound.mp3");
+  alarm.volume = 0.4;
 
   const { countdown, start, reset, pause, isRunning } = useCountdownTimer({
     timer: timerDuration,
@@ -38,13 +38,13 @@ const CountDownTimer: React.FC<Props> = ({ name, duration }: Props) => {
     setTimerDuration((prev) => Math.max(0, prev + delta * 1000));
   }
 
-  function playBellSound() {
-    bell.play();
+  function playAlarmSound() {
+    alarm.play();
   }
 
   // play sound when timer ends
   if (isRunning && countdown === 0) {
-    playBellSound();
+    playAlarmSound();
   }
 
   return (
