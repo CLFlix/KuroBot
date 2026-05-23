@@ -1637,9 +1637,10 @@ class TwitchBot(commands.Bot):
                 case 0:
                     self.add_points(user, amount)
                     win_message = f"@{user} You didn't win, you didn't lose.. You got your {amount} points back."
-                case _: 
-                    self.add_points(user, round(amount * multiplier))
-                    win_message = f"@{user} Congrats, you won {round(amount * (multiplier - 1))} points!"
+                case _:
+                    won_points = round(amount * multiplier) if amount * multiplier != 0 else 1
+                    self.add_points(user, won_points)
+                    win_message = f"@{user} Congrats, you won {won_points} point{"" if won_points == 1 else "'s"}!"
 
             await ctx.send(win_message)
             return
