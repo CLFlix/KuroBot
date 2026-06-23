@@ -1,7 +1,7 @@
 import os
 import requests
 
-from refresh_access_token import refresh_access_token
+from utils.refresh_access_token import refresh_access_token
 from utils.utils import write_log
 
 CLIENT_ID = os.getenv("CLIENT_ID")
