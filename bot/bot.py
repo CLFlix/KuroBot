@@ -1,6 +1,6 @@
-from utils.utils import *
-from eventsub_listener import eventsub_listener
-from utils.twitch_api import TwitchAPI
+from bot.utils.utils import *
+from bot.utils.eventsub_listener import eventsub_listener
+from bot.utils.twitch_api import TwitchAPI
 
 from twitchio.ext import commands
 from packaging import version
@@ -92,10 +92,10 @@ class KuroBot(commands.Bot):
         self._load_cogs()
 
     def _load_cogs(self):
-        from commands.useful import UsefulCommands
-        from commands.osu import OsuCommands
-        from commands.fun import FunCommands
-        from commands.redeem import RedeemCommands
+        from bot.commands.useful import UsefulCommands
+        from bot.commands.osu import OsuCommands
+        from bot.commands.fun import FunCommands
+        from bot.commands.redeem import RedeemCommands
 
         self.add_cog(UsefulCommands(self))
         self.add_cog(OsuCommands(self))
@@ -142,7 +142,7 @@ class KuroBot(commands.Bot):
         
         app = FastAPI()
 
-        BASE_DIR = Path(__file__).resolve().parent
+        BASE_DIR = Path(__file__).resolve().parent.parent
         STATIC_DIR = BASE_DIR / "website" / "out"
 
         app.add_middleware(
@@ -301,7 +301,7 @@ class KuroBot(commands.Bot):
     async def event_ready(self):
         self.user_points[self.nick] = float("inf")
         self.check_for_update()
-        await self.get_mods_list()
+        self.get_mods_list()
         # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
 
         while not self.initialized:
@@ -379,6 +379,12 @@ class KuroBot(commands.Bot):
 
     def get_user_id(self, user):
         return self.api.get_user_id(user)
+    
+    def get_mods_list(self):
+        return self.api.get_mods_list(self.nick)
+
+    def get_banned_users(self):
+        return self.api.get_banned_users()
 
     def get_follower_data(self, user_id):
         return self.api.get_follower_data(user_id)

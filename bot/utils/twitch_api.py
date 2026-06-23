@@ -1,8 +1,8 @@
 import os
 import requests
 
-from utils.refresh_access_token import refresh_access_token
-from utils.utils import write_log
+from bot.utils.refresh_access_token import refresh_access_token
+from bot.utils.utils import write_log
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 BROADCASTER_ID = os.getenv("BROADCASTER_ID")
