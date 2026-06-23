@@ -1,6 +1,6 @@
 import asyncio
 from bot import KuroBot
-from utils import write_log
+from utils.utils import write_log
 from bot import LOG_FILE
 
 async def main():

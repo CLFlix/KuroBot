@@ -1,4 +1,4 @@
-from utils import *
+from utils.utils import *
 from eventsub_listener import eventsub_listener
 from utils.twitch_api import TwitchAPI
 

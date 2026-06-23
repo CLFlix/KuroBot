@@ -1,7 +1,7 @@
 import random
 
 from twitchio.ext import commands
-from utils import write_log, calculate_followage_days
+from utils.utils import write_log, calculate_followage_days
 
 class UsefulCommands(commands.Cog):
     def __init__(self, bot: commands.Bot):

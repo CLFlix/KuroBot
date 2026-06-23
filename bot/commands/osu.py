@@ -2,7 +2,7 @@ import random
 import os
 
 from twitchio.ext import commands
-from utils import get_map, get_profile, format_mods, write_log
+from utils.utils import get_map, get_profile, format_mods, write_log
 
 osuUsername = os.getenv("osuUsername")
 

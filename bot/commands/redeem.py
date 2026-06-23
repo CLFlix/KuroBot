@@ -1,7 +1,7 @@
 import random
 
 from twitchio.ext import commands
-from utils import write_log
+from utils.utils import write_log
 
 class RedeemCommands(commands.Cog):
     def __init__(self, bot: commands.Bot):

@@ -6,7 +6,7 @@ from datetime import datetime as dt
 
 from dotenv import load_dotenv
 from refresh_access_token import refresh_access_token
-from utils import write_log
+from utils.utils import write_log
 
 load_dotenv()
 
