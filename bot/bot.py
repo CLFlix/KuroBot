@@ -1,6 +1,6 @@
 from utils import *
-from refresh_access_token import refresh_access_token
 from eventsub_listener import eventsub_listener
+from utils.twitch_api import TwitchAPI
 
 from twitchio.ext import commands
 from packaging import version
@@ -40,12 +40,6 @@ SOCIALS_FILE = r'socials.json'
 date_format = "%Y-%m-%d_%H-%M-%S"
 LOG_FILE = f'logs/{dt.now().strftime(date_format)}.txt'
 
-request_headers = {
-    "Authorization": f"Bearer {ACCESS_TOKEN}",
-    "Client-Id": CLIENT_ID,
-    "Content-Type": "application/json"
-}
-
 shutdown_event = asyncio.Event()
 
 class KuroBot(commands.Bot):
@@ -62,6 +56,8 @@ class KuroBot(commands.Bot):
 
         if getattr(sys, 'frozen', False):
             sys.stderr = open(LOG_FILE, 'w')
+
+        self.api = TwitchAPI(ACCESS_TOKEN, LOG_FILE)
 
         self.initialized = False
         self.map_requests = False
@@ -365,70 +361,6 @@ class KuroBot(commands.Bot):
         except:
             pass
 
-    async def get_mods_list(self):
-        global ACCESS_TOKEN, request_headers
-
-        uri = "https://api.twitch.tv/helix/moderation/moderators"
-        params = {"broadcaster_id": BROADCASTER_ID}
-
-
-        response = requests.get(uri, headers=request_headers, params=params)
-
-        if response.status_code == 401:
-            try:
-                ACCESS_TOKEN = refresh_access_token()
-                request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
-            except Exception as e:
-                write_log(LOG_FILE, e)
-
-            response = requests.get(uri, headers=request_headers, params=params)
-
-            if response.status_code != 200:
-                write_log(LOG_FILE, response.text)
-                raise ConnectionError(f"Error getting mods list. More detailed error in {LOG_FILE}")
-
-        try:
-            data = response.json()["data"]
-            mods_list = [mod["user_login"] for mod in data]
-
-            with open("mods_list.txt", 'w', encoding='utf-8') as mods_file:
-                for mod in mods_list:
-                    mods_file.write(f"{mod}\n")
-                mods_file.write(self.nick)
-
-        except requests.exceptions.JSONDecodeError:
-            raise RuntimeError("Couldn't get moderators list.")
-        
-    def get_banned_users(self):
-        global ACCESS_TOKEN, request_headers
-
-        uri = "https://api.twitch.tv/helix/moderation/banned"
-        params = {"broadcaster_id": BROADCASTER_ID}
-
-        response = requests.get(uri, headers=request_headers, params=params)
-
-        if response.status_code == 401:
-            try:
-                ACCESS_TOKEN = refresh_access_token()
-                request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
-            except Exception as e:
-                write_log(LOG_FILE, e)
-
-            response = requests.get(uri, headers=request_headers, params=params)
-
-            if response.status_code != 200:
-                write_log(LOG_FILE, response.text)
-                raise ConnectionError("Couldn't get banned users list.")
-
-        try:
-            data: list = response.json()["data"]
-            banned_users = set()
-            for banned_user in data:
-                banned_users.add(banned_user["user_login"])
-            return banned_users
-        except requests.exceptions.JSONDecodeError:
-            write_log(LOG_FILE, "Couldn't decode banned users list response.")
-
     def clear_banned_users(self):
         banned_users = self.get_banned_users()
 
@@ -441,237 +373,30 @@ class KuroBot(commands.Bot):
             mods = mods_list.readlines()
         mods_list = [user.strip() for user in mods]
         return mods_list
-
-    # check if a user exists
+    
     async def user_exists(self, username) -> bool:
-        global ACCESS_TOKEN, request_headers
-
-        url = f"https://api.twitch.tv/helix/users?login={username}"
-
-        response = requests.get(url, headers=request_headers)
-
-        if response.status_code == 401:
-            try:
-                ACCESS_TOKEN = refresh_access_token()
-            except Exception as e:
-                write_log(LOG_FILE, e)
-                return False
-            
-            request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
-            response = requests.get(url, headers=request_headers)
-
-            if not response.ok:
-                write_log(LOG_FILE, response.text)
-                return False
-
-        data = response.json()
-        return len(data["data"]) > 0
+        return self.api.user_exists(username)
 
     def get_user_id(self, user):
-        global ACCESS_TOKEN, request_headers
-
-        url = "https://api.twitch.tv/helix/users"
-        params = {
-            "login": user
-        }
-
-        # initial try to get user id
-        response = requests.get(url, headers=request_headers, params=params)
-
-        if response.status_code == 401: # Unauthorized: token expired
-            try:
-                ACCESS_TOKEN = refresh_access_token()
-                request_headers['Authorization'] = f"Bearer {ACCESS_TOKEN}"
-            except ConnectionError as e:
-                write_log(LOG_FILE, e)
-                return
-            
-            # retry getting user id once
-            response = requests.get(url, headers=request_headers, params=params)
-
-        try:
-            user_data = response.json()
-            return user_data["data"][0]["id"]
-        except requests.exceptions.JSONDecodeError as e:
-            write_log(LOG_FILE, e)
+        return self.api.get_user_id(user)
 
     def get_follower_data(self, user_id):
-        global ACCESS_TOKEN, request_headers
+        return self.api.get_follower_data(user_id)
 
-        url = "https://api.twitch.tv/helix/channels/followers"
-        params = {
-            "user_id": user_id,
-            "broadcaster_id": BROADCASTER_ID
-        }
-
-        response = requests.get(url, headers=request_headers, params=params)
-
-        if response.status_code == 401:
-            try:
-                ACCESS_TOKEN = refresh_access_token()
-                request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
-            except ConnectionError as e:
-                write_log(LOG_FILE, e)
-                return
-            
-            response = requests.get(url, headers=request_headers, params=params)
-
-            if not response.ok:
-                write_log(LOG_FILE, response.text)
-                return
-            
-        try:
-            data = response.json()["data"]
-            if not data:
-                return
-            return data[0]["followed_at"]
-        except requests.exceptions.JSONDecodeError as e:
-            write_log(LOG_FILE, "Invalid or no response getting followage.")
-
-    # add VIP status to user
     def add_vip(self, user_id):
-        url = "https://api.twitch.tv/helix/channels/vips"
-        params = {
-            "broadcaster_id": BROADCASTER_ID,
-            "user_id": user_id
-        }
+        return self.api.add_vip(user_id)
 
-        try:
-            response = requests.post(url, headers=request_headers, params=params)
-        except ConnectionError:
-            return "Something went wrong assigning VIP status.."
-
-        if response.status_code == 204:
-            return True, 204
-        elif response.status_code == 422: # user already is VIP
-            return False, 422
-        else:
-            write_log(LOG_FILE, response.text)
-            return False, response.status_code
-    
     def create_poll(self, title, choices, duration):
-        global ACCESS_TOKEN, request_headers
+        return self.api.create_poll(title, choices, duration)
 
-        uri = "https://api.twitch.tv/helix/polls"
-        body = {
-            "broadcaster_id": BROADCASTER_ID,
-            "title": title,
-            "choices": [{"title": choice} for choice in choices],
-            "duration": duration,
-            "channel_points_voting_enabled": False
-        }
-
-        response = requests.post(uri, headers=request_headers, json=body)
-
-        if response.status_code == 401:
-            try:
-                ACCESS_TOKEN = refresh_access_token()
-            except Exception as e:
-                write_log(LOG_FILE, e)
-                return
-            
-            request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
-            response = requests.post(uri, headers=request_headers, json=body)
-
-            if not response.ok:
-                write_log(LOG_FILE, response.text)
-                raise ConnectionError(f"Error creating poll. Error Details in {LOG_FILE}")
-            
-            return True
-        
-        elif response.status_code == 200:
-            return True
-        else:
-            write_log(LOG_FILE, response.text)
-            return False
-
-    # get current twitch stream title
     def get_stream_title(self):
-        global ACCESS_TOKEN, request_headers
+        return self.api.get_stream_title()
 
-        url = "https://api.twitch.tv/helix/channels"
-        params = {
-            "broadcaster_id": BROADCASTER_ID
-        }
-
-        response = requests.get(url, headers=request_headers, params=params)
-
-        if response.status_code == 401:
-            try:
-                ACCESS_TOKEN = refresh_access_token()
-                request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
-            except ConnectionError as e:
-                write_log(LOG_FILE, e)
-                return
-            
-            response = requests.get(url, headers=request_headers, params=params)
-            
-            if not response.ok:
-                write_log(LOG_FILE, response.text)
-
-        try:
-            data = response.json()["data"]
-            stream_title = data[0]["title"]
-            return stream_title
-        except requests.exceptions.JSONDecodeError:
-            write_log(LOG_FILE, response.text)
-
-    # send patch request to update stream title
     def update_stream_title(self, new_stream_title):
-        global ACCESS_TOKEN, request_headers
+        self.api.update_stream_title(new_stream_title)
 
-        url = "https://api.twitch.tv/helix/channels"
-        params = {
-            "broadcaster_id": BROADCASTER_ID
-        }
-        body = {
-            "title": new_stream_title
-        }
-
-        response = requests.patch(url, headers=request_headers, params=params, json=body)
-
-        if response.status_code == 401:
-            try:
-                ACCESS_TOKEN = refresh_access_token()
-                request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
-            except ConnectionError as e:
-                write_log(LOG_FILE, e)
-                return
-            
-            response = requests.patch(url, headers=request_headers, params=params)
-
-        if "The request must update at least one channel property field." in response.text:
-            write_log(LOG_FILE, f"NOTICE: {response.text}")
-
-        if not response.ok:
-            write_log(LOG_FILE, response.text)
-
-    # update stream category to osu!
     def update_stream_category(self):
-        global ACCESS_TOKEN, request_headers
-
-        url = "https://api.twitch.tv/helix/channels"
-        params = {
-            "broadcaster_id": BROADCASTER_ID
-            }
-        body = {
-            "game_id": "21465" # osu! ID in twitch backend
-        }
-
-        response = requests.patch(url, headers=request_headers, params=params, json=body)
-
-        if response.status_code == 401:
-            try:
-                ACCESS_TOKEN = refresh_access_token()
-                request_headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
-            except ConnectionError as e:
-                write_log(LOG_FILE, f"[ERROR]: {e}")
-                return
-            
-            response = requests.patch(url, headers=request_headers, params=params, json=body)
-
-        if not response.ok:
-            write_log(LOG_FILE, response.text)
+        self.api.update_stream_category()
 
     # generalized function for title_updater_loop and post mapping
     async def title_updater(self):
