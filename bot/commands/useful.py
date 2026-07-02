@@ -73,7 +73,7 @@ class UsefulCommands(commands.Cog):
 # display socials in chat
     @commands.command(name="socials")
     async def socials(self, ctx):
-        await ctx.send(f"@{ctx.author.name} {self.links}")
+        await ctx.send(f"@{ctx.author.name} {self.bot.links}")
     socials.category = "useful"
     socials.description = "Display links to other social channels in the chat! These can be: YouTube, TikTok, Discord, Instagram, Twitter / X, or when the streamer prefers this, the link to their Linktree."
 
@@ -158,7 +158,7 @@ class UsefulCommands(commands.Cog):
             await ctx.send(f"@{user} You already claimed your first time bonus!")
             return
 
-        self.bot.bonus_claimed.append(user)
+        self.bot.bonus_claimed.add(user)
         self.bot.add_points(user, 500)
 
         message = random.choice([
@@ -282,7 +282,7 @@ class UsefulCommands(commands.Cog):
         user_id = self.bot.get_user_id(user)
 
         try:
-            followed_at = self.get_follower_data(user_id)
+            followed_at = self.bot.get_follower_data(user_id)
             if not followed_at:
                 await ctx.send(f"@{ctx.author.name} This user doesn't follow {self.bot.nick}")
                 return

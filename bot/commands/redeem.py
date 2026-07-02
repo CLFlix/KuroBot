@@ -191,7 +191,7 @@ class RedeemCommands(commands.Cog):
                     await ctx.send(f"@{user} You didn't win, you didn't lose.. You got your {amount} points back.")
                 case _:
                     won_points = round(amount * multiplier) if amount * multiplier != 0 else 1
-                    await ctx.send(f"@{user} Congrats, you won {won_points} point{"" if won_points == 1 else "'s"}!")
+                    await ctx.send(f"@{user} Congrats, you won {won_points} point{"" if won_points == 1 else "s"}!")
                     self.bot.add_points(user, won_points)
         else:
             await ctx.send(f"@{user} Sadge, you lost {amount} points...")
