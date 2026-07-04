@@ -233,6 +233,7 @@ class KuroBot(commands.Bot):
         @app.post("/toggleRequests")
         def toggleRequests():
             self.map_requests = not self.map_requests
+            write_log(LOG_FILE, f"[NOTICE] - [OPTIONS] Toggled Requests to {"ON" if self.map_requests else "OFF"}")
 
         @app.post("/stop")
         async def stop_bot():
@@ -245,6 +246,7 @@ class KuroBot(commands.Bot):
         threading.Thread(target=start_api, daemon=True).start()
 
     async def stop(self):
+        write_log(LOG_FILE, "[NOTICE] - Stopping bot..")
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
         write_log(LOG_FILE, f"First time bonus data saved")
 
@@ -313,13 +315,22 @@ class KuroBot(commands.Bot):
 
         while not self.initialized:
             await asyncio.sleep(0.5)
+        if self.map_requests:
+            write_log(LOG_FILE, "[NOTICE] - [OPTIONS] Bot started with requests ON")
+        else:
+            write_log(LOG_FILE, "[NOTICE] - [OPTIONS] Bot started with requests OFF")
 
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
-            write_log(LOG_FILE, "[NOTICE] - Affiliate / Partner selected. Locked commands: !hydrate, !stretch, !posture. Redemptions Listener on.")
+            write_log(LOG_FILE, "[NOTICE] - [OPTIONS] Affiliate / Partner enabled. Locked commands: !hydrate, !stretch, !posture. Redemptions Listener ON")
+        else:
+            write_log(LOG_FILE, "[NOTICE] - [OPTIONS] Affiliate / Partner disabled. Unlocked commands: !hydrate, !stretch, !posture. Redemptions Listener OFF")
+
         if self.update_title:
             self.loop.create_task(self.title_updater_loop())
-            write_log(LOG_FILE, "[NOTICE] - Automatic Title Updater on.")
+            write_log(LOG_FILE, "[NOTICE] - [OPTIONS] Automatic Title Updater ON")
+        else:
+            write_log(LOG_FILE, "[NOTICE] - [OPTIONS] Automatic Title Updater OFF")
 
     # give people points for chatting
     async def event_message(self, message):
