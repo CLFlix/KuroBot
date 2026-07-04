@@ -39,7 +39,7 @@ class TwitchAPI:
             write_log(self.log_file, f"[INFO] - Received response from '{log_url}'")
             return response
 
-        write_log(self.log_file, f"[NOTICE] - Could not get valid response from '{log_url}': {response.text}")
+        write_log(self.log_file, f"[WARN] - Could not get valid response from '{log_url}': {response.text}")
     
     def get_mods_list(self, bot_nick):
         uri = "https://api.twitch.tv/helix/moderation/moderators"
@@ -48,7 +48,7 @@ class TwitchAPI:
         response = self._request("get", uri, params=params)
 
         if response.status_code != 200:
-            write_log(self.log_file, response.text)
+            write_log(self.log_file, f"[ERROR] - Couldn't get mods list: {response.text}")
             raise ConnectionError(f"Error getting mods list. More detailed error in {self.log_file}")
 
         try:
@@ -70,7 +70,7 @@ class TwitchAPI:
         response = self._request("get", uri, params=params)
         
         if response.status_code != 200:
-            write_log(self.log_file, response.text)
+            write_log(self.log_file, f"[ERROR] - Couldn't get banned users: {response.text}")
             raise ConnectionError("Couldn't get banned users.")
 
         try:
@@ -79,15 +79,15 @@ class TwitchAPI:
             for banned_user in data:
                 banned_users.add(banned_user["user_login"])
             return banned_users
-        except requests.exceptions.JSONDecodeError:
-            write_log(self.log_file, "Couldn't decode banned users list.")
+        except requests.exceptions.JSONDecodeError as e:
+            write_log(self.log_file, f"[ERROR] - Couldn't decode banned users list: {e}")
     
     def user_exists(self, username) -> bool:
         url = f"https://api.twitch.tv/helix/users?login={username}"
         response = self._request("get", url)
 
         if not response.ok:
-            write_log(self.log_file, response.text)
+            write_log(self.log_file, f"[ERROR] - Couldn't get user data: {response.text}")
             return False
 
         data = response.json()
@@ -103,7 +103,7 @@ class TwitchAPI:
             user_data = response.json()
             return user_data["data"][0]["id"]
         except requests.exceptions.JSONDecodeError as e:
-            write_log(self.log_file, e)
+            write_log(self.log_file, f"[ERROR] - Couldn't get user ID: {e}")
 
     def get_follower_data(self, user_id):
         url = "https://api.twitch.tv/helix/channels/followers"
@@ -115,7 +115,7 @@ class TwitchAPI:
         response = self._request("get", url, params=params)
 
         if not response.ok:
-            write_log(self.log_file, response.text)
+            write_log(self.log_file, f"[ERROR] - Couldn't get follower data: {response.text}")
             return
 
         try:
@@ -123,8 +123,8 @@ class TwitchAPI:
             if not data:
                 return
             return data[0]["followed_at"]
-        except requests.exceptions.JSONDecodeError:
-            write_log(self.log_file, "Invalid or no response getting followage.")
+        except requests.exceptions.JSONDecodeError as e:
+            write_log(self.log_file, f"[ERROR] - Invalid or no response getting followage: {e}")
 
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"
@@ -143,7 +143,7 @@ class TwitchAPI:
         elif response.status_code == 422:  # user already is VIP
             return False, 422
         else:
-            write_log(self.log_file, response.text)
+            write_log(self.log_file, f"[ERROR] - Couldn't add VIP to user {user_id}: {response.text}")
             return False, response.status_code
 
     # --- Polls ---
@@ -163,7 +163,7 @@ class TwitchAPI:
         if response.status_code == 200:
             return True
         else:
-            write_log(self.log_file, response.text)
+            write_log(self.log_file, f"[ERROR] - Couldn't create poll: {response.text}")
             return False
 
     # --- Channel / stream ---
@@ -175,13 +175,13 @@ class TwitchAPI:
         response = self._request("get", url, params=params)
 
         if not response.ok:
-            write_log(self.log_file, response.text)
+            write_log(self.log_file, f"[ERROR] - Couldn't get stream title: {response.text}")
 
         try:
             data = response.json()["data"]
             return data[0]["title"]
-        except requests.exceptions.JSONDecodeError:
-            write_log(self.log_file, response.text)
+        except requests.exceptions.JSONDecodeError as e:
+            write_log(self.log_file, f"[ERROR] - Couldn't decode stream title response: {e}")
 
     def update_stream_title(self, new_stream_title):
         url = "https://api.twitch.tv/helix/channels"
@@ -194,7 +194,7 @@ class TwitchAPI:
             write_log(self.log_file, f"[NOTICE] - {response.text}")
 
         if not response.ok:
-            write_log(self.log_file, response.text)
+            write_log(self.log_file, f"[ERROR] - Couldn't update stream title: {response.text}")
 
     def update_stream_category(self):
         url = "https://api.twitch.tv/helix/channels"
@@ -204,4 +204,4 @@ class TwitchAPI:
         response = self._request("patch", url, params=params, json=body)
 
         if not response.ok:
-            write_log(self.log_file, response.text)
+            write_log(self.log_file, f"[ERROR] - Couldn't update stream category: {response.text}")
