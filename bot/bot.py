@@ -248,14 +248,14 @@ class KuroBot(commands.Bot):
     async def stop(self):
         write_log(LOG_FILE, "[NOTICE] - Stopping bot..")
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
-        write_log(LOG_FILE, f"First time bonus data saved")
+        write_log(LOG_FILE, f"[INFO] - First time bonus data saved")
 
         self.clear_banned_users()
         self.user_points[self.nick] = 0
         write_points_data(self.user_points, POINTS_FILE)
-        write_log(LOG_FILE, f"Points data saved")
+        write_log(LOG_FILE, f"[INFO] - Points data saved")
 
-        write_log(LOG_FILE, "Bye! :D")
+        write_log(LOG_FILE, "[INFO] - Stopped bot. Bye!")
         await self.close()
 
     ## export commands
