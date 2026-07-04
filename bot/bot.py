@@ -53,6 +53,13 @@ class KuroBot(commands.Bot):
         # let first_time_startup run first, otherwise log file will
         # become undefined, trying to look in a directory that doesn't exist
         first_time_startup()
+        write_log(LOG_FILE, "\n\t".join([
+            "\n\tTHIS IS A KUROBOT LOG FILE",
+            "If you have a problem or an error that was not caused by you,",
+            "please provide this file when reporting the error.",
+            "Bug Reporting: https://github.com/CLFlix/KuroBot/issues",
+            "Suggestions: https://github.com/CLFlix/KuroBot/discussions/categories/suggestions\n\n"
+        ]))
 
         if getattr(sys, 'frozen', False):
             sys.stderr = open(LOG_FILE, 'w')
@@ -309,8 +316,10 @@ class KuroBot(commands.Bot):
 
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
+            write_log(LOG_FILE, "[NOTICE] - Affiliate / Partner selected. Locked commands: !hydrate, !stretch, !posture. Redemptions Listener on.")
         if self.update_title:
             self.loop.create_task(self.title_updater_loop())
+            write_log(LOG_FILE, "[NOTICE] - Automatic Title Updater on.")
 
     # give people points for chatting
     async def event_message(self, message):
