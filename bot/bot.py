@@ -383,7 +383,7 @@ class KuroBot(commands.Bot):
         try:
             return self.links_dict[social]
         except:
-            pass
+            write_log(LOG_FILE, f"[NOTICE] - No social set for: {social}")
 
     def clear_banned_users(self):
         banned_users = self.get_banned_users()
