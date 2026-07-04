@@ -60,7 +60,7 @@ async def eventsub_listener(redemption_handler):
                     # refresh access token for redemption listener, then retry subscription
                     ACCESS_TOKEN = refresh_access_token()
                 except Exception as e:
-                    write_log(LOG_FILE, e)
+                    write_log(LOG_FILE, f"[ERROR] - Failed to refresh token: {e}")
                     return
 
                 headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
@@ -71,7 +71,7 @@ async def eventsub_listener(redemption_handler):
                 )
 
                 if not response.ok: # if second try fails, stop trying to create subscription
-                    write_log(LOG_FILE, response.text)
+                    write_log(LOG_FILE, f"[ERROR] - Failed to start Redemptions Listener: {response.text}")
                     return
                         
         # wait for incoming notifications
@@ -85,7 +85,7 @@ async def eventsub_listener(redemption_handler):
                     await redemption_handler(event)
                 elif msg_type == "revocation":
                     revocation_reason = data["payload"]["status"]
-                    write_log(LOG_FILE, revocation_reason)
+                    write_log(LOG_FILE, f"[FATAL] - Redemptions Listener access revoked: {revocation_reason}")
                     await redemption_handler(msg_type)
         except Exception as e:
-            write_log(LOG_FILE, e)
+            write_log(LOG_FILE, f"[ERROR] - EventSub Listener failed: {e}")
