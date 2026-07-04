@@ -283,6 +283,7 @@ class KuroBot(commands.Bot):
             self.user_points[user] = amount 
         else:
             self.user_points[user] = round(self.user_points[user] + amount)
+        write_log(LOG_FILE, f"[INFO] - Added {amount} to {user}'s points: {self.user_points[user]}")
 
     # add points as result to rps game
     def add_rps_points(self, user, rps_result):
@@ -299,11 +300,14 @@ class KuroBot(commands.Bot):
 
         if user in self.user_points:
             if self.user_points[user] < item_cost:
+                write_log(LOG_FILE, f"[INFO] - {user} does not have enough for an item that costs {item_cost}: {self.user_points[user]}")
                 return False, f"@{user} You don't have enough points! You need {item_cost - self.user_points[user]} more points!"
             else:
                 self.user_points[user] = round(self.user_points[user] - item_cost)
+                write_log(LOG_FILE, f"[INFO] - Subtracted {item_cost} points from {user}: {self.user_points[user]}")
                 return True, f"This costed @{user} {item_cost} points."
         else:
+            write_log(LOG_FILE, f"[INFO] - {user} does not have enough for an item that costs {item_cost}: {self.user_points[user]}")
             return False, f"@{user} You don't have enough points! You need {item_cost} more points!"
 
 ## events
