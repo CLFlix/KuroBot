@@ -246,7 +246,7 @@ class KuroBot(commands.Bot):
         threading.Thread(target=start_api, daemon=True).start()
 
     async def stop(self):
-        write_log(LOG_FILE, "[NOTICE] - Stopping bot..")
+        write_log(LOG_FILE, "[INFO] - Stopping bot..")
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
         write_log(LOG_FILE, f"[INFO] - First time bonus data saved")
 
@@ -441,7 +441,7 @@ class KuroBot(commands.Bot):
                 self.update_stream_title(new_stream_title)
 
         except SyntaxError as e:
-            write_log(LOG_FILE, e)
+            write_log(LOG_FILE, f"[ERROR] - Caught SyntaxError while editing stream title: {e}")
             
         except ValueError as e:
             write_log(LOG_FILE, f"[NOTICE] - {e}")
