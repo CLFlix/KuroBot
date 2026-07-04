@@ -264,7 +264,7 @@ class KuroBot(commands.Bot):
                  "instagram", "linktree", "shoutout", "points", "claim", "daily", "leaderboard", "poll",
                  "category", "ping", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
                  "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "rob",
-                 "shush", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "vip"]
+                 "shush", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "double", "vip"]
 
         written = set()
         with open(r'website/public/static/commands.txt', 'w', encoding='utf-8') as commands_file:
@@ -318,7 +318,7 @@ class KuroBot(commands.Bot):
         self.user_points[self.nick] = float("inf")
         self.check_for_update()
         self.get_mods_list()
-        # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
+        self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
 
         while not self.initialized:
             await asyncio.sleep(0.5)

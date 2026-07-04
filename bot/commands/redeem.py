@@ -203,9 +203,28 @@ class RedeemCommands(commands.Cog):
             await ctx.send(f"@{user} Sadge, you lost {amount} points...")
             write_log(LOG_FILE, f"[INFO] - {user} lost {amount} points by gambling.")
     gamble.category = "redeem"
-    gamble.description = "Gamble your points away! You have a 1 in 3 chance of winning. If you do, " \
+    gamble.description = "Gamble your points away! You have a 1 in 2 chance of winning. If you do, " \
     "a 6-sided dice will roll and decide on a multiplier which will calculate how much you win. This can " \
     "only be used 5 times per stream (per bot run)."
+
+    @commands.command(name="double", aliases=["dorn"])
+    async def double(self, ctx):
+        user = ctx.author.name
+        if user not in self.bot.user_points or self.bot.user_points[user] == 0:
+            await ctx.send(f"@{user} you don't have any points.")
+
+        won = random.choice([0,1])
+        if won:
+            self.bot.add_points(user, self.bot.user_points[user])
+            await ctx.send(f"@{user} You won! You now have double your original amount of points!")
+            write_log(LOG_FILE, f"[INFO] - {user} won the double or nothing: {self.bot.user_points[user]}")
+        else:
+            self.bot.user_points = 0
+            await ctx.send(f"@{user} You lost... You're back at 0 points...")
+            write_log(LOG_FILE, f"[INFO] - {user} lost the double or nothing.")
+    double.category = "redeem"
+    double.description = "Double or nothing! When using this command, you go all in. " \
+    "You either lose everything, or end up with double the amount you had originally!"
 
     # temporary VIP status
     @commands.command(name="vip")
