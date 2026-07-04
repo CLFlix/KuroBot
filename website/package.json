@@ -1,7 +1,7 @@
 {
   "homepage": "https://clflix.github.io/KuroBot/",
   "name": "kurobot",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
