@@ -9,7 +9,7 @@ async def main():
     try:
         await bot.run_forever()
     except Exception as e:
-        write_log(LOG_FILE, e)
+        write_log(LOG_FILE, f"[FATAL] - Bot crashed: {e}")
 
 if __name__ == "__main__":
     asyncio.run(main())
