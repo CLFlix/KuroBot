@@ -279,6 +279,9 @@ class KuroBot(commands.Bot):
 
     ## helper methods
     def add_points(self, user, amount):
+        if user == self.nick:
+            write_log(LOG_FILE, f"[INFO] - Skipping add_points, user is self.nick")
+            return
         if user not in self.user_points:
             self.user_points[user] = amount 
         else:
