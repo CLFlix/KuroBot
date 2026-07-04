@@ -21,9 +21,10 @@ class TwitchAPI:
         try:
             self.access_token = refresh_access_token()
             self.headers["Authorization"] = f"Bearer {self.access_token}"
+            write_log(self.log_file, "[INFO] - Refreshed Access Token")
             return True
         except Exception as e:
-            write_log(self.log_file, e)
+            write_log(self.log_file, f"[ERROR] - Couldn't refresh access token: {e}")
             return False
     
     def _request(self, method, url, **kwargs):
@@ -32,7 +33,13 @@ class TwitchAPI:
         if response.status_code == 401 and self._refresh():
             response = requests.request(method, url, headers=self.headers, **kwargs)
 
-        return response
+        log_url = url.replace("https://api.twitch.tv/helix/", "")
+
+        if response.ok:
+            write_log(self.log_file, f"[INFO] - Received response from '{log_url}'")
+            return response
+
+        write_log(self.log_file, f"[NOTICE] - Could not get valid response from '{log_url}': {response.text}")
     
     def get_mods_list(self, bot_nick):
         uri = "https://api.twitch.tv/helix/moderation/moderators"
