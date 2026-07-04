@@ -9,6 +9,8 @@ class FunCommands(commands.Cog):
     # roll a random number between 1 and a specified amount, with 100 as a default
     @commands.command(name="roll")
     async def roll(self, ctx, amount=100):
+        if amount > 1000000000000:
+            amount = 100
         random_number = random.randint(1, int(amount))
         await ctx.send(f"@{ctx.author.name} You rolled {random_number}")
     roll.category = "fun"
