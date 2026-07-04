@@ -1,6 +1,7 @@
 import random
 import os
 
+from bot.bot import LOG_FILE
 from twitchio.ext import commands
 from bot.utils.utils import get_map, get_profile, format_mods, write_log
 
@@ -9,10 +10,6 @@ osuUsername = os.getenv("osuUsername")
 class OsuCommands(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
-    def _log(self, e):
-        from bot import LOG_FILE
-        write_log(LOG_FILE, e)
 
     @commands.command(name="np")
     async def np(self, ctx):
@@ -34,7 +31,7 @@ class OsuCommands(commands.Cog):
                 
         except ConnectionError as e:
             await ctx.send(f"@{self.bot.nick} , @{ctx.author.name} Something went wrong")
-            self._log(e)
+            write_log(LOG_FILE, f"[ERROR] - Couldn't get current playing map. StreamCompanion is most likely not running: {e}")
     np.category = "osu"
     np.description = "This will display the map that the streamer is currently playing."
 
@@ -69,7 +66,7 @@ class OsuCommands(commands.Cog):
 
         except ConnectionError as e:
             await ctx.send(f"@{self.bot.nick} , @{ctx.author.name} Something went wrong")
-            self._log(e)
+            write_log(LOG_FILE, f"[ERROR] - Couldn't get current playing map. StreamCompanion is most likely not running: {e}")
     nppp.category = "osu"
     nppp.description = "This will make the bot reply with the map the streamer " \
     "is currently playing, along with the pp values for SS, 99% and 95%."
@@ -89,7 +86,7 @@ class OsuCommands(commands.Cog):
 
         except ConnectionError as e:
             await ctx.send(f"@{self.bot.nick} , @{ctx.author.name} Something went wrong")
-            self._log(e)
+            write_log(LOG_FILE, f"[ERROR] - Couldn't get {user}'s rank: {e}")
     rank.category = "osu"
     rank.description = "!rank will show the streamer's rank in chat! You can also provide a username and " \
     "the bot will search for that user's rank: !rank _Kurookami_"
@@ -108,7 +105,7 @@ class OsuCommands(commands.Cog):
             await ctx.send(f"@{ctx.author.name} {user} has played osu! for a total of {total_playtime} hours.")
         except ConnectionError as e:
             await ctx.send(f"@{self.bot.nick} , @{ctx.author.name} Something went wrong")
-            self._log(e)
+            write_log(LOG_FILE, f"[ERROR] - Couldn't get {user}'s playtime: {e}")
     playtime.category = "osu"
     playtime.description = "Calling this command will show how much time the streamer " \
     "has wasted in this game. Adding a username will find that information for that user: !playtime _Kurookami_"
@@ -128,7 +125,7 @@ class OsuCommands(commands.Cog):
 
         except ConnectionError as e:
             await ctx.send(f"@{self.bot.nick} , @{ctx.author.name} Something went wrong")
-            self._log(e)
+            write_log(LOG_FILE, f"[ERROR] - Couldn't get {user}'s playcount: {e}")
     playcount.category = "osu"
     playcount.description = "This command will show the streamer's playcount! " \
     "You can also find other users' playcount with !playcount _Kurookami_"
@@ -156,7 +153,7 @@ class OsuCommands(commands.Cog):
             
         except ConnectionError as e:
             await ctx.send(f"@{self.bot.nick} @{ctx.author.name} Something went wrong getting osu! profile.")
-            self._log(e)
+            write_log(LOG_FILE, f"[ERROR] - Couldn't get {user}'s osustats: {e}")
     osustats.category = "osu"
     osustats.description = "This command is basically rank, playtime and playcount combined. " \
     "You can also call this for another user: !osustats _Kurookami_"
@@ -174,7 +171,7 @@ class OsuCommands(commands.Cog):
             await ctx.send(f"@{ctx.author.name} https://osu.ppy.sh/users/{user_id}")
         except ConnectionError as e:
             await ctx.send(f"@{self.bot.nick} @{ctx.author.name} Something went wrong getting osu! profile.")
-            self._log(e)
+            write_log(LOG_FILE, f"[ERROR] - Couldn't find {user}'s profile: {e}")
     profile.category = "osu"
     profile.description = "Show the link to the osu! profile of the streamer! " \
     "You can also get someone else's profile: !profile _Kurookami_"

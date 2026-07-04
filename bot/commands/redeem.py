@@ -1,15 +1,12 @@
 import random
 
+from bot.bot import LOG_FILE
 from twitchio.ext import commands
 from bot.utils.utils import write_log
 
 class RedeemCommands(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
-    def _log(e):
-        from bot import LOG_FILE
-        write_log(LOG_FILE, e)
 
     @commands.command(name="shush")
     async def shush(self, ctx):
@@ -19,6 +16,7 @@ class RedeemCommands(commands.Cog):
 
         if can_afford:
             await ctx.send(f"@{self.bot.nick} You can't speak for the next 5 minutes! {afford_message}")
+            write_log(LOG_FILE, f"[INFO] - Shush has been claimed by {user}")
         else:
             await ctx.send(afford_message)
     shush.category = "redeem"
@@ -33,6 +31,7 @@ class RedeemCommands(commands.Cog):
 
         if can_afford:
             await ctx.send(f"@{self.bot.nick} You have to throw a silly effect over your camera for the next 10 minutes! {afford_message}")
+            write_log(LOG_FILE, f"[INFO] - Memecam has been claimed by {user}")
         else:
             await ctx.send(afford_message)
     memecam.category = "redeem"
@@ -51,6 +50,8 @@ class RedeemCommands(commands.Cog):
             return
         
         await ctx.send(f"@{self.bot.nick} You now have to zoom in your camera for the next 10 minutes! {afford_message}")
+        write_log(LOG_FILE, f"[INFO] - Zoom has been claimed by {user}")
+
     zoom.category = "redeem"
     zoom.description = "Make the streamer zoom in their camera for 10 minutes for 500 points!"
 
@@ -65,6 +66,7 @@ class RedeemCommands(commands.Cog):
             return
 
         await ctx.send(f"@{self.bot.nick} Turn your camera upside-down for the next 10 minutes! {afford_message}")
+        write_log(LOG_FILE, f"[INFO] - Invert has been claimed by {user}")
     invert.category = "redeem"
     invert.description = "For 250 points, you can make the streamer turn their camera upside-down for 10 minutes."
 
@@ -87,6 +89,7 @@ class RedeemCommands(commands.Cog):
         if can_afford:
             self.bot.endwith_redeemed = True
             await ctx.send(f"@{self.bot.nick} You have to end stream with {map_link}! {afford_message}")
+            write_log(LOG_FILE, f"[INFO] - Endwith has been claimed by {user}")
         else:
             await ctx.send(afford_message)
     endwith.category = "redeem"
@@ -138,6 +141,7 @@ class RedeemCommands(commands.Cog):
         ])
         await ctx.send(return_message)
         self.bot.add_points(receiver, amount)
+        write_log(LOG_FILE, f"[INFO] - {gifter} gifted {amount} points to {receiver}")
     gift.category = "redeem"
     gift.description = "You can gift points to another user, if you " \
     "have enough points to do so. '!gift @KurookamiTV 500' will subtract " \
@@ -189,12 +193,15 @@ class RedeemCommands(commands.Cog):
                 case 0:
                     self.bot.add_points(user, amount)
                     await ctx.send(f"@{user} You didn't win, you didn't lose.. You got your {amount} points back.")
+                    write_log(LOG_FILE, f"[INFO] - {user} gambled {amount} points and broke even.")
                 case _:
                     won_points = round(amount * multiplier) if amount * multiplier != 0 else 1
                     await ctx.send(f"@{user} Congrats, you won {won_points} point{"" if won_points == 1 else "s"}!")
                     self.bot.add_points(user, won_points)
+                    write_log(LOG_FILE, f"[INFO] - {user} won {won_points} points by gambling {amount} points")
         else:
             await ctx.send(f"@{user} Sadge, you lost {amount} points...")
+            write_log(LOG_FILE, f"[INFO] - {user} lost {amount} points by gambling.")
     gamble.category = "redeem"
     gamble.description = "Gamble your points away! You have a 1 in 3 chance of winning. If you do, " \
     "a 6-sided dice will roll and decide on a multiplier which will calculate how much you win. This can " \
@@ -229,8 +236,10 @@ class RedeemCommands(commands.Cog):
             match status_code:
                 case 422:
                     await ctx.send(f"@{user} You already are a VIP!")
+                    write_log(LOG_FILE, f"[WARN] - {user} tried claiming VIP while already being one.")
                 case _:
                     await ctx.send(f"@{self.bot.nick} Something went wrong. @{user} No points were deducted.")
+                    write_log(LOG_FILE, f"[ERROR] - Couldn't add VIP to {user}: Status Code {status_code}")
     vip.category = "redeem"
     vip.description = "Redeeming 1.000.000 points, you can " \
     "claim VIP status on the streamer's Twitch channel! " \

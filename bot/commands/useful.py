@@ -1,15 +1,12 @@
 import random
 
+from bot.bot import LOG_FILE
 from twitchio.ext import commands
 from bot.utils.utils import write_log, calculate_followage_days
 
 class UsefulCommands(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        
-    def _log(self, e):
-        from bot import LOG_FILE
-        write_log(LOG_FILE, e)
 
     ## useful commands
     @commands.command(name="ping")
@@ -170,6 +167,7 @@ class UsefulCommands(commands.Cog):
         ])
 
         await ctx.send(f"@{user} {message}")
+        write_log(LOG_FILE, f"[INFO] - First time bonus claimed by {user}")
     claim.category = "useful"
     claim.description = "After using this command, you will have claimed your " \
     "first 500 bot points. You can obtain more points by chatting in the Twitch chat."
@@ -194,6 +192,7 @@ class UsefulCommands(commands.Cog):
         ]
         choice = random.choice(messages)
         await ctx.send(choice)
+        write_log(LOG_FILE, f"[INFO] - Daily bonus claimed by {user}")
     daily.category = "useful"
     daily.description = "Viewers can chime in on your stream and claim a bonus " \
     "of 50 points when they invoke this command."
@@ -287,7 +286,7 @@ class UsefulCommands(commands.Cog):
                 await ctx.send(f"@{ctx.author.name} This user doesn't follow {self.bot.nick}")
                 return
         except ValueError as e:
-            self._log(e)
+            write_log(LOG_FILE, f"[ERROR] - Couldn't get followage: {e}")
             return
         
         followage = calculate_followage_days(followed_at)

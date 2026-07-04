@@ -53,6 +53,13 @@ class KuroBot(commands.Bot):
         # let first_time_startup run first, otherwise log file will
         # become undefined, trying to look in a directory that doesn't exist
         first_time_startup()
+        write_log(LOG_FILE, "\n\t".join([
+            "\n\tTHIS IS A KUROBOT LOG FILE",
+            "If you have a problem or an error that was not caused by you,",
+            "please provide this file when reporting the error.",
+            "Bug Reporting: https://github.com/CLFlix/KuroBot/issues",
+            "Suggestions: https://github.com/CLFlix/KuroBot/discussions/categories/suggestions\n\n"
+        ]))
 
         if getattr(sys, 'frozen', False):
             sys.stderr = open(LOG_FILE, 'w')
@@ -226,6 +233,7 @@ class KuroBot(commands.Bot):
         @app.post("/toggleRequests")
         def toggleRequests():
             self.map_requests = not self.map_requests
+            write_log(LOG_FILE, f"[NOTICE] - [OPTIONS] Toggled Requests to {"ON" if self.map_requests else "OFF"}")
 
         @app.post("/stop")
         async def stop_bot():
@@ -238,15 +246,16 @@ class KuroBot(commands.Bot):
         threading.Thread(target=start_api, daemon=True).start()
 
     async def stop(self):
+        write_log(LOG_FILE, "[INFO] - Stopping bot..")
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
-        write_log(LOG_FILE, f"First time bonus data saved")
+        write_log(LOG_FILE, f"[INFO] - First time bonus data saved")
 
         self.clear_banned_users()
         self.user_points[self.nick] = 0
         write_points_data(self.user_points, POINTS_FILE)
-        write_log(LOG_FILE, f"Points data saved")
+        write_log(LOG_FILE, f"[INFO] - Points data saved")
 
-        write_log(LOG_FILE, "Bye! :D")
+        write_log(LOG_FILE, "[INFO] - Stopped bot. Bye!")
         await self.close()
 
     ## export commands
@@ -274,6 +283,7 @@ class KuroBot(commands.Bot):
             self.user_points[user] = amount 
         else:
             self.user_points[user] = round(self.user_points[user] + amount)
+        write_log(LOG_FILE, f"[INFO] - Added {amount} to {user}'s points: {self.user_points[user]}")
 
     # add points as result to rps game
     def add_rps_points(self, user, rps_result):
@@ -290,11 +300,14 @@ class KuroBot(commands.Bot):
 
         if user in self.user_points:
             if self.user_points[user] < item_cost:
+                write_log(LOG_FILE, f"[INFO] - {user} does not have enough for an item that costs {item_cost}: {self.user_points[user]}")
                 return False, f"@{user} You don't have enough points! You need {item_cost - self.user_points[user]} more points!"
             else:
                 self.user_points[user] = round(self.user_points[user] - item_cost)
+                write_log(LOG_FILE, f"[INFO] - Subtracted {item_cost} points from {user}: {self.user_points[user]}")
                 return True, f"This costed @{user} {item_cost} points."
         else:
+            write_log(LOG_FILE, f"[INFO] - {user} does not have enough for an item that costs {item_cost}: {self.user_points[user]}")
             return False, f"@{user} You don't have enough points! You need {item_cost} more points!"
 
 ## events
@@ -306,11 +319,22 @@ class KuroBot(commands.Bot):
 
         while not self.initialized:
             await asyncio.sleep(0.5)
+        if self.map_requests:
+            write_log(LOG_FILE, "[NOTICE] - [OPTIONS] Bot started with requests ON")
+        else:
+            write_log(LOG_FILE, "[NOTICE] - [OPTIONS] Bot started with requests OFF")
 
         if self.affiliate:
             self.loop.create_task(eventsub_listener(self.handle_redemptions))
+            write_log(LOG_FILE, "[NOTICE] - [OPTIONS] Affiliate / Partner enabled. Locked commands: !hydrate, !stretch, !posture. Redemptions Listener ON")
+        else:
+            write_log(LOG_FILE, "[NOTICE] - [OPTIONS] Affiliate / Partner disabled. Unlocked commands: !hydrate, !stretch, !posture. Redemptions Listener OFF")
+
         if self.update_title:
             self.loop.create_task(self.title_updater_loop())
+            write_log(LOG_FILE, "[NOTICE] - [OPTIONS] Automatic Title Updater ON")
+        else:
+            write_log(LOG_FILE, "[NOTICE] - [OPTIONS] Automatic Title Updater OFF")
 
     # give people points for chatting
     async def event_message(self, message):
@@ -359,7 +383,7 @@ class KuroBot(commands.Bot):
         try:
             return self.links_dict[social]
         except:
-            pass
+            write_log(LOG_FILE, f"[NOTICE] - No social set for: {social}")
 
     def clear_banned_users(self):
         banned_users = self.get_banned_users()
@@ -417,10 +441,10 @@ class KuroBot(commands.Bot):
                 self.update_stream_title(new_stream_title)
 
         except SyntaxError as e:
-            write_log(LOG_FILE, e)
+            write_log(LOG_FILE, f"[ERROR] - Caught SyntaxError while editing stream title: {e}")
             
         except ValueError as e:
-            write_log(LOG_FILE, f"NOTICE: {e}")
+            write_log(LOG_FILE, f"[NOTICE] - {e}")
 
         return
 
