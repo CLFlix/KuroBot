@@ -191,7 +191,7 @@ class TwitchAPI:
         response = self._request("patch", url, params=params, json=body)
 
         if "The request must update at least one channel property field." in response.text:
-            write_log(self.log_file, f"NOTICE: {response.text}")
+            write_log(self.log_file, f"[NOTICE] - {response.text}")
 
         if not response.ok:
             write_log(self.log_file, response.text)
