@@ -25,6 +25,7 @@ const Dashboard = () => {
   const [updateAvailable, setUpdateAvailable] = useState<UpdateInfo | null>(
     null,
   );
+  const [initStatus, setInitStatus] = useState<boolean>(false);
 
   // const baseUrl = "http://localhost:7273"; // used for testing
 
@@ -175,6 +176,13 @@ const Dashboard = () => {
     return;
   };
 
+  const initBot = async () => {
+    await fetch("/initStatus").then((data) => setInitStatus);
+    if (!initStatus) {
+      window.location.assign("/initializeBot");
+    }
+  };
+
   const getIsRunning = async () => {
     await fetch("/isRunning")
       .then((data) => {
@@ -195,6 +203,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    initBot();
     getIsRunning();
 
     const interval = setInterval(getIsRunning, 5000);
