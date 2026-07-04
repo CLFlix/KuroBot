@@ -429,7 +429,7 @@ class KuroBot(commands.Bot):
             write_log(LOG_FILE, e)
             
         except ValueError as e:
-            write_log(LOG_FILE, f"NOTICE: {e}")
+            write_log(LOG_FILE, f"[NOTICE] - {e}")
 
         return
 
