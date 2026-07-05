@@ -174,6 +174,31 @@ class TwitchAPI:
         else:
             write_log(self.log_file, f"[ERROR] - Couldn't add VIP to user {user_id}: {response.text}")
             return False, response.status_code
+        
+    def remove_vip(self, user_id):
+        url = "https://api.twitch.tv/helix/channels/vips"
+        params = {
+            "broadcaster_id": BROADCASTER_ID,
+            "user_id": user_id
+        }
+
+        try:
+            response = self._request("delete", url, params=params)
+        except ConnectionError as e:
+            write_log(self.log_file, f"[ERROR] - Couldn't remove VIP status from user {user_id}: {e}")
+            return False
+        
+        if not response.ok:
+            write_log(self.log_file, f"[ERROR] - Something went wrong deleting VIP status: {response.text}")
+            return False
+        
+        try:
+            data = response.json()
+            write_log(self.log_file, f"[INFO] - Removed VIP status from user {user_id}, temporary VIP period expired")
+            return True
+        except requests.exceptions.JSONDecodeError as e:
+            write_log(self.log_file, f"[ERROR] - Couldn't remove VIP status from user {user_id}: {e}")
+            return False
 
     # --- Polls ---
 
