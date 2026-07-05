@@ -250,6 +250,10 @@ class KuroBot(commands.Bot):
         write_bonus_claimed(self.bonus_claimed, FIRST_TIME_BONUS_FILE)
         write_log(LOG_FILE, f"[INFO] - First time bonus data saved")
 
+        expired_vips = check_expired_vips()
+        for expired_vip in expired_vips:
+            self.api.remove_vip(expired_vip)
+
         self.clear_banned_users()
         self.user_points[self.nick] = 0
         write_points_data(self.user_points, POINTS_FILE)

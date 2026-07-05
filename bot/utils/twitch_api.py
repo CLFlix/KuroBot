@@ -2,7 +2,7 @@ import os
 import requests
 
 from bot.utils.refresh_access_token import refresh_access_token
-from bot.utils.utils import write_log, write_original_vips, write_new_vip
+from bot.utils.utils import write_log, write_original_vips, write_new_vip, delete_vip_from_file
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 BROADCASTER_ID = os.getenv("BROADCASTER_ID")
@@ -192,13 +192,9 @@ class TwitchAPI:
             write_log(self.log_file, f"[ERROR] - Something went wrong deleting VIP status: {response.text}")
             return False
         
-        try:
-            data = response.json()
-            write_log(self.log_file, f"[INFO] - Removed VIP status from user {user_id}, temporary VIP period expired")
-            return True
-        except requests.exceptions.JSONDecodeError as e:
-            write_log(self.log_file, f"[ERROR] - Couldn't remove VIP status from user {user_id}: {e}")
-            return False
+        delete_vip_from_file(user_id)
+        write_log(self.log_file, f"[INFO] - Removed VIP status from user {user_id}, temporary VIP period expired")
+        return True
 
     # --- Polls ---
 

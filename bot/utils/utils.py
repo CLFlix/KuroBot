@@ -4,6 +4,7 @@ import requests
 import os
 import json
 from datetime import datetime as dt
+from datetime import timedelta
 from datetime import timezone
 from dateutil.relativedelta import relativedelta
 
@@ -189,5 +190,32 @@ def write_new_vip(user_id):
     
     date = dt.now()
     with open(r'vips.json', 'w', encoding='utf-8') as vips_file:
-        all_vips[user_id] = f"{date.year}/{date.month}/{date.day}"
+        all_vips[user_id] = date.strftime("%Y/%m/%d")
+        json.dump(all_vips, vips_file, indent=4)
+
+def is_expired(date_str):
+    start_date = dt.strptime(date_str, "%Y/%m/%d").date()
+    today = dt.now().date()
+
+    return (today - start_date) > timedelta(days=31)
+
+def check_expired_vips():
+    with open(r'vips.json', 'r', encoding='utf-8') as vips_file:
+        all_vips = json.load(vips_file)
+
+    expired_vips = []
+    for vip, date in all_vips.items():
+        if date == "indefinite":
+            continue
+        if is_expired(date):
+            expired_vips.append(vip)
+
+    return expired_vips
+
+def delete_vip_from_file(user_id):
+    with open(r'vips.json', 'r', encoding='utf-8') as vips_file:
+        all_vips = json.load(vips_file)
+    
+    del all_vips[user_id]
+    with open(r'vips.json', 'w', encoding='utf-8') as vips_file:
         json.dump(all_vips, vips_file, indent=4)
