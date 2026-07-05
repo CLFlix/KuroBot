@@ -318,7 +318,7 @@ class KuroBot(commands.Bot):
         self.user_points[self.nick] = float("inf")
         self.check_for_update()
         self.get_mods_list()
-        self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
+        # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
 
         while not self.initialized:
             await asyncio.sleep(0.5)
