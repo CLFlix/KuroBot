@@ -318,6 +318,7 @@ class KuroBot(commands.Bot):
         self.user_points[self.nick] = float("inf")
         self.check_for_update()
         self.get_mods_list()
+        self.get_vips_list()
         # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
 
         while not self.initialized:
@@ -415,6 +416,9 @@ class KuroBot(commands.Bot):
 
     def get_follower_data(self, user_id):
         return self.api.get_follower_data(user_id)
+    
+    def get_vips_list(self):
+        return self.api.get_vip_list()
 
     def add_vip(self, user_id):
         return self.api.add_vip(user_id)

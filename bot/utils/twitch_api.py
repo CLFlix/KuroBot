@@ -2,7 +2,7 @@ import os
 import requests
 
 from bot.utils.refresh_access_token import refresh_access_token
-from bot.utils.utils import write_log
+from bot.utils.utils import write_log, write_original_vips
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 BROADCASTER_ID = os.getenv("BROADCASTER_ID")
@@ -125,6 +125,33 @@ class TwitchAPI:
             return data[0]["followed_at"]
         except requests.exceptions.JSONDecodeError as e:
             write_log(self.log_file, f"[ERROR] - Invalid or no response getting followage: {e}")
+
+    def get_vip_list(self):
+        with open(r'vips.json', 'r', encoding='utf-8') as vips_file:
+            if len(vips_file.read()) != 2: # if the dict is empty, then the char amount is 2: '{}'
+                return
+
+        url = "https://api.twitch.tv/helix/channels/vips"
+        params = {
+            "broadcaster_id": BROADCASTER_ID,
+            "first": 100
+        }
+        
+        try:
+            response = self._request("get", url, params=params)
+        except ConnectionError as e:
+            write_log(self.log_file, f"[ERROR] - Something went wrong getting VIPs: {e}")
+
+        if not response.ok:
+            write_log(self.log_file, f"[ERROR] - Something went wrong getting VIPs: {response.text}")
+            return
+        
+        try:
+            data = response.json()["data"]
+            write_original_vips(data)
+            write_log(self.log_file, f"[INFO] - Written original VIPs list to vips.json")
+        except requests.exceptions.JSONDecodeError as e:
+            write_log(self.log_file, f"[ERROR] - Invalid or no response getting vips list: {e}")
 
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"

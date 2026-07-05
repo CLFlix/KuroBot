@@ -19,7 +19,7 @@ def write_log(log_file, text: str):
 
 def first_time_startup():
     # quick check if all files / log folder exist
-    files = [r'first_time_bonus_claimed.txt', r'logs', r'points.json', r'socials.json']
+    files = [r'first_time_bonus_claimed.txt', r'logs', r'points.json', r'socials.json', r'vips.json']
     files_exist = [file in os.listdir(r'.') for file in files]
     if not all(files_exist):
         # create file to save all usernames that claimed first-time bonus
@@ -50,6 +50,10 @@ def first_time_startup():
 
             with open(r'socials.json', 'w', encoding='utf-8') as socials_file:
                 json.dump(socials, socials_file, indent=4)
+
+        if r'vips.json' not in os.listdir(r'.'):
+            with open(r'vips.json', 'w', encoding='utf-8') as vips_file:
+                json.dump({}, vips_file)
 
 # load the socials links
 def read_socials_links(socials_file):
@@ -170,3 +174,11 @@ def calculate_followage_days(followed_at):
         parts.append(f"{rd.hours} hour{'s' if rd.hours != 1 else ''}")
 
     return " ".join(parts) if parts else "less than an hour"
+
+def write_original_vips(data):
+    indefinite_vips = {}
+    for vip in data:
+        indefinite_vips[vip["user_login"]] = "indefinite"
+
+    with open("vips.json", 'w', encoding='utf-8') as original_vips_file:
+        json.dump(indefinite_vips, original_vips_file, indent=4)
