@@ -2,7 +2,7 @@ import os
 import requests
 
 from bot.utils.refresh_access_token import refresh_access_token
-from bot.utils.utils import write_log, write_original_vips
+from bot.utils.utils import write_log, write_original_vips, write_new_vip
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 BROADCASTER_ID = os.getenv("BROADCASTER_ID")
@@ -128,7 +128,7 @@ class TwitchAPI:
 
     def get_vip_list(self):
         with open(r'vips.json', 'r', encoding='utf-8') as vips_file:
-            if len(vips_file.read()) != 2: # if the dict is empty, then the char amount is 2: '{}'
+            if len(vips_file.read()) > 2: # if the dict is empty, then the char amount is 2: '{}'
                 return
 
         url = "https://api.twitch.tv/helix/channels/vips"
@@ -166,6 +166,8 @@ class TwitchAPI:
             return "Something went wrong assigning VIP status.."
 
         if response.status_code == 204:
+            write_new_vip(user_id)
+            write_log(self.log_file, f"[INFO] - Added {user_id} to vips.json")
             return True, 204
         elif response.status_code == 422:  # user already is VIP
             return False, 422

@@ -180,5 +180,14 @@ def write_original_vips(data):
     for vip in data:
         indefinite_vips[vip["user_login"]] = "indefinite"
 
-    with open("vips.json", 'w', encoding='utf-8') as original_vips_file:
-        json.dump(indefinite_vips, original_vips_file, indent=4)
+    with open(r"vips.json", 'w', encoding='utf-8') as vips_file:
+        json.dump(indefinite_vips, vips_file, indent=4)
+
+def write_new_vip(user_id):
+    with open(r'vips.json', 'r', encoding='utf-8') as vips_file:
+        all_vips = json.load(vips_file)
+    
+    date = dt.now()
+    with open(r'vips.json', 'w', encoding='utf-8') as vips_file:
+        all_vips[user_id] = f"{date.year}/{date.month}/{date.day}"
+        json.dump(all_vips, vips_file, indent=4)
