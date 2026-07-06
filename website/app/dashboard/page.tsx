@@ -177,8 +177,11 @@ const Dashboard = () => {
   };
 
   const initBot = async () => {
-    await fetch("/initStatus").then((data) => setInitStatus);
-    if (!initStatus) {
+    const res = await fetch("/initStatus");
+    const data = await res.json();
+    setInitStatus(data);
+
+    if (!data) {
       window.location.assign("/initializeBot");
     }
   };
