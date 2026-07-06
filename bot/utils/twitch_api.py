@@ -2,7 +2,7 @@ import os
 import requests
 
 from bot.utils.refresh_access_token import refresh_access_token
-from bot.utils.utils import write_log
+from bot.utils.utils import write_log, write_original_vips, write_new_vip, delete_vip_from_file
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 BROADCASTER_ID = os.getenv("BROADCASTER_ID")
@@ -126,6 +126,33 @@ class TwitchAPI:
         except requests.exceptions.JSONDecodeError as e:
             write_log(self.log_file, f"[ERROR] - Invalid or no response getting followage: {e}")
 
+    def get_vip_list(self):
+        with open(r'vips.json', 'r', encoding='utf-8') as vips_file:
+            if len(vips_file.read()) > 2: # if the dict is empty, then the char amount is 2: '{}'
+                return
+
+        url = "https://api.twitch.tv/helix/channels/vips"
+        params = {
+            "broadcaster_id": BROADCASTER_ID,
+            "first": 100
+        }
+        
+        try:
+            response = self._request("get", url, params=params)
+        except ConnectionError as e:
+            write_log(self.log_file, f"[ERROR] - Something went wrong getting VIPs: {e}")
+
+        if not response.ok:
+            write_log(self.log_file, f"[ERROR] - Something went wrong getting VIPs: {response.text}")
+            return
+        
+        try:
+            data = response.json()["data"]
+            write_original_vips(data)
+            write_log(self.log_file, f"[INFO] - Written original VIPs list to vips.json")
+        except requests.exceptions.JSONDecodeError as e:
+            write_log(self.log_file, f"[ERROR] - Invalid or no response getting vips list: {e}")
+
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"
         params = {
@@ -139,12 +166,35 @@ class TwitchAPI:
             return "Something went wrong assigning VIP status.."
 
         if response.status_code == 204:
+            write_new_vip(user_id)
+            write_log(self.log_file, f"[INFO] - Added {user_id} to vips.json")
             return True, 204
         elif response.status_code == 422:  # user already is VIP
             return False, 422
         else:
             write_log(self.log_file, f"[ERROR] - Couldn't add VIP to user {user_id}: {response.text}")
             return False, response.status_code
+        
+    def remove_vip(self, user_id):
+        url = "https://api.twitch.tv/helix/channels/vips"
+        params = {
+            "broadcaster_id": BROADCASTER_ID,
+            "user_id": user_id
+        }
+
+        try:
+            response = self._request("delete", url, params=params)
+        except ConnectionError as e:
+            write_log(self.log_file, f"[ERROR] - Couldn't remove VIP status from user {user_id}: {e}")
+            return False
+        
+        if not response.ok:
+            write_log(self.log_file, f"[ERROR] - Something went wrong deleting VIP status: {response.text}")
+            return False
+        
+        delete_vip_from_file(user_id)
+        write_log(self.log_file, f"[INFO] - Removed VIP status from user {user_id}, temporary VIP period expired")
+        return True
 
     # --- Polls ---
 

@@ -23,6 +23,7 @@ logs/
 *.txt
 points.json
 socials.json
+vips.json
 
 # needed for website
 !commands.txt

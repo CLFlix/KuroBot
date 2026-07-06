@@ -4,6 +4,7 @@ import requests
 import os
 import json
 from datetime import datetime as dt
+from datetime import timedelta
 from datetime import timezone
 from dateutil.relativedelta import relativedelta
 
@@ -19,7 +20,7 @@ def write_log(log_file, text: str):
 
 def first_time_startup():
     # quick check if all files / log folder exist
-    files = [r'first_time_bonus_claimed.txt', r'logs', r'points.json', r'socials.json']
+    files = [r'first_time_bonus_claimed.txt', r'logs', r'points.json', r'socials.json', r'vips.json']
     files_exist = [file in os.listdir(r'.') for file in files]
     if not all(files_exist):
         # create file to save all usernames that claimed first-time bonus
@@ -50,6 +51,10 @@ def first_time_startup():
 
             with open(r'socials.json', 'w', encoding='utf-8') as socials_file:
                 json.dump(socials, socials_file, indent=4)
+
+        if r'vips.json' not in os.listdir(r'.'):
+            with open(r'vips.json', 'w', encoding='utf-8') as vips_file:
+                json.dump({}, vips_file)
 
 # load the socials links
 def read_socials_links(socials_file):
@@ -170,3 +175,47 @@ def calculate_followage_days(followed_at):
         parts.append(f"{rd.hours} hour{'s' if rd.hours != 1 else ''}")
 
     return " ".join(parts) if parts else "less than an hour"
+
+def write_original_vips(data):
+    indefinite_vips = {}
+    for vip in data:
+        indefinite_vips[vip["user_login"]] = "indefinite"
+
+    with open(r"vips.json", 'w', encoding='utf-8') as vips_file:
+        json.dump(indefinite_vips, vips_file, indent=4)
+
+def write_new_vip(user_id):
+    with open(r'vips.json', 'r', encoding='utf-8') as vips_file:
+        all_vips = json.load(vips_file)
+    
+    date = dt.now()
+    with open(r'vips.json', 'w', encoding='utf-8') as vips_file:
+        all_vips[user_id] = date.strftime("%Y/%m/%d")
+        json.dump(all_vips, vips_file, indent=4)
+
+def is_expired(date_str):
+    start_date = dt.strptime(date_str, "%Y/%m/%d").date()
+    today = dt.now().date()
+
+    return (today - start_date) > timedelta(days=31)
+
+def check_expired_vips():
+    with open(r'vips.json', 'r', encoding='utf-8') as vips_file:
+        all_vips = json.load(vips_file)
+
+    expired_vips = []
+    for vip, date in all_vips.items():
+        if date == "indefinite":
+            continue
+        if is_expired(date):
+            expired_vips.append(vip)
+
+    return expired_vips
+
+def delete_vip_from_file(user_id):
+    with open(r'vips.json', 'r', encoding='utf-8') as vips_file:
+        all_vips = json.load(vips_file)
+    
+    del all_vips[user_id]
+    with open(r'vips.json', 'w', encoding='utf-8') as vips_file:
+        json.dump(all_vips, vips_file, indent=4)
