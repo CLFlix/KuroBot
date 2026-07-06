@@ -277,7 +277,7 @@ const Dashboard = () => {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => updateTitle()}
-                  className="mt-3 discord-button"
+                  className="mt-3 neutralDashboardButton"
                   disabled={loading}
                 >
                   Update Stream Title
@@ -381,7 +381,7 @@ const Dashboard = () => {
                 </p>
               </div>
               <button
-                className="discord-button mt-2 text-lg"
+                className="neutralDashboardButton mt-2 text-lg"
                 onClick={toggleRequests}
               >
                 {takeRequests

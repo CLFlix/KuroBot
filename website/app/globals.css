@@ -8,28 +8,19 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 .link {
-  color: #ec817a;
+  color: #697fff;
 }
 
 .link:hover {
-  color: #40e0d0;
+  color: #ffe863;
   text-decoration: underline;
 }
 
 .big-link {
-  color: #ec817a;
+  color: #697fff;
   display: inline-block;
   transition-property: transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -37,13 +28,13 @@
 }
 
 .big-link:hover {
-  color: #40e0d0;
+  color: #ffe863;
   text-decoration: underline;
   scale: 1.1;
 }
 
 .header {
-  background-image: linear-gradient(to right, #dd362a, #c44c44);
+  background-image: linear-gradient(to right, #36638c, #3c6fb2);
   display: flex;
   justify-content: center;
   gap: 1.5rem;
@@ -86,7 +77,7 @@
 .view-commands-button {
   padding: 0.25rem;
   border-radius: 0.5rem;
-  background-image: linear-gradient(to right, #7c3aed, #6b21a8);
+  background-image: linear-gradient(to right, #7c3aedd3, #6b21a8d3);
   transition-duration: 300ms;
   font-weight: bold;
 }
@@ -94,7 +85,7 @@
 .about-button {
   padding: 0.25rem;
   border-radius: 0.5rem;
-  background-image: linear-gradient(to right, #ef4444, #be185d);
+  background-image: linear-gradient(to right, #ef4444d3, #be185df8);
   transition-duration: 300ms;
   font-weight: bold;
 }
@@ -102,7 +93,7 @@
 .discord-button {
   padding: 0.25rem;
   border-radius: 0.5rem;
-  background-image: linear-gradient(to right, #0e7490, #0284c7);
+  background-image: linear-gradient(to right, #0e7490ec, #0285c7e8);
   transition-duration: 300ms;
   font-weight: bold;
 }
@@ -110,7 +101,7 @@
 .stop-button {
   padding: 0.25rem;
   border-radius: 0.5rem;
-  background-image: linear-gradient(to right, #c9132b, #c91a1a);
+  background-image: linear-gradient(to right, #c9132bde, #c91a1ae7);
   transition-duration: 300ms;
   font-weight: bold;
 }
@@ -138,7 +129,7 @@
 .commandsTable {
   & thead {
     color: white;
-    background-image: linear-gradient(to right, #da4c42, #b44c45);
+    background-image: linear-gradient(to right, #36638c, #3c6fb2);
 
     & th {
       padding: 0.5rem;
@@ -160,7 +151,7 @@
   & tbody {
     & tr {
       border: 1px solid #333;
-      background-image: linear-gradient(to bottom right, #2e2b2a, #2c2520cb);
+      background-image: linear-gradient(to bottom right, #2a2a2e, #20222ccb);
       transition: all;
       transition-duration: 200ms;
 
@@ -186,7 +177,7 @@
 }
 
 .additionalFeatureBlock {
-  background-image: linear-gradient(to bottom right, #2e2b2a, #2c2520cb);
+  background-image: linear-gradient(to bottom right, #2a2a2e, #20222ccb);
   padding: 0.5rem;
   border-radius: 0.5rem;
   border: 1px solid #4b5563;
@@ -199,7 +190,7 @@
 }
 
 .featureOverviewBlock {
-  background-image: linear-gradient(to bottom right, #2e2b2a, #2c2520cb);
+  background-image: linear-gradient(to bottom right, #2a2a2e, #20222ccb);
   padding: 0.25rem;
   border: 1px solid #374151;
   border-radius: 0.5rem;
@@ -214,7 +205,7 @@
 .pointsTable {
   & thead {
     color: white;
-    background-image: linear-gradient(to right, #da4c42, #b44c45);
+    background-image: linear-gradient(to right, #36638c, #3c6fb2);
 
     & th {
       padding: 0.5rem;
@@ -240,7 +231,7 @@
   width: 80%;
   & thead {
     color: white;
-    background-image: linear-gradient(to right, #da4c42, #b44c45);
+    background-image: linear-gradient(to right, #36638c, #3c6fb2);
     text-align: center;
   }
 
@@ -257,6 +248,14 @@
       width: 30%;
     }
   }
+}
+
+.neutralDashboardButton {
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  background-image: linear-gradient(to right, #36638c, #3c6fb2);
+  transition-duration: 300ms;
+  font-weight: bold;
 }
 .countDownTimer {
   display: inline-flex;
@@ -281,11 +280,7 @@
 
   & .timerPauseButton,
   .timerStartButton {
-    background-image: linear-gradient(
-      to bottom right,
-      hsl(220, 75%, 45%),
-      hsl(220, 65%, 40%)
-    );
+    background-image: linear-gradient(to bottom right, #36638c, #3c6fb2);
     font-weight: bold;
     padding: 0.25rem;
     border-radius: 0.5rem;
