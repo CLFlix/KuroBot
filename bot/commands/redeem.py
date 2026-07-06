@@ -219,7 +219,7 @@ class RedeemCommands(commands.Cog):
             await ctx.send(f"@{user} You won! You now have double your original amount of points!")
             write_log(LOG_FILE, f"[INFO] - {user} won the double or nothing: {self.bot.user_points[user]}")
         else:
-            self.bot.user_points = 0
+            self.bot.user_points[user] = 0
             await ctx.send(f"@{user} You lost... You're back at 0 points...")
             write_log(LOG_FILE, f"[INFO] - {user} lost the double or nothing.")
     double.category = "redeem"
