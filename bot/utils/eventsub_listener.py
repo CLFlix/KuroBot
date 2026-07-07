@@ -5,8 +5,8 @@ import requests
 from datetime import datetime as dt
 
 from dotenv import load_dotenv
-from refresh_access_token import refresh_access_token
-from utils import write_log
+from bot.utils.refresh_access_token import refresh_access_token
+from bot.utils.utils import write_log
 
 load_dotenv()
 
@@ -18,11 +18,11 @@ ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 date_format = "%Y-%m-%d_%H-%M-%S"
 LOG_FILE = f'logs/{dt.now().strftime(date_format)}.txt'
 
+DEFAULT_URL = "wss://eventsub.wss.twitch.tv/ws"
+
 # channel points redemption listener
-async def eventsub_listener(redemption_handler):
+async def eventsub_listener(redemption_handler, url=DEFAULT_URL, is_reconnect=False):
     global ACCESS_TOKEN
-    
-    url = "wss://eventsub.wss.twitch.tv/ws"
 
     async with websockets.connect(url) as ws:
         msg = await ws.recv()
@@ -31,6 +31,7 @@ async def eventsub_listener(redemption_handler):
         if data["metadata"]["message_type"] == "session_welcome":
             session_id = data["payload"]["session"]["id"]
 
+        if not is_reconnect:
             headers = {
                     "Authorization": f"Bearer {ACCESS_TOKEN}",
                     "Client-Id": CLIENT_ID,
@@ -60,7 +61,7 @@ async def eventsub_listener(redemption_handler):
                     # refresh access token for redemption listener, then retry subscription
                     ACCESS_TOKEN = refresh_access_token()
                 except Exception as e:
-                    write_log(LOG_FILE, e)
+                    write_log(LOG_FILE, f"[ERROR] - Failed to refresh token: {e}")
                     return
 
                 headers["Authorization"] = f"Bearer {ACCESS_TOKEN}"
@@ -71,9 +72,9 @@ async def eventsub_listener(redemption_handler):
                 )
 
                 if not response.ok: # if second try fails, stop trying to create subscription
-                    write_log(LOG_FILE, response.text)
+                    write_log(LOG_FILE, f"[ERROR] - Failed to start Redemptions Listener: {response.text}")
                     return
-                        
+
         # wait for incoming notifications
         try:
             async for message in ws:
@@ -83,9 +84,16 @@ async def eventsub_listener(redemption_handler):
                 if msg_type == "notification":
                     event = data["payload"]["event"]
                     await redemption_handler(event)
+                
+                elif msg_type == "session_reconnect":
+                    reconnect_url = data["payload"]["session"]["reconnect_url"]
+                    write_log(LOG_FILE, f"[NOTICE] - Received EventSub session_reconnect, migrating to new session")
+                    await eventsub_listener(redemption_handler, url=reconnect_url, is_reconnect=True)
+                    return
+
                 elif msg_type == "revocation":
                     revocation_reason = data["payload"]["status"]
-                    write_log(LOG_FILE, revocation_reason)
+                    write_log(LOG_FILE, f"[FATAL] - Redemptions Listener access revoked: {revocation_reason}")
                     await redemption_handler(msg_type)
         except Exception as e:
-            write_log(LOG_FILE, e)
+            write_log(LOG_FILE, f"[ERROR] - EventSub Listener failed: {e}")

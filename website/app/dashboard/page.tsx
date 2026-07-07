@@ -25,6 +25,7 @@ const Dashboard = () => {
   const [updateAvailable, setUpdateAvailable] = useState<UpdateInfo | null>(
     null,
   );
+  const [initStatus, setInitStatus] = useState<boolean>(false);
 
   // const baseUrl = "http://localhost:7273"; // used for testing
 
@@ -175,6 +176,16 @@ const Dashboard = () => {
     return;
   };
 
+  const initBot = async () => {
+    const res = await fetch("/initStatus");
+    const data = await res.json();
+    setInitStatus(data);
+
+    if (!data) {
+      window.location.assign("/initializeBot");
+    }
+  };
+
   const getIsRunning = async () => {
     await fetch("/isRunning")
       .then((data) => {
@@ -195,6 +206,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    initBot();
     getIsRunning();
 
     const interval = setInterval(getIsRunning, 5000);
@@ -265,7 +277,7 @@ const Dashboard = () => {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => updateTitle()}
-                  className="mt-3 discord-button"
+                  className="mt-3 neutralDashboardButton"
                   disabled={loading}
                 >
                   Update Stream Title
@@ -369,7 +381,7 @@ const Dashboard = () => {
                 </p>
               </div>
               <button
-                className="discord-button mt-2 text-lg"
+                className="neutralDashboardButton mt-2 text-lg"
                 onClick={toggleRequests}
               >
                 {takeRequests
