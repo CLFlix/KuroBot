@@ -62,7 +62,7 @@ class KuroBot(commands.Bot):
         ]))
 
         if getattr(sys, 'frozen', False):
-            sys.stderr = open(LOG_FILE, 'w')
+            sys.stderr = open(LOG_FILE, 'a', buffering=1, encoding='utf-8')
 
         self.api = TwitchAPI(ACCESS_TOKEN, LOG_FILE)
 
