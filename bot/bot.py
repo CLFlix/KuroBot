@@ -255,7 +255,7 @@ class KuroBot(commands.Bot):
             self.api.remove_vip(expired_vip)
 
         self.clear_banned_users()
-        self.user_points[self.nick] = 0
+        self.user_points[self.user_id] = 0
         write_points_data(self.user_points, POINTS_FILE)
         write_log(LOG_FILE, f"[INFO] - Points data saved")
 
@@ -282,44 +282,46 @@ class KuroBot(commands.Bot):
         print("Commands succesfully exported to 'website/public/static/commands.txt'")
 
     ## helper methods
-    def add_points(self, user, amount):
-        if user == self.nick:
+    def add_points(self, user_id, amount):
+        if user_id == self.user_id:
             write_log(LOG_FILE, f"[INFO] - Skipping add_points, user is self.nick")
             return
-        if user not in self.user_points:
-            self.user_points[user] = amount 
+        if user_id not in self.user_points:
+            self.user_points[user_id] = amount 
         else:
-            self.user_points[user] = round(self.user_points[user] + amount)
-        write_log(LOG_FILE, f"[INFO] - Added {amount} to {user}'s points: {self.user_points[user]}")
+            self.user_points[user_id] = round(self.user_points[user_id] + amount)
+        write_log(LOG_FILE, f"[INFO] - Added {amount} to {user_id}'s points: {self.user_points[user_id]}")
 
     # add points as result to rps game
-    def add_rps_points(self, user, rps_result):
+    def add_rps_points(self, user_id, rps_result):
         match rps_result:
             case "win":
-                self.add_points(user, 15)
+                self.add_points(user_id, 15)
             case "tie":
-                self.add_points(user, 5)
+                self.add_points(user_id, 5)
 
     # check points for points redeeming
-    def remove_points(self, user, item_cost):
-        if user == self.nick:
+    def remove_points(self, user_id, item_cost):
+        if user_id == self.user_id:
             return True, f"Infinite points - {item_cost}?? lol"
 
-        if user in self.user_points:
-            if self.user_points[user] < item_cost:
-                write_log(LOG_FILE, f"[INFO] - {user} does not have enough for an item that costs {item_cost}: {self.user_points[user]}")
-                return False, f"@{user} You don't have enough points! You need {item_cost - self.user_points[user]} more points!"
+        user_name = self.get_user_name(user_id)
+
+        if user_id in self.user_points:
+            if self.user_points[user_id] < item_cost:
+                write_log(LOG_FILE, f"[INFO] - {user_name} does not have enough for an item that costs {item_cost}: {self.user_points[user_id]}")
+                return False, f"@{user_name} You don't have enough points! You need {item_cost - self.user_points[user_id]} more points!"
             else:
-                self.user_points[user] = round(self.user_points[user] - item_cost)
-                write_log(LOG_FILE, f"[INFO] - Subtracted {item_cost} points from {user}: {self.user_points[user]}")
-                return True, f"This costed @{user} {item_cost} points."
+                self.user_points[user_id] = round(self.user_points[user_id] - item_cost)
+                write_log(LOG_FILE, f"[INFO] - Subtracted {item_cost} points from {user_name}: {self.user_points[user_id]}")
+                return True, f"This costed @{user_name} {item_cost} points."
         else:
-            write_log(LOG_FILE, f"[INFO] - {user} does not have enough for an item that costs {item_cost}: {self.user_points[user]}")
-            return False, f"@{user} You don't have enough points! You need {item_cost} more points!"
+            write_log(LOG_FILE, f"[INFO] - {user_name} does not have enough for an item that costs {item_cost}: {self.user_points[user_id]}")
+            return False, f"@{user_name} You don't have enough points! You need {item_cost} more points!"
 
 ## events
     async def event_ready(self):
-        self.user_points[self.nick] = float("inf")
+        self.user_points[self.user_id] = float("inf")
         self.check_for_update()
         self.get_mods_list()
         self.get_vips_list()
@@ -362,13 +364,13 @@ class KuroBot(commands.Bot):
         now = time.time()
         cooldown = 5
 
-        user = message.author.name
+        user_id = message.author.id
         added_points = min(15, round(len(message.content) / 4))
 
         # prevent spamming
-        if user not in self.last_point_time or (now - self.last_point_time[user]) >= cooldown:
-            self.add_points(user, added_points)
-            self.last_point_time[user] = now
+        if user_id not in self.last_point_time or (now - self.last_point_time[user_id]) >= cooldown:
+            self.add_points(user_id, added_points)
+            self.last_point_time[user_id] = now
 
         # this line is necessary to keep recognizing commands
         await self.handle_commands(message)
@@ -381,11 +383,12 @@ class KuroBot(commands.Bot):
 
         redemption = event["reward"]["title"]
         if redemption.startswith("Exchange"):
-            user = event["user_name"].lower()
+            user_id = event["user_id"]
+            user_name = event["user_login"].lower()
             cost = event["reward"]["cost"]
 
-            self.add_points(user, cost)
-            await channel.send(f"@{user} Your redemption has been acknowlged.")
+            self.add_points(user_id, cost)
+            await channel.send(f"@{user_name} Your redemption has been acknowlged.")
 
     def get_single_social(self, social):
         try:
@@ -396,21 +399,23 @@ class KuroBot(commands.Bot):
     def clear_banned_users(self):
         banned_users = self.get_banned_users()
 
-        for user in banned_users:
-            if user in self.user_points.keys():
-                del self.user_points[user]
+        for user_id in banned_users:
+            if user_id in self.user_points.keys():
+                del self.user_points[user_id]
         
     def read_mods(self):
         with open(r'mods_list.txt', 'r', encoding='utf-8') as mods_list:
             mods = mods_list.readlines()
-        mods_list = [user.strip() for user in mods]
-        return mods_list
+        return mods
     
     async def user_exists(self, username) -> bool:
         return self.api.user_exists(username)
 
     def get_user_id(self, user):
         return self.api.get_user_id(user)
+
+    def get_user_name(self, user_id):
+        return self.api.get_user_name(user_id)
     
     def get_mods_list(self):
         return self.api.get_mods_list(self.nick)

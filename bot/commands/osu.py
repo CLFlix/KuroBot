@@ -203,7 +203,7 @@ class OsuCommands(commands.Cog):
     # change streaming category to osu!
     @commands.command(name="category")
     async def category(self, ctx):
-        user = ctx.author.name
+        user = ctx.author.id
         mods_list = self.bot.read_mods()
 
         if user not in mods_list:

@@ -89,7 +89,7 @@ class FunCommands(commands.Cog):
         await ctx.send(f"@{ctx.author.name} {base_reply}{messages[result]}")
 
         if result in ("win", "tie"):
-            self.bot.add_rps_points(ctx.author.name, result)
+            self.bot.add_rps_points(ctx.author.id, result)
     rps.category = "fun"
     rps.description = "Play rock, paper, scissors with the bot! If you win, " \
     "you get 15 points. If you tie with the bot, you gain 5 points."
@@ -97,12 +97,14 @@ class FunCommands(commands.Cog):
     @commands.command(name="rob", aliases=["steal"])
     async def rob(self, ctx, username: str=None):
         invoker = ctx.author.name
+        invoker_id = ctx.author.id
 
         if not username or not username.encode("ascii", "ignore").decode():
             await ctx.send(f"@{invoker} You didn't specify who you want to rob points from!")
             return
         
         username = username.lstrip("@").lower() if "@" in username else username.lower()
+        username_id = self.bot.get_user_id(username)
 
         if username in self.bot.robbed:
             await ctx.send(f"@{invoker} {username} already has been robbed today!")
@@ -118,7 +120,7 @@ class FunCommands(commands.Cog):
             await ctx.send(f"@{invoker} what are you doing?? Stealing from yourself? LUL")
             return
 
-        if username not in self.bot.user_points.keys():
+        if username_id not in self.bot.user_points.keys():
             await ctx.send(f"@{invoker} This user doesn't have any points, or just doesn't exist lol")
             return
         
@@ -135,8 +137,8 @@ class FunCommands(commands.Cog):
         steal_chance = 0.33
 
         if random.random() > steal_chance:
-            fine = round(self.bot.user_points[invoker] * random.uniform(0.02, 0.04))
-            self.bot.remove_points(invoker, fine)
+            fine = round(self.bot.user_points[invoker_id] * random.uniform(0.02, 0.04))
+            self.bot.remove_points(invoker_id, fine)
             lost_points_message = f"You just lost 1 point!" if fine == 1 else f"You just lost {fine} points!"
             messages = [
                 f"@{invoker} You failed to rob {username}... {lost_points_message}",
@@ -149,9 +151,9 @@ class FunCommands(commands.Cog):
             return
         
         percentage = random.uniform(0.03, 0.07)
-        robbed_points = round(self.bot.user_points[username] * percentage)
-        self.bot.remove_points(username, robbed_points)
-        self.bot.add_points(invoker, robbed_points)
+        robbed_points = round(self.bot.user_points[username_id] * percentage)
+        self.bot.remove_points(username_id, robbed_points)
+        self.bot.add_points(invoker_id, robbed_points)
         self.bot.robbed.add(username)
 
         messages = [

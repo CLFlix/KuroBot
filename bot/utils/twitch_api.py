@@ -53,7 +53,7 @@ class TwitchAPI:
 
         try:
             data = response.json()["data"]
-            mods_list = [mod["user_login"] for mod in data]
+            mods_list = [mod["user_id"] for mod in data]
 
             with open("mods_list.txt", 'w', encoding='utf-8') as mods_file:
                 for mod in mods_list:
@@ -77,7 +77,7 @@ class TwitchAPI:
             data = response.json()["data"]
             banned_users = set()
             for banned_user in data:
-                banned_users.add(banned_user["user_login"])
+                banned_users.add(banned_user["user_id"])
             return banned_users
         except requests.exceptions.JSONDecodeError as e:
             write_log(self.log_file, f"[ERROR] - Couldn't decode banned users list: {e}")
@@ -104,6 +104,18 @@ class TwitchAPI:
             return user_data["data"][0]["id"]
         except requests.exceptions.JSONDecodeError as e:
             write_log(self.log_file, f"[ERROR] - Couldn't get user ID: {e}")
+
+    def get_user_name(self, user_id):
+        url = "https://api.twitch.tv/helix/users"
+        params = {"id": user_id}
+
+        res = self._request("get", url, params=params)
+
+        try:
+            user_data = res.json()
+            return user_data["data"][0]["login"]
+        except requests.exceptions.JSONDecodeError as e:
+            write_log(self.log_file, f"[ERROR] - Couldn't get user login: {e}")
 
     def get_follower_data(self, user_id):
         url = "https://api.twitch.tv/helix/channels/followers"
