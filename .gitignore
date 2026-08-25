@@ -38,3 +38,6 @@ out/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+convert_usernames_to_user_ids.py
+new_points_file.json
