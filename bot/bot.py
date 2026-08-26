@@ -33,7 +33,7 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 osuUsername = os.getenv("osuUsername")
 
-POINTS_FILE = r'points.json'
+POINTS_FILE = r'points_ids.json'
 FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
 SOCIALS_FILE = r'socials.json'
 
@@ -220,11 +220,7 @@ class KuroBot(commands.Bot):
         
         @app.get("/points")
         def get_points():
-            req_points = {}
-            for username, points_amount in self.user_points.items():
-                if username != self.nick:
-                    req_points[username] = points_amount
-            return req_points
+            return self.get_top_5_points()
 
         @app.get("/update_title")
         async def fire_updater():
@@ -318,6 +314,20 @@ class KuroBot(commands.Bot):
         else:
             write_log(LOG_FILE, f"[INFO] - {user_name} does not have enough for an item that costs {item_cost}: {self.user_points[user_id]}")
             return False, f"@{user_name} You don't have enough points! You need {item_cost} more points!"
+
+    def get_top_5_points(self):
+        ranking = sorted(self.user_points.items(), key=lambda user: user[1], reverse=True)
+        ranking.pop(0) # inf points is always index 0 because of sorting
+
+        top_n = 5
+        top_5 = {user_id: points for user_id, points in ranking[:top_n]}
+
+        ranking_with_usernames = {}
+        for user_id, points in top_5.items():
+            user_name = self.get_user_name(user_id)
+            ranking_with_usernames[user_name] = points
+        
+        return ranking_with_usernames
 
 ## events
     async def event_ready(self):

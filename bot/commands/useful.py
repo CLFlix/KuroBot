@@ -253,22 +253,17 @@ class UsefulCommands(commands.Cog):
 
     @commands.command(name="leaderboard", aliases=["lb"])
     async def leaderboard(self, ctx):
-        ranking = sorted(self.bot.user_points.items(), key=lambda user: user[1], reverse=True)
+        ranking = self.bot.get_top_5_points()
 
         if not ranking:
             await ctx.send(f"@{ctx.author.name} No one is on the leaderboard yet!")
             return
-
-        ranking.pop(0) # inf points is always index 0 because of sorting
+        
         top_n = 3
-        top_users = [f"{user_id}: {points}" for user_id, points in ranking[:top_n]]
+        from itertools import islice
+        top_3 = [f"{user_id}: {points}" for user_id, points in islice(ranking.items(), top_n)]
 
-        lb = []
-        for user_id, points in top_users:
-            user_name = self.bot.get_user_name(user_id)
-            lb.append(f"{user_name}: {points}")
-
-        await ctx.send(f"@{ctx.author.name} " + ", ".join(top_users))
+        await ctx.send(f"@{ctx.author.name} " + ", ".join(top_3))
     leaderboard.category = "useful"
     leaderboard.description = "'!leaderboard' will show you the top 3 " \
     "bot point earners of this channel. Alias: !lb"
