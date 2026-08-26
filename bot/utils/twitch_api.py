@@ -58,7 +58,7 @@ class TwitchAPI:
             with open("mods_list.txt", 'w', encoding='utf-8') as mods_file:
                 for mod in mods_list:
                     mods_file.write(f"{mod}\n")
-                mods_file.write(bot_user_id)
+                mods_file.write(f"{bot_user_id}")
         
         except requests.exceptions.JSONDecodeError:
             raise RuntimeError("Couldn't get moderators")
