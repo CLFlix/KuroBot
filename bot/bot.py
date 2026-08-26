@@ -428,7 +428,7 @@ class KuroBot(commands.Bot):
         return self.api.get_user_name(user_id)
     
     def get_mods_list(self):
-        return self.api.get_mods_list(self.nick)
+        return self.api.get_mods_list(self.user_id)
 
     def get_banned_users(self):
         return self.api.get_banned_users()

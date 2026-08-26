@@ -41,7 +41,7 @@ class TwitchAPI:
 
         write_log(self.log_file, f"[WARN] - Could not get valid response from '{log_url}': {response.text}")
     
-    def get_mods_list(self, bot_nick):
+    def get_mods_list(self, bot_user_id):
         uri = "https://api.twitch.tv/helix/moderation/moderators"
         params = {"broadcaster_id": BROADCASTER_ID}
 
@@ -58,7 +58,7 @@ class TwitchAPI:
             with open("mods_list.txt", 'w', encoding='utf-8') as mods_file:
                 for mod in mods_list:
                     mods_file.write(f"{mod}\n")
-                mods_file.write(bot_nick)
+                mods_file.write(bot_user_id)
         
         except requests.exceptions.JSONDecodeError:
             raise RuntimeError("Couldn't get moderators")
