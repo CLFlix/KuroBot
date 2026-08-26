@@ -11,6 +11,7 @@ load_dotenv()
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 REFRESH_TOKEN = os.getenv("REFRESH_TOKEN")
 CLIENT_ID = os.getenv("CLIENT_ID")
+BROADCASTER_ID = os.getenv("BROADCASTER_ID")
 
 LOG_FILE = "logs/conversion_log.txt"
 
@@ -20,6 +21,8 @@ def read_user_points_file():
     return points
 
 def write_new_points_file(points_data):
+    if BROADCASTER_ID in points_data.keys():
+        del points_data[BROADCASTER_ID]
     with open(r'./points_ids.json', 'w', encoding='utf-8') as points_file:
         json.dump(points_data, points_file, indent=4)
 

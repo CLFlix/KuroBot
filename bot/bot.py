@@ -251,7 +251,7 @@ class KuroBot(commands.Bot):
             self.api.remove_vip(expired_vip)
 
         self.clear_banned_users()
-        self.user_points[self.user_id] = 0
+        del self.user_points[self.user_id]
         write_points_data(self.user_points, POINTS_FILE)
         write_log(LOG_FILE, f"[INFO] - Points data saved")
 
