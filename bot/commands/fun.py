@@ -129,13 +129,22 @@ class FunCommands(commands.Cog):
             await ctx.send(f"@{invoker} You've already tried robbing 3 times!")
             return
 
+        minus_10 = round(self.bot.user_points[username_id] - (self.bot.user_points[username_id] * 0.1))
+        plus_10 = round(self.bot.user_points[username_id] + (self.bot.user_points[username_id] * 0.1))
+        if self.bot.user_points[invoker_id] < minus_10:
+            await ctx.send(f"@{invoker} {username} has too many points - they're outside your 10% robbing range.")
+            return
+        if self.bot.user_points[invoker_id] > plus_10:
+            await ctx.send(f"@{invoker} {username} has too few points - they're outside your 10% robbing range.")
+            return
+
         if invoker in self.bot.robbers.keys():
             self.bot.robbers[invoker].append(username)
         else:
             self.bot.robbers[invoker] = [username]
 
 
-        steal_chance = 0.33
+        steal_chance = 1
 
         if random.random() > steal_chance:
             fine = round(self.bot.user_points[invoker_id] * random.uniform(0.02, 0.04))
