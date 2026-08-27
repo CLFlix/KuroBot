@@ -279,7 +279,7 @@ class KuroBot(commands.Bot):
 
     ## helper methods
     def add_points(self, user_id, username, amount):
-        if user_id == self.user_id:
+        if int(user_id) == self.user_id:
             write_log(LOG_FILE, f"[INFO] - Skipping add_points, user is self.nick")
             return
         if user_id not in self.user_points:
@@ -298,7 +298,7 @@ class KuroBot(commands.Bot):
 
     # check points for points redeeming
     def remove_points(self, user_id, username, item_cost):
-        if user_id == self.user_id:
+        if int(user_id) == self.user_id:
             return True, f"Infinite points - {item_cost}?? lol"
 
         if user_id in self.user_points:
