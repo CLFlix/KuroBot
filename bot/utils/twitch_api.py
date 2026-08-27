@@ -41,7 +41,7 @@ class TwitchAPI:
 
         write_log(self.log_file, f"[WARN] - Could not get valid response from '{log_url}': {response.text}")
     
-    def get_mods_list(self, bot_nick):
+    def get_mods_list(self, bot_user_id):
         uri = "https://api.twitch.tv/helix/moderation/moderators"
         params = {"broadcaster_id": BROADCASTER_ID}
 
@@ -53,12 +53,12 @@ class TwitchAPI:
 
         try:
             data = response.json()["data"]
-            mods_list = [mod["user_login"] for mod in data]
+            mods_list = [mod["user_id"] for mod in data]
 
             with open("mods_list.txt", 'w', encoding='utf-8') as mods_file:
                 for mod in mods_list:
                     mods_file.write(f"{mod}\n")
-                mods_file.write(bot_nick)
+                mods_file.write(f"{bot_user_id}")
         
         except requests.exceptions.JSONDecodeError:
             raise RuntimeError("Couldn't get moderators")
@@ -77,21 +77,10 @@ class TwitchAPI:
             data = response.json()["data"]
             banned_users = set()
             for banned_user in data:
-                banned_users.add(banned_user["user_login"])
+                banned_users.add(banned_user["user_id"])
             return banned_users
         except requests.exceptions.JSONDecodeError as e:
             write_log(self.log_file, f"[ERROR] - Couldn't decode banned users list: {e}")
-    
-    def user_exists(self, username) -> bool:
-        url = f"https://api.twitch.tv/helix/users?login={username}"
-        response = self._request("get", url)
-
-        if not response.ok:
-            write_log(self.log_file, f"[ERROR] - Couldn't get user data: {response.text}")
-            return False
-
-        data = response.json()
-        return len(data["data"]) > 0
     
     def get_user_id(self, user):
         url = "https://api.twitch.tv/helix/users"
@@ -100,10 +89,24 @@ class TwitchAPI:
         response = self._request("get", url, params=params)
 
         try:
-            user_data = response.json()
-            return user_data["data"][0]["id"]
+            user_data = response.json()["data"]
+            if len(user_data) == 0:
+                return None
+            return user_data[0]["id"]
         except requests.exceptions.JSONDecodeError as e:
             write_log(self.log_file, f"[ERROR] - Couldn't get user ID: {e}")
+
+    def get_user_name(self, user_id):
+        url = "https://api.twitch.tv/helix/users"
+        params = {"id": user_id}
+
+        res = self._request("get", url, params=params)
+
+        try:
+            user_data = res.json()
+            return user_data["data"][0]["login"]
+        except requests.exceptions.JSONDecodeError as e:
+            write_log(self.log_file, f"[ERROR] - Couldn't get user login: {e}")
 
     def get_follower_data(self, user_id):
         url = "https://api.twitch.tv/helix/channels/followers"

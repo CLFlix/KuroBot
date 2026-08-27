@@ -179,7 +179,7 @@ def calculate_followage_days(followed_at):
 def write_original_vips(data):
     indefinite_vips = {}
     for vip in data:
-        indefinite_vips[vip["user_login"]] = "indefinite"
+        indefinite_vips[vip["user_id"]] = "indefinite"
 
     with open(r"vips.json", 'w', encoding='utf-8') as vips_file:
         json.dump(indefinite_vips, vips_file, indent=4)

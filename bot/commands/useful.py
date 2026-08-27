@@ -21,9 +21,10 @@ class UsefulCommands(commands.Cog):
     @commands.command(name="poll")
     async def poll(self, ctx, *, message):
         user = ctx.author.name
+        user_id = ctx.author.id
         mods_list = self.bot.read_mods()
 
-        if user not in mods_list:
+        if user_id not in mods_list:
             await ctx.send(f"@{user} You do not have permission to use this command!")
             return
         
@@ -130,13 +131,14 @@ class UsefulCommands(commands.Cog):
     @commands.command(name="shoutout", aliases=["so"])
     async def shoutout(self, ctx, user: str=None):
         invoker = ctx.author.name
+        invoker_id = ctx.author.id
 
         if not user or not user.encode("ascii", "ignore").decode():
             await ctx.send(f"@{invoker} You didn't specify a user to shoutout :/")
             return
         
         mods_list = self.bot.read_mods()
-        if invoker not in mods_list:
+        if invoker_id not in mods_list:
             await ctx.send(f"@{invoker} You are not allowed to use this command!")
             return
 
@@ -150,13 +152,14 @@ class UsefulCommands(commands.Cog):
     @commands.command(name="claim")
     async def claim(self, ctx):
         user = ctx.author.name
+        user_id = ctx.author.id
 
-        if user in self.bot.bonus_claimed:
+        if user_id in self.bot.bonus_claimed:
             await ctx.send(f"@{user} You already claimed your first time bonus!")
             return
 
-        self.bot.bonus_claimed.add(user)
-        self.bot.add_points(user, 500)
+        self.bot.bonus_claimed.add(user_id)
+        self.bot.add_points(user_id, user, 500)
 
         message = random.choice([
             "You just claimed 500 points! Use !commands to find out what you can do CorgiDerp",
@@ -175,6 +178,8 @@ class UsefulCommands(commands.Cog):
     @commands.command(name="daily")
     async def daily(self, ctx):
         user = ctx.author.name
+        user_id = ctx.author.id
+
         if user == self.bot.nick:
             return
 
@@ -182,7 +187,7 @@ class UsefulCommands(commands.Cog):
             await ctx.send(f"@{user} You already claimed your daily bonus!")
             return
 
-        self.bot.add_points(user, 50)
+        self.bot.add_points(user_id, user, 50)
         self.bot.daily_claimed.add(user)
 
         messages = [
@@ -201,7 +206,7 @@ class UsefulCommands(commands.Cog):
     @commands.command(name="points")
     async def points(self, ctx, username: str=None):
         user = ctx.author.name
-
+        
         if not username or not username.encode("ascii", "ignore").decode():
             if user == self.bot.nick.lower():
                 await ctx.send(f"@{self.bot.nick} is the points master! Infinite points to them!")
@@ -214,8 +219,10 @@ class UsefulCommands(commands.Cog):
             await ctx.send(f"@{username} is the points master! Infinite points to them!")
             return
 
-        if username in self.bot.user_points.keys():
-            amount = self.bot.user_points[username]
+        username_id = self.bot.get_user_id(username)
+
+        if username_id in self.bot.user_points.keys():
+            amount = self.bot.user_points[username_id]
             if amount == 1:
                 msg = f"@{user} You currently have 1 point." if username == user else f"@{user} {username} currently has 1 point."
                 await ctx.send(msg)
@@ -246,16 +253,17 @@ class UsefulCommands(commands.Cog):
 
     @commands.command(name="leaderboard", aliases=["lb"])
     async def leaderboard(self, ctx):
-        ranking = sorted(self.bot.user_points.items(), key=lambda user: user[1], reverse=True)
+        ranking = self.bot.get_top_5_points()
 
         if not ranking:
             await ctx.send(f"@{ctx.author.name} No one is on the leaderboard yet!")
             return
-
-        ranking.pop(0) # inf points is always index 0 because of sorting
+        
         top_n = 3
-        top_users = [f"{user}: {points}" for user, points in ranking[:top_n]]
-        await ctx.send(f"@{ctx.author.name} " + ", ".join(top_users))
+        from itertools import islice
+        top_3 = [f"{user_id}: {points}" for user_id, points in islice(ranking.items(), top_n)]
+
+        await ctx.send(f"@{ctx.author.name} " + ", ".join(top_3))
     leaderboard.category = "useful"
     leaderboard.description = "'!leaderboard' will show you the top 3 " \
     "bot point earners of this channel. Alias: !lb"
@@ -263,27 +271,28 @@ class UsefulCommands(commands.Cog):
     # Get user's followage
     @commands.command(name="followage")
     async def followage(self, ctx, username=None):
+        invoker = ctx.author.name
+
         if username:
             user = username[1:] if "@" in username else username
-            followage_message = f"@{ctx.author.name} @{user} has been following {self.bot.nick} for ..."
+            followage_message = f"@{invoker} @{user} has been following {self.bot.nick} for ..."
         else:
-            user = ctx.author.name
+            user = invoker
             followage_message = f"@{user} You have been following {self.bot.nick} for ..."
 
         if self.bot.nick == user.lower():
             await ctx.send(f"@{user} You can't follow yourself, dummy")
             return
 
-        if not await self.bot.user_exists(user):
-            await ctx.send(f"@{ctx.author.name} This user doesn't exist.")
-            return
-
         user_id = self.bot.get_user_id(user)
+        if not user_id:
+            await ctx.send(f"@{invoker} This user doesn't exist.")
+            return
 
         try:
             followed_at = self.bot.get_follower_data(user_id)
             if not followed_at:
-                await ctx.send(f"@{ctx.author.name} This user doesn't follow {self.bot.nick}")
+                await ctx.send(f"@{invoker} This user doesn't follow {self.bot.nick}")
                 return
         except ValueError as e:
             write_log(LOG_FILE, f"[ERROR] - Couldn't get followage: {e}")
