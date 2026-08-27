@@ -33,7 +33,7 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 osuUsername = os.getenv("osuUsername")
 
-POINTS_FILE = r'points_ids.json'
+POINTS_FILE = r'points.json'
 FIRST_TIME_BONUS_FILE = r'first_time_bonus_claimed.txt'
 SOCIALS_FILE = r'socials.json'
 
