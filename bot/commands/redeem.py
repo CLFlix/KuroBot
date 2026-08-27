@@ -128,7 +128,8 @@ class RedeemCommands(commands.Cog):
             await ctx.send(f"@{gifter} You cant gift points to yourself!")
             return
 
-        if not await self.bot.user_exists(receiver):
+        receiver_id = self.bot.get_user_id(receiver)
+        if not receiver_id:
             await ctx.send(f"@{gifter} That user doesn't exist on Twitch!")
             return
 
@@ -146,7 +147,7 @@ class RedeemCommands(commands.Cog):
             f"@{gifter} could miss {amount} points and gave it to @{receiver} !"
         ])
         await ctx.send(return_message)
-        self.bot.add_points(self.bot.get_user_id(receiver), receiver, amount)
+        self.bot.add_points(receiver_id, receiver, amount)
         write_log(LOG_FILE, f"[INFO] - {gifter} gifted {amount} points to {receiver}")
     gift.category = "redeem"
     gift.description = "You can gift points to another user, if you " \

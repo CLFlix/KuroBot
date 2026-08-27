@@ -82,17 +82,6 @@ class TwitchAPI:
         except requests.exceptions.JSONDecodeError as e:
             write_log(self.log_file, f"[ERROR] - Couldn't decode banned users list: {e}")
     
-    def user_exists(self, username) -> bool:
-        url = f"https://api.twitch.tv/helix/users?login={username}"
-        response = self._request("get", url)
-
-        if not response.ok:
-            write_log(self.log_file, f"[ERROR] - Couldn't get user data: {response.text}")
-            return False
-
-        data = response.json()
-        return len(data["data"]) > 0
-    
     def get_user_id(self, user):
         url = "https://api.twitch.tv/helix/users"
         params = {"login": user}
@@ -100,8 +89,10 @@ class TwitchAPI:
         response = self._request("get", url, params=params)
 
         try:
-            user_data = response.json()
-            return user_data["data"][0]["id"]
+            user_data = response.json()["data"]
+            if len(user_data) == 0:
+                return None
+            return user_data[0]["id"]
         except requests.exceptions.JSONDecodeError as e:
             write_log(self.log_file, f"[ERROR] - Couldn't get user ID: {e}")
 

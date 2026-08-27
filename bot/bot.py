@@ -415,9 +415,6 @@ class KuroBot(commands.Bot):
         with open(r'mods_list.txt', 'r', encoding='utf-8') as mods_list:
             mods = mods_list.readlines()
         return mods
-    
-    async def user_exists(self, username) -> bool:
-        return self.api.user_exists(username)
 
     def get_user_id(self, user):
         return self.api.get_user_id(user)

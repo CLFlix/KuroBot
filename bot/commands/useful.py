@@ -277,18 +277,17 @@ class UsefulCommands(commands.Cog):
             user = username[1:] if "@" in username else username
             followage_message = f"@{invoker} @{user} has been following {self.bot.nick} for ..."
         else:
-            user = ctx.author.name
+            user = invoker
             followage_message = f"@{user} You have been following {self.bot.nick} for ..."
 
         if self.bot.nick == user.lower():
             await ctx.send(f"@{user} You can't follow yourself, dummy")
             return
 
-        if not await self.bot.user_exists(user):
+        user_id = self.bot.get_user_id(user)
+        if not user_id:
             await ctx.send(f"@{invoker} This user doesn't exist.")
             return
-
-        user_id = self.bot.get_user_id(user)
 
         try:
             followed_at = self.bot.get_follower_data(user_id)
