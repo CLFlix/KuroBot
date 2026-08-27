@@ -144,7 +144,7 @@ class FunCommands(commands.Cog):
             self.bot.robbers[invoker] = [username]
 
 
-        steal_chance = 1
+        steal_chance = 0.33
 
         if random.random() > steal_chance:
             fine = round(self.bot.user_points[invoker_id] * random.uniform(0.02, 0.04))
