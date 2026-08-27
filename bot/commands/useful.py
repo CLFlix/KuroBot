@@ -21,7 +21,7 @@ class UsefulCommands(commands.Cog):
     @commands.command(name="poll")
     async def poll(self, ctx, *, message):
         user = ctx.author.name
-        user_id = ctx.author.name
+        user_id = ctx.author.id
         mods_list = self.bot.read_mods()
 
         if user_id not in mods_list:
@@ -215,11 +215,11 @@ class UsefulCommands(commands.Cog):
         else:
             username = username.lstrip("@").lower() if "@" in username else username.lower()
 
-        username_id = self.bot.get_user_id(username)
-
         if username == self.bot.nick.lower():
             await ctx.send(f"@{username} is the points master! Infinite points to them!")
             return
+
+        username_id = self.bot.get_user_id(username)
 
         if username_id in self.bot.user_points.keys():
             amount = self.bot.user_points[username_id]

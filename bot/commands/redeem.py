@@ -219,7 +219,7 @@ class RedeemCommands(commands.Cog):
         user = ctx.author.name
         user_id = ctx.author.id
 
-        if user_id not in self.bot.user_points or self.bot.user_points[user_id] == 0:
+        if user_id not in self.bot.user_points.keys() or self.bot.user_points[user_id] == 0:
             await ctx.send(f"@{user} you don't have any points.")
 
         won = random.choice([0,1])

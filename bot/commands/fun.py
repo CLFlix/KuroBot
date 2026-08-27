@@ -52,17 +52,18 @@ class FunCommands(commands.Cog):
     # rock paper scissors against bot
     @commands.command(name="rps")
     async def rps(self, ctx, choice=None):
+        user = ctx.author.name
         options = ["rock", "paper", "scissors"]
 
         if not choice:
-            await ctx.send(f"@{ctx.author.name} please choose rock, paper or scissors.")
+            await ctx.send(f"@{user} please choose rock, paper or scissors.")
             return
         
         player_choice = choice.lower()
         rps = random.choice(options)
 
         if player_choice not in options:
-            await ctx.send(f"@{ctx.author.name} please choose rock, paper or scissors.")
+            await ctx.send(f"@{user} please choose rock, paper or scissors.")
             return
         
         outcomes = {
@@ -86,7 +87,7 @@ class FunCommands(commands.Cog):
             "tie": "It's a tie. 🤝"
         }
 
-        await ctx.send(f"@{ctx.author.name} {base_reply}{messages[result]}")
+        await ctx.send(f"@{user} {base_reply}{messages[result]}")
 
         if result in ("win", "tie"):
             self.bot.add_rps_points(ctx.author.id, result)
