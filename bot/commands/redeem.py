@@ -13,7 +13,7 @@ class RedeemCommands(commands.Cog):
         user = ctx.author.name
         user_id = ctx.author.id
         shush_cost = 2500
-        can_afford, afford_message = self.bot.remove_points(user_id, shush_cost)
+        can_afford, afford_message = self.bot.remove_points(user_id, user, shush_cost)
 
         if can_afford:
             await ctx.send(f"@{self.bot.nick} You can't speak for the next 5 minutes! {afford_message}")
@@ -29,7 +29,7 @@ class RedeemCommands(commands.Cog):
         user = ctx.author.name
         user_id = ctx.author.id
         memecam_cost = 500
-        can_afford, afford_message = self.bot.remove_points(user_id, memecam_cost)
+        can_afford, afford_message = self.bot.remove_points(user_id, user, memecam_cost)
 
         if can_afford:
             await ctx.send(f"@{self.bot.nick} You have to throw a silly effect over your camera for the next 10 minutes! {afford_message}")
@@ -46,7 +46,7 @@ class RedeemCommands(commands.Cog):
         user = ctx.author.name
         user_id = ctx.author.id
         zoom_cost = 500
-        can_afford, afford_message = self.bot.remove_points(user_id, zoom_cost)
+        can_afford, afford_message = self.bot.remove_points(user_id, user, zoom_cost)
 
         if not can_afford:
             await ctx.send(afford_message)
@@ -63,7 +63,7 @@ class RedeemCommands(commands.Cog):
         user = ctx.author.name
         user_id = ctx.author.id
         invert_cost = 250
-        can_afford, afford_message = self.bot.remove_points(user_id, invert_cost)
+        can_afford, afford_message = self.bot.remove_points(user_id, user, invert_cost)
 
         if not can_afford:
             await ctx.send(afford_message)
@@ -89,7 +89,7 @@ class RedeemCommands(commands.Cog):
             await ctx.send(f"@{user} Please send the map link or the title of the song you'd like to see the stream end with: '!endwith <link or title>'")
             return
             
-        can_afford, afford_message = self.bot.remove_points(user_id, endwith_cost)
+        can_afford, afford_message = self.bot.remove_points(user_id, user, endwith_cost)
 
         if can_afford:
             self.bot.endwith_redeemed = True
@@ -132,7 +132,7 @@ class RedeemCommands(commands.Cog):
             await ctx.send(f"@{gifter} That user doesn't exist on Twitch!")
             return
 
-        can_afford, afford_message = self.bot.remove_points(gifter_id, amount)
+        can_afford, afford_message = self.bot.remove_points(gifter_id, gifter, amount)
 
         if not can_afford:
             await ctx.send(afford_message)
@@ -146,7 +146,7 @@ class RedeemCommands(commands.Cog):
             f"@{gifter} could miss {amount} points and gave it to @{receiver} !"
         ])
         await ctx.send(return_message)
-        self.bot.add_points(self.bot.get_user_id(receiver), amount)
+        self.bot.add_points(self.bot.get_user_id(receiver), receiver, amount)
         write_log(LOG_FILE, f"[INFO] - {gifter} gifted {amount} points to {receiver}")
     gift.category = "redeem"
     gift.description = "You can gift points to another user, if you " \
@@ -188,7 +188,7 @@ class RedeemCommands(commands.Cog):
         else:
             self.bot.gamble_cooldown[user] = 1
 
-        self.bot.remove_points(user_id, amount)
+        self.bot.remove_points(user_id, user, amount)
 
         won = random.choice([0,1])
         if won:
@@ -198,13 +198,13 @@ class RedeemCommands(commands.Cog):
             
             match round(multiplier - 1, 1):
                 case 0:
-                    self.bot.add_points(user_id, amount)
+                    self.bot.add_points(user_id, user, amount)
                     await ctx.send(f"@{user} You didn't win, you didn't lose.. You got your {amount} points back.")
                     write_log(LOG_FILE, f"[INFO] - {user} gambled {amount} points and broke even.")
                 case _:
                     won_points = round(amount * multiplier) if amount * multiplier != 0 else 1
                     await ctx.send(f"@{user} Congrats, you won {won_points} point{"" if won_points == 1 else "s"}!")
-                    self.bot.add_points(user_id, won_points)
+                    self.bot.add_points(user_id, user, won_points)
                     write_log(LOG_FILE, f"[INFO] - {user} won {won_points} points by gambling {amount} points")
         else:
             await ctx.send(f"@{user} Sadge, you lost {amount} points...")
@@ -224,7 +224,7 @@ class RedeemCommands(commands.Cog):
 
         won = random.choice([0,1])
         if won:
-            self.bot.add_points(user_id, self.bot.user_points[user_id])
+            self.bot.add_points(user_id, user, self.bot.user_points[user_id])
             await ctx.send(f"@{user} You won! You now have double your original amount of points!")
             write_log(LOG_FILE, f"[INFO] - {user} won the double or nothing: {self.bot.user_points[user_id]}")
         else:
@@ -242,7 +242,7 @@ class RedeemCommands(commands.Cog):
         user = ctx.author.name
         user_id = ctx.author.id
 
-        can_afford, afford_message = self.bot.remove_points(user_id, vip_cost)
+        can_afford, afford_message = self.bot.remove_points(user_id, user, vip_cost)
         
         if not can_afford:
             await ctx.send(afford_message)
@@ -260,7 +260,7 @@ class RedeemCommands(commands.Cog):
             ])
             await ctx.send(message)
         else:
-            self.bot.add_points(user_id, vip_cost)
+            self.bot.add_points(user_id, user, vip_cost)
             match status_code:
                 case 422:
                     await ctx.send(f"@{user} You already are a VIP!")

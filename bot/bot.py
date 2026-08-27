@@ -278,7 +278,7 @@ class KuroBot(commands.Bot):
         print("Commands succesfully exported to 'website/public/static/commands.txt'")
 
     ## helper methods
-    def add_points(self, user_id, amount):
+    def add_points(self, user_id, username, amount):
         if user_id == self.user_id:
             write_log(LOG_FILE, f"[INFO] - Skipping add_points, user is self.nick")
             return
@@ -286,34 +286,32 @@ class KuroBot(commands.Bot):
             self.user_points[user_id] = amount 
         else:
             self.user_points[user_id] = round(self.user_points[user_id] + amount)
-        write_log(LOG_FILE, f"[INFO] - Added {amount} to {user_id}'s points: {self.user_points[user_id]}")
+        write_log(LOG_FILE, f"[INFO] - Added {amount} to {username}'s points: {self.user_points[user_id]}")
 
     # add points as result to rps game
-    def add_rps_points(self, user_id, rps_result):
+    def add_rps_points(self, user_id, username, rps_result):
         match rps_result:
             case "win":
-                self.add_points(user_id, 15)
+                self.add_points(user_id, username, 15)
             case "tie":
-                self.add_points(user_id, 5)
+                self.add_points(user_id, username, 5)
 
     # check points for points redeeming
-    def remove_points(self, user_id, item_cost):
+    def remove_points(self, user_id, username, item_cost):
         if user_id == self.user_id:
             return True, f"Infinite points - {item_cost}?? lol"
 
-        user_name = self.get_user_name(user_id)
-
         if user_id in self.user_points:
             if self.user_points[user_id] < item_cost:
-                write_log(LOG_FILE, f"[INFO] - {user_name} does not have enough for an item that costs {item_cost}: {self.user_points[user_id]}")
-                return False, f"@{user_name} You don't have enough points! You need {item_cost - self.user_points[user_id]} more points!"
+                write_log(LOG_FILE, f"[INFO] - {username} does not have enough for an item that costs {item_cost}: {self.user_points[user_id]}")
+                return False, f"@{username} You don't have enough points! You need {item_cost - self.user_points[user_id]} more points!"
             else:
                 self.user_points[user_id] = round(self.user_points[user_id] - item_cost)
-                write_log(LOG_FILE, f"[INFO] - Subtracted {item_cost} points from {user_name}: {self.user_points[user_id]}")
-                return True, f"This costed @{user_name} {item_cost} points."
+                write_log(LOG_FILE, f"[INFO] - Subtracted {item_cost} points from {username}: {self.user_points[user_id]}")
+                return True, f"This costed @{username} {item_cost} points."
         else:
-            write_log(LOG_FILE, f"[INFO] - {user_name} does not have enough for an item that costs {item_cost}: {self.user_points[user_id]}")
-            return False, f"@{user_name} You don't have enough points! You need {item_cost} more points!"
+            write_log(LOG_FILE, f"[INFO] - {username} does not have enough for an item that costs {item_cost}: {self.user_points[user_id]}")
+            return False, f"@{username} You don't have enough points! You need {item_cost} more points!"
 
     def get_top_5_points(self):
         ranking = sorted(self.user_points.items(), key=lambda user: user[1], reverse=True)
@@ -379,7 +377,7 @@ class KuroBot(commands.Bot):
 
         # prevent spamming
         if user_id not in self.last_point_time or (now - self.last_point_time[user_id]) >= cooldown:
-            self.add_points(user_id, added_points)
+            self.add_points(user_id, message.author.name, added_points)
             self.last_point_time[user_id] = now
 
         # this line is necessary to keep recognizing commands
@@ -397,7 +395,7 @@ class KuroBot(commands.Bot):
             user_name = event["user_login"].lower()
             cost = event["reward"]["cost"]
 
-            self.add_points(user_id, cost)
+            self.add_points(user_id, user_name, cost)
             await channel.send(f"@{user_name} Your redemption has been acknowlged.")
 
     def get_single_social(self, social):

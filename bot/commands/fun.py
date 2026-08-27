@@ -139,7 +139,7 @@ class FunCommands(commands.Cog):
 
         if random.random() > steal_chance:
             fine = round(self.bot.user_points[invoker_id] * random.uniform(0.02, 0.04))
-            self.bot.remove_points(invoker_id, fine)
+            self.bot.remove_points(invoker_id, invoker, fine)
             lost_points_message = f"You just lost 1 point!" if fine == 1 else f"You just lost {fine} points!"
             messages = [
                 f"@{invoker} You failed to rob {username}... {lost_points_message}",
@@ -153,8 +153,8 @@ class FunCommands(commands.Cog):
         
         percentage = random.uniform(0.03, 0.07)
         robbed_points = round(self.bot.user_points[username_id] * percentage)
-        self.bot.remove_points(username_id, robbed_points)
-        self.bot.add_points(invoker_id, robbed_points)
+        self.bot.remove_points(username_id, username, robbed_points)
+        self.bot.add_points(invoker_id, invoker, robbed_points)
         self.bot.robbed.add(username)
 
         messages = [

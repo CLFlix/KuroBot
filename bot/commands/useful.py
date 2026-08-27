@@ -159,7 +159,7 @@ class UsefulCommands(commands.Cog):
             return
 
         self.bot.bonus_claimed.add(user_id)
-        self.bot.add_points(user_id, 500)
+        self.bot.add_points(user_id, user, 500)
 
         message = random.choice([
             "You just claimed 500 points! Use !commands to find out what you can do CorgiDerp",
@@ -187,7 +187,7 @@ class UsefulCommands(commands.Cog):
             await ctx.send(f"@{user} You already claimed your daily bonus!")
             return
 
-        self.bot.add_points(user_id, 50)
+        self.bot.add_points(user_id, user, 50)
         self.bot.daily_claimed.add(user)
 
         messages = [
