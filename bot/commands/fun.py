@@ -90,7 +90,7 @@ class FunCommands(commands.Cog):
         await ctx.send(f"@{user} {base_reply}{messages[result]}")
 
         if result in ("win", "tie"):
-            self.bot.add_rps_points(ctx.author.id, result)
+            self.bot.add_rps_points(ctx.author.id, user, result)
     rps.category = "fun"
     rps.description = "Play rock, paper, scissors with the bot! If you win, " \
     "you get 15 points. If you tie with the bot, you gain 5 points."
