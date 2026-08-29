@@ -86,7 +86,7 @@ function About() {
             <div className="flex flex-col gap-1 text-blue-400 text-xl">
               <span>
                 <a
-                  href="https://www.twitch.tv/kurookamitv"
+                  href="https://www.twitch.tv/kurookamiosu"
                   className="big-link"
                 >
                   Twitch
@@ -102,7 +102,7 @@ function About() {
               </span>
               <span>
                 <a
-                  href="https://www.tiktok.com/@_kurookami_osu"
+                  href="https://www.tiktok.com/@kurookamiosu"
                   className="big-link"
                 >
                   TikTok
@@ -126,7 +126,7 @@ function About() {
           <div className="text-center mt-4 pb-2">
             <h1 className="text-3xl font-bold">Download</h1>
             <a
-              href="https://github.com/CLFlix/KuroBot/releases/tag/v3.0.0"
+              href="https://github.com/CLFlix/KuroBot/releases/tag/v4.0.0"
               className="link font-bold text-xl"
               target="_blank"
             >
