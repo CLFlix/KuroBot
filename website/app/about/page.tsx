@@ -130,7 +130,7 @@ function About() {
               className="link font-bold text-xl"
               target="_blank"
             >
-              KuroBot v3.0.0
+              KuroBot Download
             </a>
           </div>
         </div>
