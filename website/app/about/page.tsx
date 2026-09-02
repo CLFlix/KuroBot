@@ -94,7 +94,7 @@ function About() {
               </span>
               <span>
                 <a
-                  href="https://www.youtube.com/@Doku_Kurookami"
+                  href="https://www.youtube.com/@kurookamiosu"
                   className="big-link"
                 >
                   YouTube
