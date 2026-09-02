@@ -11,8 +11,9 @@ class RedeemCommands(commands.Cog):
     @commands.command(name="shush")
     async def shush(self, ctx):
         user = ctx.author.name
+        user_id = ctx.author.id
         shush_cost = 2500
-        can_afford, afford_message = self.bot.remove_points(user, shush_cost)
+        can_afford, afford_message = self.bot.remove_points(user_id, user, shush_cost)
 
         if can_afford:
             await ctx.send(f"@{self.bot.nick} You can't speak for the next 5 minutes! {afford_message}")
@@ -26,8 +27,9 @@ class RedeemCommands(commands.Cog):
     @commands.command(name="memecam")
     async def memecam(self, ctx):
         user = ctx.author.name
+        user_id = ctx.author.id
         memecam_cost = 500
-        can_afford, afford_message = self.bot.remove_points(user, memecam_cost)
+        can_afford, afford_message = self.bot.remove_points(user_id, user, memecam_cost)
 
         if can_afford:
             await ctx.send(f"@{self.bot.nick} You have to throw a silly effect over your camera for the next 10 minutes! {afford_message}")
@@ -42,8 +44,9 @@ class RedeemCommands(commands.Cog):
     @commands.command(name="zoom")
     async def zoom(self, ctx):
         user = ctx.author.name
+        user_id = ctx.author.id
         zoom_cost = 500
-        can_afford, afford_message = self.bot.remove_points(user, zoom_cost)
+        can_afford, afford_message = self.bot.remove_points(user_id, user, zoom_cost)
 
         if not can_afford:
             await ctx.send(afford_message)
@@ -58,8 +61,9 @@ class RedeemCommands(commands.Cog):
     @commands.command(name="invert")
     async def invert(self, ctx):
         user = ctx.author.name
+        user_id = ctx.author.id
         invert_cost = 250
-        can_afford, afford_message = self.bot.remove_points(user, invert_cost)
+        can_afford, afford_message = self.bot.remove_points(user_id, user, invert_cost)
 
         if not can_afford:
             await ctx.send(afford_message)
@@ -74,6 +78,7 @@ class RedeemCommands(commands.Cog):
     @commands.command(name="endwith")
     async def endwith(self, ctx, map_link=None):
         user = ctx.author.name
+        user_id = ctx.author.id
         endwith_cost = 300
 
         if self.bot.endwith_redeemed:
@@ -84,7 +89,7 @@ class RedeemCommands(commands.Cog):
             await ctx.send(f"@{user} Please send the map link or the title of the song you'd like to see the stream end with: '!endwith <link or title>'")
             return
             
-        can_afford, afford_message = self.bot.remove_points(user, endwith_cost)
+        can_afford, afford_message = self.bot.remove_points(user_id, user, endwith_cost)
 
         if can_afford:
             self.bot.endwith_redeemed = True
@@ -100,6 +105,7 @@ class RedeemCommands(commands.Cog):
     @commands.command(name="gift")
     async def gift(self, ctx, *, message: str):
         gifter = ctx.author.name
+        gifter_id = ctx.author.id
         parts = message.split()
 
         if len(parts) != 2:
@@ -122,11 +128,12 @@ class RedeemCommands(commands.Cog):
             await ctx.send(f"@{gifter} You cant gift points to yourself!")
             return
 
-        if not await self.bot.user_exists(receiver):
+        receiver_id = self.bot.get_user_id(receiver)
+        if not receiver_id:
             await ctx.send(f"@{gifter} That user doesn't exist on Twitch!")
             return
 
-        can_afford, afford_message = self.bot.remove_points(gifter, amount)
+        can_afford, afford_message = self.bot.remove_points(gifter_id, gifter, amount)
 
         if not can_afford:
             await ctx.send(afford_message)
@@ -140,7 +147,7 @@ class RedeemCommands(commands.Cog):
             f"@{gifter} could miss {amount} points and gave it to @{receiver} !"
         ])
         await ctx.send(return_message)
-        self.bot.add_points(receiver, amount)
+        self.bot.add_points(receiver_id, receiver, amount)
         write_log(LOG_FILE, f"[INFO] - {gifter} gifted {amount} points to {receiver}")
     gift.category = "redeem"
     gift.description = "You can gift points to another user, if you " \
@@ -150,6 +157,7 @@ class RedeemCommands(commands.Cog):
     @commands.command(name="gamble")
     async def gamble(self, ctx, amount=None):
         user = ctx.author.name
+        user_id = ctx.author.id
 
         if not amount:
             amount = 0
@@ -172,7 +180,7 @@ class RedeemCommands(commands.Cog):
             await ctx.send(f"@{user} You didn't specify an amount. Usage: '!gamble <amount>'")
             return
 
-        if amount > self.bot.user_points[user]:
+        if amount > self.bot.user_points[user_id]:
             await ctx.send(f"@{user} You cannot afford this gamble!")
             return
 
@@ -181,7 +189,7 @@ class RedeemCommands(commands.Cog):
         else:
             self.bot.gamble_cooldown[user] = 1
 
-        self.bot.remove_points(user, amount)
+        self.bot.remove_points(user_id, user, amount)
 
         won = random.choice([0,1])
         if won:
@@ -191,13 +199,13 @@ class RedeemCommands(commands.Cog):
             
             match round(multiplier - 1, 1):
                 case 0:
-                    self.bot.add_points(user, amount)
+                    self.bot.add_points(user_id, user, amount)
                     await ctx.send(f"@{user} You didn't win, you didn't lose.. You got your {amount} points back.")
                     write_log(LOG_FILE, f"[INFO] - {user} gambled {amount} points and broke even.")
                 case _:
                     won_points = round(amount * multiplier) if amount * multiplier != 0 else 1
                     await ctx.send(f"@{user} Congrats, you won {won_points} point{"" if won_points == 1 else "s"}!")
-                    self.bot.add_points(user, won_points)
+                    self.bot.add_points(user_id, user, won_points)
                     write_log(LOG_FILE, f"[INFO] - {user} won {won_points} points by gambling {amount} points")
         else:
             await ctx.send(f"@{user} Sadge, you lost {amount} points...")
@@ -210,16 +218,18 @@ class RedeemCommands(commands.Cog):
     @commands.command(name="double", aliases=["dorn"])
     async def double(self, ctx):
         user = ctx.author.name
-        if user not in self.bot.user_points or self.bot.user_points[user] == 0:
+        user_id = ctx.author.id
+
+        if user_id not in self.bot.user_points.keys() or self.bot.user_points[user_id] == 0:
             await ctx.send(f"@{user} you don't have any points.")
 
         won = random.choice([0,1])
         if won:
-            self.bot.add_points(user, self.bot.user_points[user])
+            self.bot.add_points(user_id, user, self.bot.user_points[user_id])
             await ctx.send(f"@{user} You won! You now have double your original amount of points!")
-            write_log(LOG_FILE, f"[INFO] - {user} won the double or nothing: {self.bot.user_points[user]}")
+            write_log(LOG_FILE, f"[INFO] - {user} won the double or nothing: {self.bot.user_points[user_id]}")
         else:
-            self.bot.user_points[user] = 0
+            self.bot.user_points[user_id] = 0
             await ctx.send(f"@{user} You lost... You're back at 0 points...")
             write_log(LOG_FILE, f"[INFO] - {user} lost the double or nothing.")
     double.category = "redeem"
@@ -231,14 +241,14 @@ class RedeemCommands(commands.Cog):
     async def vip(self, ctx):
         vip_cost = 1000000
         user = ctx.author.name
+        user_id = ctx.author.id
 
-        can_afford, afford_message = self.bot.remove_points(user, vip_cost)
+        can_afford, afford_message = self.bot.remove_points(user_id, user, vip_cost)
         
         if not can_afford:
             await ctx.send(afford_message)
             return
 
-        user_id = self.bot.get_user_id(user)
         succes, status_code = self.bot.add_vip(user_id) # try adding VIP
 
         if succes:
@@ -251,7 +261,7 @@ class RedeemCommands(commands.Cog):
             ])
             await ctx.send(message)
         else:
-            self.bot.add_points(user, vip_cost)
+            self.bot.add_points(user_id, user, vip_cost)
             match status_code:
                 case 422:
                     await ctx.send(f"@{user} You already are a VIP!")

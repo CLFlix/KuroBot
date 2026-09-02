@@ -176,15 +176,7 @@ def calculate_followage_days(followed_at):
 
     return " ".join(parts) if parts else "less than an hour"
 
-def write_original_vips(data):
-    indefinite_vips = {}
-    for vip in data:
-        indefinite_vips[vip["user_login"]] = "indefinite"
-
-    with open(r"vips.json", 'w', encoding='utf-8') as vips_file:
-        json.dump(indefinite_vips, vips_file, indent=4)
-
-def write_new_vip(user_id):
+def write_vip(user_id):
     with open(r'vips.json', 'r', encoding='utf-8') as vips_file:
         all_vips = json.load(vips_file)
     

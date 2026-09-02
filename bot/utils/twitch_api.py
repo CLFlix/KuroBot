@@ -2,7 +2,7 @@ import os
 import requests
 
 from bot.utils.refresh_access_token import refresh_access_token
-from bot.utils.utils import write_log, write_original_vips, write_new_vip, delete_vip_from_file
+from bot.utils.utils import write_log, write_vip, delete_vip_from_file
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 BROADCASTER_ID = os.getenv("BROADCASTER_ID")
@@ -41,7 +41,7 @@ class TwitchAPI:
 
         write_log(self.log_file, f"[WARN] - Could not get valid response from '{log_url}': {response.text}")
     
-    def get_mods_list(self, bot_nick):
+    def get_mods_list(self, bot_user_id):
         uri = "https://api.twitch.tv/helix/moderation/moderators"
         params = {"broadcaster_id": BROADCASTER_ID}
 
@@ -53,12 +53,12 @@ class TwitchAPI:
 
         try:
             data = response.json()["data"]
-            mods_list = [mod["user_login"] for mod in data]
+            mods_list = [mod["user_id"] for mod in data]
 
             with open("mods_list.txt", 'w', encoding='utf-8') as mods_file:
                 for mod in mods_list:
                     mods_file.write(f"{mod}\n")
-                mods_file.write(bot_nick)
+                mods_file.write(f"{bot_user_id}")
         
         except requests.exceptions.JSONDecodeError:
             raise RuntimeError("Couldn't get moderators")
@@ -77,21 +77,10 @@ class TwitchAPI:
             data = response.json()["data"]
             banned_users = set()
             for banned_user in data:
-                banned_users.add(banned_user["user_login"])
+                banned_users.add(banned_user["user_id"])
             return banned_users
         except requests.exceptions.JSONDecodeError as e:
             write_log(self.log_file, f"[ERROR] - Couldn't decode banned users list: {e}")
-    
-    def user_exists(self, username) -> bool:
-        url = f"https://api.twitch.tv/helix/users?login={username}"
-        response = self._request("get", url)
-
-        if not response.ok:
-            write_log(self.log_file, f"[ERROR] - Couldn't get user data: {response.text}")
-            return False
-
-        data = response.json()
-        return len(data["data"]) > 0
     
     def get_user_id(self, user):
         url = "https://api.twitch.tv/helix/users"
@@ -100,10 +89,24 @@ class TwitchAPI:
         response = self._request("get", url, params=params)
 
         try:
-            user_data = response.json()
-            return user_data["data"][0]["id"]
+            user_data = response.json()["data"]
+            if len(user_data) == 0:
+                return None
+            return user_data[0]["id"]
         except requests.exceptions.JSONDecodeError as e:
             write_log(self.log_file, f"[ERROR] - Couldn't get user ID: {e}")
+
+    def get_user_name(self, user_id):
+        url = "https://api.twitch.tv/helix/users"
+        params = {"id": user_id}
+
+        res = self._request("get", url, params=params)
+
+        try:
+            user_data = res.json()
+            return user_data["data"][0]["login"]
+        except requests.exceptions.JSONDecodeError as e:
+            write_log(self.log_file, f"[ERROR] - Couldn't get user login: {e}")
 
     def get_follower_data(self, user_id):
         url = "https://api.twitch.tv/helix/channels/followers"
@@ -126,33 +129,6 @@ class TwitchAPI:
         except requests.exceptions.JSONDecodeError as e:
             write_log(self.log_file, f"[ERROR] - Invalid or no response getting followage: {e}")
 
-    def get_vip_list(self):
-        with open(r'vips.json', 'r', encoding='utf-8') as vips_file:
-            if len(vips_file.read()) > 2: # if the dict is empty, then the char amount is 2: '{}'
-                return
-
-        url = "https://api.twitch.tv/helix/channels/vips"
-        params = {
-            "broadcaster_id": BROADCASTER_ID,
-            "first": 100
-        }
-        
-        try:
-            response = self._request("get", url, params=params)
-        except ConnectionError as e:
-            write_log(self.log_file, f"[ERROR] - Something went wrong getting VIPs: {e}")
-
-        if not response.ok:
-            write_log(self.log_file, f"[ERROR] - Something went wrong getting VIPs: {response.text}")
-            return
-        
-        try:
-            data = response.json()["data"]
-            write_original_vips(data)
-            write_log(self.log_file, f"[INFO] - Written original VIPs list to vips.json")
-        except requests.exceptions.JSONDecodeError as e:
-            write_log(self.log_file, f"[ERROR] - Invalid or no response getting vips list: {e}")
-
     def add_vip(self, user_id):
         url = "https://api.twitch.tv/helix/channels/vips"
         params = {
@@ -166,7 +142,7 @@ class TwitchAPI:
             return "Something went wrong assigning VIP status.."
 
         if response.status_code == 204:
-            write_new_vip(user_id)
+            write_vip(user_id)
             write_log(self.log_file, f"[INFO] - Added {user_id} to vips.json")
             return True, 204
         elif response.status_code == 422:  # user already is VIP
