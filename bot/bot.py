@@ -261,10 +261,10 @@ class KuroBot(commands.Bot):
     ## export commands
     def export_commands(self):
         order = ["commands", "followage", "lurk", "socials", "youtube", "discord", "tiktok", "twitter",
-                 "instagram", "linktree", "shoutout", "points", "claim", "daily", "leaderboard", "poll",
-                 "category", "ping", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
-                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "rob",
-                 "shush", "endwith", "invert", "zoom", "memecam", "gift", "gamble", "double", "vip"]
+                 "instagram", "linktree", "shoutout", "title", "points", "claim", "daily", "leaderboard",
+                 "poll", "category", "ping", "rq", "np", "nppp", "profile", "rank", "playcount", "playtime",
+                 "osustats", "hydrate", "posture", "stretch", "owo", "mock", "rps", "roll", "rob", "shush",
+                 "endwith", "invert", "zoom", "memecam", "gift", "gamble", "double", "vip"]
 
         written = set()
         with open(r'website/public/static/commands.txt', 'w', encoding='utf-8') as commands_file:
