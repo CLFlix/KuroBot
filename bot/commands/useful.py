@@ -149,6 +149,25 @@ class UsefulCommands(commands.Cog):
     shoutout.description = "Use this command and tag someone right behind it like '!shoutout @user' to shout out this user's Twitch channel! (mods only) " \
     "Alias: !so"
 
+    @commands.command(name="title")
+    async def title(self, ctx, *, new_title):
+        invoker = ctx.author.name
+
+        mods_list = self.bot.read_mods()
+        if ctx.author.id not in mods_list:
+            await ctx.send(f"{invoker} You are not allowed to use this command!")
+            return
+
+        current_title = self.bot.get_stream_title()
+        if new_title == current_title:
+            await ctx.send(f"{invoker} The current title is identical to your requested title!")
+            return
+
+        self.bot.update_stream_title(new_title)
+        await ctx.send(f"@{invoker} new stream title: {new_title}")
+    title.category = "useful"
+    title.description = "Just like in the famous bots, you can edit the title with a simple command, giving mods the ability to do so too."
+
     @commands.command(name="claim")
     async def claim(self, ctx):
         user = ctx.author.name
