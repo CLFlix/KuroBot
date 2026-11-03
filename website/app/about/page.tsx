@@ -8,9 +8,9 @@ function About() {
           <div>
             <h1 className="text-3xl font-bold">Me!</h1>
             <p>
-              Hi there! I'm Kurookami, also known as CLFlix - creator of this
-              website and KuroBot. I'm a second-year college student studying
-              Applied Computer Science, and a fanatic osu! player.
+              Hi there! I'm Kurookami, creator of this website and KuroBot.
+              I'm a last-year college student studying Applied Computer Science,
+              and a fanatic osu! player.
             </p>
             <h1 className="text-3xl font-bold mt-4">Why?</h1>
             <p>
