@@ -6,13 +6,10 @@ const AdditionalFeatures = () => {
         <div className="additionalFeatureBlock">
           <h1 className="text-2xl font-bold">Redemptions Listener</h1>
           <p className="text-xl">
-            If you enable this, the bot will listen to all the redemptions made
-            on your Twitch channel! With how things are right now, the bot will
-            only recognize redemptions whose name starts with "Exchange". The
-            bot will then add the cost of the Twitch redemption to its own
-            points system. I'll give a quick example: If the Twitch redemption
-            costed 500 points, the bot will then add 500 points to the amount of
-            points this user has in the bot's points system.
+            Enable this and the bot will listen to your Twitch redemptions. Any
+            redemption whose name starts with "Exchange" gets its cost added to
+            the user's points in the bot's points system. For example, a
+            50-point redemption adds 50 points to that user's balance.
           </p>
         </div>
         <div className="additionalFeatureBlock">
