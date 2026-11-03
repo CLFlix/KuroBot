@@ -2,7 +2,7 @@ const AdditionalFeatures = () => {
   return (
     <>
       <h1 className="text-4xl text-center">Additional Features</h1>
-      <div className="flex max-lg:flex-col gap-20 max-lg:gap-5 justify-center mt-5">
+      <div className="flex max-lg:flex-col items-start gap-20 max-lg:gap-5 justify-center mt-5">
         <div className="additionalFeatureBlock">
           <h1 className="text-2xl font-bold">Redemptions Listener</h1>
           <p className="text-xl">
