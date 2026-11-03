@@ -9,6 +9,7 @@ twitter - If the streamer has their Twitter / X linked in the bot, this command 
 instagram - If the streamer has their Instagram linked in the bot, this command will give you this link. Alias: !insta - useful
 linktree - If the streamer has a Linktree or anything that has a similar goal linked in the bot, this command will show you the link. - useful
 shoutout - Use this command and tag someone right behind it like '!shoutout @user' to shout out this user's Twitch channel! (mods only) Alias: !so - useful
+title - Just like in the famous bots, you can edit the title with a simple command, giving mods the ability to do so too. - useful
 points - This command will show you how many bot points you have in this Twitch channel. You can also check other people's wallet by throwing in their username behind it! - useful
 claim - After using this command, you will have claimed your first 500 bot points. You can obtain more points by chatting in the Twitch chat. - useful
 daily - Viewers can chime in on your stream and claim a bonus of 50 points when they invoke this command. - useful
