@@ -329,7 +329,7 @@ class KuroBot(commands.Bot):
 
 ## events
     async def event_ready(self):
-        self.user_points[self.user_id] = float("inf")
+        self.user_points[str(self.user_id)] = float("inf")
         self.check_for_update()
         self.get_mods_list()
         # self.export_commands() # ONLY USED FOR UPDATING WEBSITE COMMANDS
