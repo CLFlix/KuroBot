@@ -200,27 +200,26 @@ class RedeemCommands(commands.Cog):
             write_log(LOG_FILE, f"[INFO] - {user} lost {amount} point{"" if amount == 1 else "s"} by gambling.")
             return
 
-        if won:
-            dice = random.choice([1, 2, 3, 4, 5, 6])
-            dice_to_multiplier_mapping = {
-                1: 0,
-                2: 0.1,
-                3: 0.2,
-                4: 0.3,
-                5: 0.4,
-                6: 0.5
-                }
-            multiplier = dice_to_multiplier_mapping.get(dice)
+        dice = random.choice([1, 2, 3, 4, 5, 6])
+        dice_to_multiplier_mapping = {
+            1: 0,
+            2: 0.1,
+            3: 0.2,
+            4: 0.3,
+            5: 0.4,
+            6: 0.5
+            }
+        multiplier = dice_to_multiplier_mapping.get(dice)
 
-            if multiplier == 0:
-                self.bot.add_points(user_id, user, amount)
-                await ctx.send(f"@{user} You didn't win, you didn't lose.. You got your {amount} point{"" if amount == 1 else "s"} back.")
-                write_log(LOG_FILE, f"[INFO] - {user} gambled {amount} point{"" if amount == 1 else "s"} and broke even.")
-            else:
-                won_points = round(amount + (amount * multiplier)) if round(amount * multiplier) != 0 else amount + 1
-                await ctx.send(f"@{user} Congrats, you won {won_points} point{"" if won_points == 1 else "s"}!")
-                self.bot.add_points(user_id, user, won_points)
-                write_log(LOG_FILE, f"[INFO] - {user} won {won_points} points by gambling {amount} points")
+        if multiplier == 0:
+            self.bot.add_points(user_id, user, amount)
+            await ctx.send(f"@{user} You didn't win, you didn't lose.. You got your {amount} point{"" if amount == 1 else "s"} back.")
+            write_log(LOG_FILE, f"[INFO] - {user} gambled {amount} point{"" if amount == 1 else "s"} and broke even.")
+        else:
+            won_points = round(amount + (amount * multiplier)) if round(amount * multiplier) != 0 else amount + 1
+            await ctx.send(f"@{user} Congrats, you won {won_points} point{"" if won_points == 1 else "s"}!")
+            self.bot.add_points(user_id, user, won_points)
+            write_log(LOG_FILE, f"[INFO] - {user} won {won_points} points by gambling {amount} points")
     gamble.category = "redeem"
     gamble.description = "Gamble your points away! You have a 1 in 2 chance of winning. If you do, " \
     "a 6-sided dice will roll and decide on a multiplier which will calculate how much you win. This can " \
